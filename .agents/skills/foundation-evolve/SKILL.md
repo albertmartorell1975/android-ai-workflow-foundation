@@ -3,7 +3,7 @@ name: foundation-evolve
 description: Automates the synchronization of new or modified skills from a working project to the AI Workflow Foundation repository.
 metadata:
   author: Albert Martorell Garcia
-  version: 1.0.0
+  version: 1.1.0
   keywords:
   - automation
   - maintenance
@@ -24,6 +24,8 @@ When the user asks to "evolve the foundation" with a specific skill:
 4. **Commit & Push**:
    - Enter the Foundation directory.
    - Execute `git add .`.
-   - Execute `git commit -m "feat(skills): add/update [skill-name] expert skill via automation" `.
+   - Execute `git commit -m "feat(skills): add/update [skill-name] expert skill via automation"`.
    - Execute `git push origin main`.
-5. **Completion**: Notify the user that the foundation has evolved.
+5. **Final Notification & Action**: 
+   - Notify the user that the foundation has evolved and the changes are live on GitHub.
+   - **MANDATORY**: Instruct the user to run `npx skills update` in their other projects to receive the new skill.
