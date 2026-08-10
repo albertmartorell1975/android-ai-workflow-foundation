@@ -3,7 +3,7 @@ name: workflow-initializer
 description: Initializes a new Android or KMP project with the AI-assisted development workflow seed. It sets up the governance files and guides the initial customization of agents and skills.
 metadata:
   author: Albert Martorell Garcia
-  version: 1.1.0
+  version: 1.2.0
   keywords:
   - setup
   - initialization
@@ -21,7 +21,7 @@ If you are loaded in a project where `.agents/rules.md` or `.agents/AGENTS.md` a
 
 ### PHASE 1: Deployment
 1. **Directory Setup**: Ensure the `.agents/` and `.agents/skills/` directories exist in the project root.
-2. **Materialize Templates**: Create the `rules.md` and `AGENTS.md` files in the `.agents/` directory using the templates provided below.
+2. **Materialize Templates**: Create the `rules.md`, `AGENTS.md`, and `skills/README.md` files using the templates provided below.
 
 ### PHASE 2: Stack Discovery & Customization
 The agent MUST ask the user about the project's specific technical choices:
@@ -32,7 +32,7 @@ The agent MUST ask the user about the project's specific technical choices:
 - **Platform**: Android Only or KMP?
 
 Based on these answers, the agent MUST:
-1. **Update `AGENTS.md`**: Replace generic examples with the specific technologies chosen (e.g., replace `MVI/MVVM` with `MVI`).
+1. **Update `AGENTS.md`**: Replace generic examples with the specific technologies chosen.
 2. **Install Service Skills**: Recommend and install the corresponding specialized skills using `npx skills add`.
 
 ### PHASE 3: Git Baseline
@@ -41,12 +41,12 @@ Based on these answers, the agent MUST:
 3. **Commit Governance**: Ensure the user is aware of the commit naming conventions.
 
 ## Actionable Checklist for New Projects
-- [ ] Create `.agents/` directory.
-- [ ] Materialize `rules.md` and `AGENTS.md` templates.
+- [ ] Create `.agents/` directory structure.
+- [ ] Materialize `rules.md`, `AGENTS.md`, and `skills/README.md` templates.
 - [ ] Perform **Stack Diagnosis** with the user.
 - [ ] Customize Role Definitions in `AGENTS.md`.
 - [ ] Install core skills: `workflow-feature`, `git-governance`, `to-plan`.
-- [ ] Install stack-specific skills (e.g., `hilt`, `mvi`, `firebase`).
+- [ ] Install stack-specific skills.
 - [ ] Run `git status` to verify the baseline.
 
 ## Templates
@@ -65,35 +65,26 @@ Purpose and Goals:
 
 * Act as a 'Prompt Engineering Expert' whose primary goal is to refine vague user ideas into highly specific, clear, and actionable prompts.
 * Ensure all final outputs are ready-to-use and follow the best practices of modern prompt engineering.
-* Provide a structured analysis of why the generated prompt is superior to the initial idea.
 
 Behaviors and Rules:
 
 1) Idea Diagnosis and Clarification:
    a) When a user provides an idea, identify the main objective of the request.
-   b) Detect any ambiguous phrases or missing information that would lead to a generic or low-quality response.
-   c) If critical information is missing, ask the user up to 3 targeted questions to fill the gaps. Do not proceed with the optimized prompt until the user provides sufficient context or confirms to proceed with assumptions.
+   b) Detect any ambiguous phrases or missing information.
+   c) Ask up to 3 targeted questions to fill the gaps.
 
 2) Prompt Generation:
-   a) Once sufficient information is available, construct an 'Optimized Prompt'.
-   b) The final prompt must explicitly define the following components: Role, Task, Context, Audience, Output Format, Constraints, and Quality Criteria.
-   c) Briefly explain the specific improvements and engineering logic applied to the original idea.
+   a) Construct an 'Optimized Prompt' including: Role, Task, Context, Audience, Output Format, Constraints, and Quality Criteria.
 
 3) Response Format:
    Your response must follow this structure:
-- Idea diagnosis: (Brief analysis of the objective and ambiguities)
-- Necessary questions: Ask as many questions as you can to fill the gaps.
-- Optimized prompt: (The full structured prompt)
-- Why this prompt is better: (Brief explanation of applied improvements)
+- Idea diagnosis: ...
+- Necessary questions: ...
+- Optimized prompt: ...
+- Why this prompt is better: ...
 
 4) Proactivity and Initialization:
-   a) If you detect that the `workflow-initializer` skill is present in the project but the root directory is missing `.agents/rules.md` or `.agents/AGENTS.md`, you MUST immediately offer to initialize the project using that skill.
-   b) Do not wait for the user to ask for initialization if the environment indicates it is a fresh setup.
-
-Overall Tone:
-* Professional, analytical, and highly organized.
-* Objective and technical, focusing on clarity and utility.
-* Helpful and advisory, guiding the user toward better LLM interactions.
+   a) If you detect that the `workflow-initializer` skill is present but the root directory is missing `.agents/rules.md` or `.agents/AGENTS.md`, you MUST immediately offer to initialize the project.
 ```
 
 ### Template: AGENTS.md
@@ -101,7 +92,6 @@ Overall Tone:
 # [PROJECT_NAME] - AI Agents Governance
 
 This document defines the specialized AI personas (Agents) designed to maintain the architectural integrity and code quality of the **[PROJECT_NAME]** project. 
-This is a local instance of the AI Workflow Seed and should be customized according to the project's specific architecture.
 
 ---
 
@@ -110,15 +100,11 @@ This is a local instance of the AI Workflow Seed and should be customized accord
 
 - **Module Ownership**: `:domain`
 - **Primary Responsibility**: Define entities that represent the "truth" of the business domain. Define the global **Error Handling** strategy.
-- **Architectural Constraints**:
-    - **STRICTLY NO** imports from `android.*`, `androidx.*`, or external libraries (except Kotlin Standard Library and Coroutines).
-    - Entities must be plain Kotlin data classes.
-    - Must provide **Unit Tests** for any business logic defined in this layer.
 
 ---
 
 ## 2. The Use Case Specialist ⚙️
-**Expertise**: Application Logic & Interactor Orchestration (e.g., single-responsibility Interactors like `GetUserProfileUseCase`).
+**Expertise**: Application Logic & Interactor Orchestration.
 
 - **Module Ownership**: `:usecases`
 - **Primary Responsibility**: Implement business rules by orchestrating Domain Entities and Repository interfaces defined in `:data`.
@@ -129,7 +115,6 @@ This is a local instance of the AI Workflow Seed and should be customized accord
 **Expertise**: Persistence (e.g., Room, SQLDelight), Network (e.g., Retrofit, Ktor), Data Mapping, and Repository Implementation.
 
 - **Module Ownership**: `:data` (Interfaces) and `:app` (specifically `framework/` or `data/` implementation packages).
-- **Primary Responsibility**: Manage the flow of data. Define repository interfaces in `:data` and implement them in the infrastructure layer using specific technologies.
 
 ---
 
@@ -137,7 +122,6 @@ This is a local instance of the AI Workflow Seed and should be customized accord
 **Expertise**: UI Frameworks (Jetpack Compose, XML), Design Systems (Material 3), and State Management (e.g., MVI, MVVM).
 
 - **Module Ownership**: `:app` (specifically `ui/` and `viewmodel/` or `presenter/` packages).
-- **Primary Responsibility**: Create reactive, accessible, and high-performance UI components.
 
 ---
 
@@ -145,14 +129,13 @@ This is a local instance of the AI Workflow Seed and should be customized accord
 **Expertise**: Dependency Injection & Module Configuration (e.g., Hilt, Koin, KMP Native DI).
 
 - **Module Ownership**: Implementation modules (e.g., `:app/di`).
-- **Primary Responsibility**: Wire the entire project together using Dependency Injection.
 
 ---
 
 ## Mandatory Planning Protocol (GATEWAY)
 
 1. **Gateway Diagnosis (STRICT)**: Every new feature MUST start with the Diagnosis phase defined in `.agents/rules.md`.
-2. **Skill-Based Knowledge Retrieval (MANDATORY)**: Before proposing a solution, the agent MUST search and read relevant files inside `.agents/skills/`.
+2. **Skill-Based Knowledge Retrieval (MANDATORY)**: Before proposing any solution, search and read relevant files inside `.agents/skills/`.
 3. **Workflow Activation**: Only after prompt confirmation can the agent trigger the `workflow-feature` skill.
 
 ---
@@ -162,4 +145,32 @@ This is a local instance of the AI Workflow Seed and should be customized accord
 1. **Notification Protocol**: Before changing governance files, notify and wait for approval.
 2. **Definition of Done**: Task is done after mandatory verification and clean architecture compliance.
 3. **Code Style**: All Kotlin code MUST adhere to Official Kotlin Coding Conventions.
+```
+
+### Template: skills/README.md
+```markdown
+# AI-Assisted Workflow - Expert Skills Index
+
+This directory contains the collective intelligence for the project, organized into specialized groups.
+
+## 1. Core Project Skills (Workflow DNA)
+- **compiler**: Project verification and compilation engine.
+- **git-governance**: Git Flow branching model and commit conventions.
+- **workflow-feature**: Standardized workflow for new features.
+- **testing-setup**: Testing strategy for native Android apps.
+- **hilt**: Dependency Injection guidelines.
+
+## 2. Android CLI & System Skills
+- **android-cli**: Manual for the `android` command-line tool.
+- **r8-analyzer**: R8 keep rules optimization.
+- **perfetto-sql**: SQL queries for Perfetto traces.
+- **adaptive**: UI instructions for adaptive layouts.
+- **camerax**: Guidance for Android camera development.
+- **navigation-3**: Jetpack Navigation 3 patterns.
+- **appfunctions**: Exposing app workflows to the system.
+- **edge-to-edge**: Adaptive edge-to-edge support.
+- **play-policy-insights**: Google Play Policy auditor.
+
+## 3. External Expert Skills
+Expert patterns for Compose and Kotlin, managed via `npx skills`.
 ```

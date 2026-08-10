@@ -10,7 +10,8 @@
       "workflow-initializer": ".agents/skills/workflow-initializer/SKILL.md",
       "workflow-feature": ".agents/skills/workflow-feature/SKILL.md",
       "git-governance": ".agents/skills/git-governance/SKILL.md",
-      "to-plan": ".agents/skills/to-plan/SKILL.md"
+      "to-plan": ".agents/skills/to-plan/SKILL.md",
+      "skills-index": ".agents/skills/README.md"
     }
   },
   "author": "Albert Martorell Garcia",
