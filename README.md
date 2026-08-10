@@ -20,18 +20,25 @@ If you already have a workflow but want to add these specific foundation skills,
 
 ## 🔄 Maintaining & Updating
 
-### 1. Updating the Foundation (For Maintainers)
-If you add, remove, or modify a skill in the foundation repository:
-1. Modify the files in the `.agents/skills/` directory.
-2. If you added a **new skill file**, update the `package.json` to include it.
-3. Commit and push your changes to GitHub.
-
-### 2. Syncing changes in your Projects (For Users)
+### 1. Syncing changes in your Projects (For Users)
 To receive the latest improvements from the foundation in your active projects, run:
 ```bash
 npx skills update
 ```
 *Note: This command updates the logic inside `.agents/skills/` but will **never** overwrite your project-specific `AGENTS.md` or `rules.md` files.*
+
+### 2. Evolving the Foundation (For Maintainers)
+To add a new skill to this seed and propagate it to all your projects:
+1. **Develop local skill**: Create and test your new skill at `.agents/skills/[skill-name]/SKILL.md` in your working project.
+2. **Copy to Foundation**: Copy the skill directory to your local `android-ai-workflow-foundation/.agents/skills/` folder.
+3. **Update Manifest**: Add the new skill path to `package.json` under the `agent-skills.skills` section.
+4. **Commit & Push**:
+```bash
+git add .
+git commit -m "feat(skills): add [skill-name] expert skill"
+git push origin main
+```
+5. **Update Projects**: Run `npx skills update` in any other project to receive the new skill.
 
 ---
 
