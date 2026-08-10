@@ -2,6 +2,9 @@
   "name": "@albertmartorell/android-ai-workflow-foundation",
   "version": "1.0.0",
   "description": "Foundational AI-Assisted Workflow Seed for Android and KMP. Provides Clean Architecture governance, standardized Git Flow, and automated feature implementation checklists.",
+  "scripts": {
+    "postinstall": "echo '\n🚀 AI Workflow Foundation installed successfully!\n👉 Next step: Open Android Studio Chat and say: \"Activate workflow-initializer\"\n'"
+  },
   "agent-skills": {
     "skills": {
       "workflow-initializer": ".agents/skills/workflow-initializer/SKILL.md",
