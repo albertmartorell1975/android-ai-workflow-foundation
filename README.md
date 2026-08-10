@@ -8,10 +8,10 @@ A standardized, AI-assisted development workflow seed for Android and KMP projec
 1. Initialize your new Android or KMP project.
 2. Run the following command in the project's root directory to install and get instant feedback:
 ```bash
-npx skills add albertmartorell1975/android-ai-workflow-foundation -y && echo "\n✅ AI Workflow Foundation installed successfully!\n👉 Next step: Open Android Studio Chat and say: \"Hello\" or \"Activate workflow-initializer\"\n"
+npx skills add albertmartorell1975/android-ai-workflow-foundation -y; echo "\n✅ AI Workflow Foundation installed successfully!\n👉 Next step: Open Android Studio Chat and say: \"Activate workflow-initializer\"\n"
 ```
-3. **Open Android Studio** and the Agent chat. The agent is proactive! It will detect the foundation and offer to initialize the project.
-4. **Stack Discovery**: Follow the agent's guide to configure your tech stack (MVI/MVVM, Hilt/Koin, etc.).
+3. **Open Android Studio** and the Agent chat.
+4. **Initial Trigger**: Type **"Activate workflow-initializer"** to start the setup. The agent will then guide you through the stack diagnosis and auto-deploy your governance files (`rules.md` and `AGENTS.md`).
 
 ### Scenario B: Existing Projects (Add Capabilities)
 If you already have a workflow but want to add these specific foundation skills, run the same command. The tools will be added to your `.agents/skills/` folder without overwriting your existing root configurations.
@@ -27,7 +27,7 @@ If you add, remove, or modify a skill in the foundation repository:
 3. Commit and push your changes to GitHub.
 
 ### 2. Syncing changes in your Projects (For Users)
-To receive the latest improvements, new skills, or bugfixes from the foundation in your active projects, run:
+To receive the latest improvements from the foundation in your active projects, run:
 ```bash
 npx skills update
 ```
