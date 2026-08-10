@@ -1,9 +1,9 @@
 {
   "name": "@albertmartorell/android-ai-workflow-foundation",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "Full-stack Foundational AI-Assisted Workflow for Android and KMP. Includes 40+ expert skills for Compose, Hilt, Firebase, and Clean Architecture.",
   "scripts": {
-    "postinstall": "echo '\n🚀 AI Workflow Foundation installed successfully!\n👉 Next step: Open Android Studio Chat and say: "Activate workflow-initializer"\n'"
+    "postinstall": "echo '\n🚀 AI Workflow Foundation installed successfully!\n👉 Next step: Open Android Studio Chat and say: \"Activate workflow-initializer\"\n'"
   },
   "agent-skills": {
     "skills": {
@@ -12,6 +12,7 @@
       "git-governance": ".agents/skills/git-governance/SKILL.md",
       "to-plan": ".agents/skills/to-plan/SKILL.md",
       "skills-index": ".agents/skills/README.md",
+      "foundation-evolve": ".agents/skills/foundation-evolve/SKILL.md",
       "hilt": ".agents/skills/hilt/SKILL.md",
       "styles": ".agents/skills/styles/SKILL.md",
       "camerax": ".agents/skills/camerax/SKILL.md",
