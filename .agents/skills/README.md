@@ -61,3 +61,5 @@ Expert patterns for Compose and Kotlin, managed via `npx skills`.
 
 ---
 **Note**: All skills must be consulted following the *Mandatory Planning Protocol* defined in `AGENTS.md`.
+
+- **error-handling**: Expert guidance for consistent error handling using ResultResponse and CustomError patterns.
