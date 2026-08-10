@@ -10,6 +10,7 @@ Custom skills created to define this project's unique architecture and governanc
 - **workflow-feature**: Analyzes the project and builds a standardized workflow for new features with granular checklists and mandatory documentation sync enforcement.
 - **testing-setup**: Analyzes and creates a testing strategy for native Android apps (Unit, UI, Screenshot, and E2E).
 - **hilt**: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns for the project.
+- **foundation-evolve**: Automates the synchronization of new or modified skills from a working project to the foundation repository.
 
 ## 2. Android CLI & System Skills
 Expert guides for system-level optimizations, tools, and best practices.
@@ -61,7 +62,3 @@ Expert patterns for Compose and Kotlin, managed via `npx skills`.
 
 ---
 **Note**: All skills must be consulted following the *Mandatory Planning Protocol* defined in `AGENTS.md`.
-
-- **error-handling**: Expert guidance for consistent error handling using ResultResponse and CustomError patterns.
-
-- **foundation-evolve**: Automates the synchronization of new or modified skills from a working project to the foundation repository.
