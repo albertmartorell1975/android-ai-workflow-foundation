@@ -45,3 +45,13 @@ npx skills update
 - **workflow-feature**: Automated Clean Architecture implementation checklists.
 - **git-governance**: Enforced Git Flow and commit conventions.
 - **to-plan**: Repository-aware implementation planning.
+- **Expert Curated Skills**: Access to a library of best-practice skills for Compose, Hilt, Firebase, and more.
+
+## 🙏 Acknowledgments & Credits
+
+This workflow foundation orchestrates collective intelligence from several sources:
+- **Core Methodology**: Developed by Albert Martorell Garcia.
+- **External Expert Patterns**: Includes curated skills and patterns from renowned community experts, such as **Chris Banes** (especially regarding Compose performance and stability).
+- **Official Documentation**: Integrates knowledge based on official Android and Firebase best practices from **Google**.
+
+All included skills retain their original author metadata in the YAML frontmatter. If you use this seed, please respect the licenses and authorship of the included modules.
