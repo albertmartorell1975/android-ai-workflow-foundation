@@ -32,7 +32,7 @@ To add a new skill to this seed and propagate it to all your projects:
 1. **Develop local skill**: Create and test your new skill at `.agents/skills/[skill-name]/SKILL.md` in your working project.
 2. **Copy to Foundation**: Copy the skill directory to your local `android-ai-workflow-foundation/.agents/skills/` folder.
 3. **Update Manifest**: Add the new skill path to `package.json` under the `agent-skills.skills` section.
-4. **Commit & Push**:
+4. **Commit & Push**: Use the **foundation-evolve** skill or do it manually:
 ```bash
 git add .
 git commit -m "feat(skills): add [skill-name] expert skill"
@@ -49,6 +49,7 @@ git push origin main
 
 ## 📦 Skills Included
 - **workflow-initializer**: Auto-deployment of AI governance and stack setup.
+- **foundation-evolve**: Automates the synchronization and push of new skills to the foundation repository.
 - **workflow-feature**: Automated Clean Architecture implementation checklists.
 - **git-governance**: Enforced Git Flow and commit conventions.
 - **to-plan**: Repository-aware implementation planning.
