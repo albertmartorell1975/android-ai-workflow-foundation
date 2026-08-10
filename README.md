@@ -6,34 +6,32 @@ A standardized, AI-assisted development workflow seed for Android and KMP projec
 
 ### Scenario A: New Projects (Full Setup)
 1. Initialize your new Android or KMP project.
-2. Run the installation command in the project's root directory:
+2. Run the following command in the project's root directory to install and get instant feedback:
 ```bash
-npx skills add albertmartorell1975/android-ai-workflow-foundation -y
+npx skills add albertmartorell1975/android-ai-workflow-foundation -y && echo "\n✅ AI Workflow Foundation installed successfully!\n👉 Next step: Open Android Studio Chat and say: \"Hello\" or \"Activate workflow-initializer\"\n"
 ```
-3. **Open Android Studio** and the Agent chat. The agent is proactive! It will detect the foundation and offer to initialize the project if it's not already deployed.
-4. **Stack Discovery**: The agent will guide you through a diagnosis to configure your tech stack (MVI/MVVM, Hilt/Koin, etc.).
+3. **Open Android Studio** and the Agent chat. The agent is proactive! It will detect the foundation and offer to initialize the project.
+4. **Stack Discovery**: Follow the agent's guide to configure your tech stack (MVI/MVVM, Hilt/Koin, etc.).
 
 ### Scenario B: Existing Projects (Add Capabilities)
-If you already have a workflow but want to add these specific foundation skills:
-1. Run the same command as above.
-2. The tools will be added to your `.agents/skills/` folder without overwriting your project-specific configurations.
+If you already have a workflow but want to add these specific foundation skills, run the same command. The tools will be added to your `.agents/skills/` folder without overwriting your existing root configurations.
 
 ---
 
 ## 🔄 Maintaining & Updating
 
-### 1. Modifying the Seed (The Foundation)
-If you want to evolve your workflow (add new skills, change rules, etc.):
-- Perform the changes in your local `android-ai-workflow-foundation` folder.
-- Update the `package.json` if you added/removed skill files.
-- Commit and push to GitHub.
+### 1. Updating the Foundation (For Maintainers)
+If you add, remove, or modify a skill in the foundation repository:
+1. Modify the files in the `.agents/skills/` directory.
+2. If you added a **new skill file**, update the `package.json` to include it.
+3. Commit and push your changes to GitHub.
 
-### 2. Updating your Active Projects
-To receive the latest improvements from this foundation in your active projects, simply run:
+### 2. Syncing changes in your Projects (For Users)
+To receive the latest improvements, new skills, or bugfixes from the foundation in your active projects, run:
 ```bash
 npx skills update
 ```
-*Note: This command will update the skills' logic but will NOT overwrite your project-specific `AGENTS.md` file, preserving your project-level customizations.*
+*Note: This command updates the logic inside `.agents/skills/` but will **never** overwrite your project-specific `AGENTS.md` or `rules.md` files, ensuring your local customizations are safe.*
 
 ---
 
