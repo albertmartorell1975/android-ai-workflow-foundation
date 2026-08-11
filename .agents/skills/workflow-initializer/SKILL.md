@@ -33,8 +33,8 @@ The agent MUST ask the user about the project's specific technical choices:
 
 ### PHASE 3: Plugin Activation
 For each selected plugin from Group 3, the agent MUST:
-1. Locate the plugin in the Foundation's `.agents/skills/` directory.
-2. Copy the plugin's folder to the local project's `.agents/skills/` directory.
+1. Locate the plugin in the Foundation's `.agents/catalog/` directory (which should have been downloaded to the local `.agents/catalog/` folder during initialization).
+2. Move the plugin's folder from `.agents/catalog/` to the local project's `.agents/skills/` directory.
 3. Notify the user of successful activation.
 
 ### PHASE 4: Git Baseline

@@ -13,6 +13,7 @@
       "to-plan": ".agents/skills/to-plan/SKILL.md",
       "skills-index": ".agents/skills/README.md",
       "foundation-evolve": ".agents/skills/foundation-evolve/SKILL.md",
+      "compiler": ".agents/skills/compiler/SKILL.md",
       "hilt": ".agents/skills/hilt/SKILL.md",
       "testing-setup": ".agents/skills/testing-setup/SKILL.md",
       "compose-ui-testing-patterns": ".agents/skills/compose-ui-testing-patterns/SKILL.md",
