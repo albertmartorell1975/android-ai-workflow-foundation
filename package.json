@@ -3,7 +3,7 @@
   "version": "2.3.0",
   "description": "Modular Foundational AI-Assisted Workflow for Android and KMP. Auto-installs Core and Guardrails. Plugins available via wizard.",
   "scripts": {
-    "postinstall": "echo \"CORE INSTALLED. Next: Activate workflow-initializer in Android Studio.\""
+    "postinstall": "echo \"CORE INSTALLED. Run 'Activate workflow-initializer' in Android Studio.\""
   },
   "agent-skills": {
     "skills": {
