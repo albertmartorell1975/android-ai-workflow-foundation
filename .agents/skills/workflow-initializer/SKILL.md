@@ -31,8 +31,14 @@ The agent MUST ask the user about the project's specific technical choices:
 
 **Plugin Selection**: Show the user the **On-Demand Plugins Catalog** (Group 3) below. All options start as UNSELECTED. The user must explicitly tell you which ones to "activate".
 
-### PHASE 3: Plugin Activation
-If the user didn't select some plugins during CLI installation, they can still add them later using `npx skills add`. The agent should verify that the selected plugins are present in `.agents/skills/`.
+### PHASE 3: Plugin Selection & Activation
+The agent MUST notify the user that CORE and GUARDRAIL skills have been successfully installed. 
+Then, it MUST show the **On-Demand Plugins Catalog** (Group 3) below. 
+
+For each plugin the user wants to activate:
+1. Locate the plugin in the local `.agents/catalog/` directory.
+2. Move the plugin's folder to the `.agents/skills/` directory.
+3. Notify the user that the plugin is now active and ready to be used.
 
 ### PHASE 4: Git Baseline
 1. **Initialize Git**: If not already initialized, perform `git init`.

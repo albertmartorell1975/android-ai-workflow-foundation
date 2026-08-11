@@ -1,9 +1,9 @@
 {
   "name": "@albertmartorell/android-ai-workflow-foundation",
-  "version": "2.1.0",
-  "description": "Modular Foundational AI-Assisted Workflow for Android and KMP. Includes Core engine, Guardrails, and On-Demand Plugins.",
+  "version": "2.2.0",
+  "description": "Modular Foundational AI-Assisted Workflow for Android and KMP. Auto-installs Core and Guardrails. Plugins available via wizard.",
   "scripts": {
-    "postinstall": "echo '\n🚀 AI Workflow Foundation installed!\n👉 Next step: Open Android Studio Chat and say: \"Activate workflow-initializer\"\n'"
+    "postinstall": "echo '\n🚀 AI Workflow Foundation CORE installed successfully!\n👉 Next step: Open Android Studio Chat and say: \"Activate workflow-initializer\" to select optional plugins.\n'"
   },
   "agent-skills": {
     "skills": {
@@ -13,6 +13,7 @@
       "CORE: compiler": ".agents/skills/compiler/SKILL.md",
       "CORE: foundation-evolve": ".agents/skills/foundation-evolve/SKILL.md",
       "CORE: skills-index": ".agents/skills/README.md",
+      "CORE: plugins-catalog": ".agents/catalog/",
       "GUARDRAIL: hilt": ".agents/skills/hilt/SKILL.md",
       "GUARDRAIL: testing-setup": ".agents/skills/testing-setup/SKILL.md",
       "GUARDRAIL: compose-ui-testing-patterns": ".agents/skills/compose-ui-testing-patterns/SKILL.md",
@@ -33,29 +34,7 @@
       "GUARDRAIL: kotlin-coroutines-structured-concurrency": ".agents/skills/kotlin-coroutines-structured-concurrency/SKILL.md",
       "GUARDRAIL: kotlin-functions": ".agents/skills/kotlin-functions/SKILL.md",
       "GUARDRAIL: using-chrisbanes-skills": ".agents/skills/using-chrisbanes-skills/SKILL.md",
-      "GUARDRAIL: compose-focus-navigation": ".agents/skills/compose-focus-navigation/SKILL.md",
-      "PLUGIN: firebase-basics": ".agents/skills/firebase-basics/SKILL.md",
-      "PLUGIN: firebase-auth-basics": ".agents/skills/firebase-auth-basics/SKILL.md",
-      "PLUGIN: firebase-remote-config-basics": ".agents/skills/firebase-remote-config-basics/SKILL.md",
-      "PLUGIN: camerax": ".agents/skills/camerax/SKILL.md",
-      "PLUGIN: to-plan": ".agents/skills/to-plan/SKILL.md",
-      "PLUGIN: styles": ".agents/skills/styles/SKILL.md",
-      "PLUGIN: compose-animations": ".agents/skills/compose-animations/SKILL.md",
-      "PLUGIN: compose-state-deferred-reads": ".agents/skills/compose-state-deferred-reads/SKILL.md",
-      "PLUGIN: compose-slot-api-pattern": ".agents/skills/compose-slot-api-pattern/SKILL.md",
-      "PLUGIN: migrate-xml-to-compose": ".agents/skills/migrate-xml-views-to-jetpack-compose/SKILL.md",
-      "PLUGIN: perfetto-sql": ".agents/skills/perfetto-sql/SKILL.md",
-      "PLUGIN: perfetto-trace-analysis": ".agents/skills/perfetto-trace-analysis/SKILL.md",
-      "PLUGIN: wear-compose-m3": ".agents/skills/wear-compose-m3/SKILL.md",
-      "PLUGIN: display-glasses-glimmer": ".agents/skills/display-glasses-with-jetpack-compose-glimmer/SKILL.md",
-      "PLUGIN: play-policy-insights": ".agents/skills/play-policy-insights/SKILL.md",
-      "PLUGIN: agp-9-upgrade": ".agents/skills/agp-9-upgrade/SKILL.md",
-      "PLUGIN: appfunctions": ".agents/skills/appfunctions/SKILL.md",
-      "PLUGIN: play-billing-upgrade": ".agents/skills/play-billing-library-version-upgrade/SKILL.md",
-      "PLUGIN: verified-email": ".agents/skills/verified-email/SKILL.md",
-      "PLUGIN: engage-sdk": ".agents/skills/engage-sdk-integration/SKILL.md",
-      "PLUGIN: kmp-expect-actual": ".agents/skills/kotlin-multiplatform-expect-actual/SKILL.md",
-      "PLUGIN: value-class": ".agents/skills/kotlin-types-value-class/SKILL.md"
+      "GUARDRAIL: compose-focus-navigation": ".agents/skills/compose-focus-navigation/SKILL.md"
     }
   },
   "author": "Albert Martorell Garcia",

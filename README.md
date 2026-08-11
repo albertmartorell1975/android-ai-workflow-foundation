@@ -8,12 +8,12 @@ A standardized, AI-assisted development workflow seed for Android and KMP projec
 1. Initialize your new Android or KMP project.
 2. Run the following command in the project's root directory:
 ```bash
-npx skills add albertmartorell1975/android-ai-workflow-foundation
+npx skills add albertmartorell1975/android-ai-workflow-foundation -y
 ```
-*Note: **Do not use the `-y` flag** if you want to select specific plugins. The CLI will present a list where you can choose which Core, Guardrail, and Plugin skills to install.*
+*Note: Using the `-y` flag will automatically install the **CORE** engine and **GUARDRAIL** quality skills. The optional **PLUGINS** will be available for selection inside Android Studio.*
 
 3. **Open Android Studio** and the Agent chat.
-4. **Initial Trigger**: Type **"Activate workflow-initializer"** to start the setup.
+4. **Initial Trigger**: Type **"Activate workflow-initializer"**. The agent will confirm the baseline installation and ask you which optional plugins from the catalog you'd like to activate.
 
 ### Scenario B: Existing Projects (Add Capabilities)
 Run the same command. Version 2.0 will install the **Core** and **Guardrail** skills automatically, improving your existing project's quality without adding noise.
