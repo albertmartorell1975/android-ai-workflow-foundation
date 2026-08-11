@@ -32,10 +32,7 @@ The agent MUST ask the user about the project's specific technical choices:
 **Plugin Selection**: Show the user the **On-Demand Plugins Catalog** (Group 3) below. All options start as UNSELECTED. The user must explicitly tell you which ones to "activate".
 
 ### PHASE 3: Plugin Activation
-For each selected plugin from Group 3, the agent MUST:
-1. Locate the plugin in the Foundation's `.agents/catalog/` directory (which should have been downloaded to the local `.agents/catalog/` folder during initialization).
-2. Move the plugin's folder from `.agents/catalog/` to the local project's `.agents/skills/` directory.
-3. Notify the user of successful activation.
+If the user didn't select some plugins during CLI installation, they can still add them later using `npx skills add`. The agent should verify that the selected plugins are present in `.agents/skills/`.
 
 ### PHASE 4: Git Baseline
 1. **Initialize Git**: If not already initialized, perform `git init`.
