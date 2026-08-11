@@ -12,12 +12,13 @@ metadata:
 ---
 # Workflow Initializer Specialist
 
-This skill provides a structured process for setting up the AI-assisted workflow in a new Android or Kotlin Multiplatform (KMP) project. It ensures that the project starts with a solid architectural foundation and a clear collaboration protocol between humans and agents.
+This skill provides a structured process for setting up or updating the AI-assisted workflow in an Android or Kotlin Multiplatform (KMP) project. It ensures that the project starts with a solid architectural foundation and can evolve its capabilities over time.
 
 ## Proactive Behavior
 If you are loaded in a project where `.agents/rules.md` or `.agents/AGENTS.md` are missing, you MUST immediately notify the user and offer to perform the **PHASE 1: Deployment**.
 
-## Initialization Process
+## Initialization & Update Process
+*Note: This process can be triggered at project kickoff or later to add new capabilities.*
 
 ### PHASE 1: Deployment
 1. **Directory Setup**: Ensure the `.agents/` and `.agents/skills/` directories exist in the project root.
