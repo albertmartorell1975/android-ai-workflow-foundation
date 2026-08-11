@@ -12,6 +12,9 @@ metadata:
 ---
 # Workflow Initializer Specialist
 
+**IMPORTANT**: If this skill is loaded and the project root does not contain `.agents/rules.md` or `.agents/AGENTS.md`, you MUST immediately greet the user and say: 
+> "I see the AI Workflow Foundation has been added but not yet initialized. Would you like me to start the **Initialization Wizard** now to set up your Tech Stack and activate optional plugins?"
+
 This skill provides a structured process for setting up or updating the AI-assisted workflow in an Android or Kotlin Multiplatform (KMP) project. It ensures that the project starts with a solid architectural foundation and can evolve its capabilities over time.
 
 ## Proactive Behavior
