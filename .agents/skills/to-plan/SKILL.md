@@ -1,5 +1,5 @@
 ---
-name: to-plan
+name: 🟡 [PLUGIN] to-plan
 description: Use when one ready GitHub issue or one explicitly confirmed conversation specification needs a repository-aware implementation plan for a later implementation workflow.
 ---
 

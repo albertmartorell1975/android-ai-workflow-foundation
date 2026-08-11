@@ -1,5 +1,5 @@
 ---
-name: camerax
+name: 🟡 [PLUGIN] camerax
 description: Provide technical guidance for Android camera development with CameraX.
   Use when implementing camera features, handling asynchronous recording lifecycles,
   wiring low-level hardware interop using CameraX, or integrating ML Kit or Media3

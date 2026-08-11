@@ -1,5 +1,5 @@
 ---
-name: compose-state-hoisting
+name: 🔵 [GUARDRAIL] compose-state-hoisting
 description: "Use when adding or refactoring interactive Jetpack Compose UI that introduces or moves remember state or coordinated UI logic, or when a screen mixes app dependencies or state holders with state or effect collection and layout."
 ---
 

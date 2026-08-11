@@ -1,5 +1,5 @@
 ---
-name: agp-9-upgrade
+name: 🟡 [PLUGIN] agp-9-upgrade
 description: Upgrades, or migrates, an Android project to use Android Gradle Plugin
   (AGP) version 9. Do not use this skill for migrating Kotlin Multiplatform (KMP)
   projects.

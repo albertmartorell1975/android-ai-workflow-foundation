@@ -1,5 +1,5 @@
 ---
-name: using-chrisbanes-skills
+name: 🔵 [GUARDRAIL] using-chrisbanes-skills
 description: Use when debugging, benchmarking, or profiling leads into Kotlin or Jetpack Compose source before the cause is known, or when a broad Kotlin or Compose review spans multiple design concerns.
 paths:
   - "**/*.kt"

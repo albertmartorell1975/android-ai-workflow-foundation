@@ -1,5 +1,5 @@
 ---
-name: kotlin-multiplatform-expect-actual
+name: 🟡 [PLUGIN] kotlin-multiplatform-expect-actual
 description: Use when designing Kotlin Multiplatform expect/actual or interface boundaries for platform services, native SDKs, source sets, Compose Multiplatform UI, permissions, files, settings, sensors, or platform interop.
 ---
 

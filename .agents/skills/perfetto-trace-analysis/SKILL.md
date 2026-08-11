@@ -1,5 +1,5 @@
 ---
-name: perfetto-trace-analysis
+name: 🟡 [PLUGIN] perfetto-trace-analysis
 description: Analyzes Perfetto traces to find the root cause of latency, memory, or
   jank issues in Android apps. Use when the user provides a Perfetto trace file and
   asks any question, ongoing investigation, or open-ended request to analyze its contents.

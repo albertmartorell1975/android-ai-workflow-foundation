@@ -1,5 +1,5 @@
 ---
-name: compose-focus-navigation
+name: 🔵 [GUARDRAIL] compose-focus-navigation
 description: Use when writing or reviewing Jetpack Compose UI for TV, keyboard, desktop, accessibility focus, D-pad navigation, FocusRequester, focusProperties, key events, or initial focus behavior.
 ---
 

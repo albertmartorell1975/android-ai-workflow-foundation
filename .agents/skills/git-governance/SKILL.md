@@ -1,5 +1,5 @@
 ---
-name: git-governance
+name: 🟢 [CORE] git-governance
 description: Defines a strict Git Flow branching model and commit conventions for AI agents. Based on the Vincent Driessen branching model.
 metadata:
   author: Albert Martorell Garcia

@@ -1,5 +1,5 @@
 ---
-name: kotlin-coroutines-structured-concurrency
+name: 🔵 [GUARDRAIL] kotlin-coroutines-structured-concurrency
 description: Use when writing or reviewing Kotlin code that stores CoroutineScope, launches from init/non-suspending APIs, calls runBlocking, or catches broad exceptions around suspend calls.
 ---
 

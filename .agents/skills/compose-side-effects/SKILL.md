@@ -1,5 +1,5 @@
 ---
-name: compose-side-effects
+name: 🔵 [GUARDRAIL] compose-side-effects
 description: Use when writing or reviewing Jetpack Compose code with LaunchedEffect, DisposableEffect, SideEffect, rememberCoroutineScope, rememberUpdatedState, snapshotFlow, snackbar, navigation, focus requests, analytics, or event Flow collection.
 ---
 

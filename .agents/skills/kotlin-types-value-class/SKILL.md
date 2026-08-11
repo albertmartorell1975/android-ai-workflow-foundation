@@ -1,5 +1,5 @@
 ---
-name: kotlin-types-value-class
+name: 🟡 [PLUGIN] kotlin-types-value-class
 description: Use when writing or reviewing Kotlin type declarations to choose @JvmInline value class over data class where appropriate, including Compose stability implications.
 ---
 

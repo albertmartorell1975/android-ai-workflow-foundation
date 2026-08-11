@@ -1,5 +1,5 @@
 ---
-name: foundation-evolve
+name: 🟢 [CORE] foundation-evolve
 description: Automates the synchronization of new or modified skills from a working project to the AI Workflow Foundation repository.
 metadata:
   author: Albert Martorell Garcia

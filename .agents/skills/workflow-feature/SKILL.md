@@ -1,5 +1,5 @@
 ---
-name: workflow-feature
+name: 🟢 [CORE] workflow-feature
 description: Analyzes the current project and builds a standardized workflow for implementing new features. Generates a feature-specific Markdown file (e.g., WORKFLOW_NAME.md) with granular checklists.
 metadata:
   author: Albert Martorell Garcia

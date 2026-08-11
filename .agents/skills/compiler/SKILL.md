@@ -1,5 +1,5 @@
 ---
-name: compiler
+name: 🟢 [CORE] compiler
 description: Centralized project verification and compilation engine. Handles Gradle Sync, Lint, Compilation, and Deployment.
 metadata:
   author: Albert Martorell Garcia

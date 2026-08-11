@@ -1,5 +1,5 @@
 ---
-name: compose-ui-testing-patterns
+name: 🔵 [GUARDRAIL] compose-ui-testing-patterns
 description: Use when writing or reviewing Jetpack Compose UI tests, screenshot tests, previews, semantics assertions, fake image loading, keyboard input, focus assertions, interaction state (hover/pressed/focused), or tests for plain state-driven UI composables.
 ---
 
