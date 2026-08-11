@@ -8,7 +8,6 @@ Essential skills for the basic functioning of the workflow. These define the "Ho
 - **workflow-initializer**: Core system and initial configuration wizard.
 - **workflow-feature**: Standardized workflow for new features with Clean Architecture checklists.
 - **git-governance**: Defined Git Flow branching model and commit conventions.
-- **to-plan**: Repository-aware implementation planning for ready tasks.
 - **compiler**: Centralized project verification, lint, and compilation engine.
 - **foundation-evolve**: Automation for maintainers to evolve and sync the Foundation repository.
 - **skills-index**: This file (README.md) serving as the map for the entire catalog.
@@ -62,6 +61,7 @@ Specific or specialized skills activated via the `workflow-initializer` wizard w
 - **verified-email**: OTP-less email verification with Credential Manager.
 - **engage-sdk-integration**: Google Play Engage SDK integration.
 - **wear-compose-m3**: Expert development for Wear OS (Material 3).
+- **to-plan**: Repository-aware implementation planning for ready tasks.
 
 ---
 **Note**: Group 1 and 2 are installed by default to ensure maximum quality. Group 3 skills must be explicitly requested during initialization.

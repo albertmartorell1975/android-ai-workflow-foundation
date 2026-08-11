@@ -35,7 +35,7 @@ Use the **foundation-evolve** skill to automate the promotion of local skills to
 To maximize AI performance and minimize context noise, skills are organized into three groups:
 
 ### 🟢 1. Core (Installed by Default)
-The engine of the workflow: `workflow-initializer`, `workflow-feature`, `git-governance`, `to-plan`, `compiler`, `foundation-evolve`.
+The engine of the workflow: `workflow-initializer`, `workflow-feature`, `git-governance`, `compiler`, `foundation-evolve`.
 
 ### 🔵 2. Expert Guardrails (Installed by Default)
 Professional quality standards for every project:
@@ -45,7 +45,7 @@ Professional quality standards for every project:
 
 ### 🟡 3. On-Demand Plugins (Optional)
 Specialized domains activated via the Wizard:
-- `firebase-*`, `camerax`, `compose-animations`, `kmp-expect-actual`, `perfetto-*`, `wear-compose`, `billing`, and more.
+- `to-plan`, `firebase-*`, `camerax`, `compose-animations`, `kmp-expect-actual`, `perfetto-*`, `wear-compose`, `billing`, and more.
 
 [See the Full Expert Skills Index for details](.agents/skills/README.md).
 

@@ -51,6 +51,7 @@ For each selected plugin from Group 3, the agent MUST:
 - **Advanced Performance**: `compose-state-deferred-reads`, `perfetto-sql`, `perfetto-trace-analysis`
 - **Specialized Platforms**: `wear-compose-m3`, `display-glasses-with-jetpack-compose-glimmer`, `kotlin-multiplatform-expect-actual`
 - **Security & Identity**: `verified-email`, `engage-sdk-integration`
+- **Planning & Strategy**: `to-plan`
 - **Maintenance & Policy**: `play-policy-insights`, `agp-9-upgrade`, `appfunctions`, `play-billing-library-version-upgrade`, `kotlin-types-value-class`
 
 ## Actionable Checklist for New Projects
