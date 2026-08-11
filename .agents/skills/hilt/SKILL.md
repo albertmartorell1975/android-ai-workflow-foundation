@@ -1,5 +1,5 @@
 ---
-name: 🔵 [GUARDRAIL] hilt-dependency-injection
+name: hilt-dependency-injection
 description: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns for the MeteoMartoCompose native Android project.
 version: 1.1.0
 ecosystem: Android, Kotlin, Dagger, Hilt, Jetpack Compose

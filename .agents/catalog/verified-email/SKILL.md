@@ -1,5 +1,5 @@
 ---
-name: 🟡 [PLUGIN] verified-email
+name: verified-email
 description: Provides a complete workflow for implementing verified email retrieval
   on Android Credential Manager API. Use this skill to integrate a secure, OTP-less
   email verification flow into an Android app. This skill solves the problem of high-friction

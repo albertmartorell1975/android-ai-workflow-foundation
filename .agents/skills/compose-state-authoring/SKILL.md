@@ -1,5 +1,5 @@
 ---
-name: 🔵 [GUARDRAIL] compose-state-authoring
+name: compose-state-authoring
 description: Use when writing or reviewing Jetpack Compose code with bare local var in a @Composable, remember { mutableStateOf(...) }, mutableStateListOf/mutableStateMapOf, or @ReadOnlyComposable.
 ---
 

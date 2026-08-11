@@ -1,5 +1,5 @@
 ---
-name: 🔵 [GUARDRAIL] compose-modifier-and-layout-style
+name: compose-modifier-and-layout-style
 description: Use when writing or reviewing Jetpack Compose layout APIs, modifier parameters, modifier chain construction, hardcoded root layout decisions, or layout wrappers around a single conditional.
 ---
 

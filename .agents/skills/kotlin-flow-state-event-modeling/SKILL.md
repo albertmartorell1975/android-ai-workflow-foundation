@@ -1,5 +1,5 @@
 ---
-name: 🔵 [GUARDRAIL] kotlin-flow-state-event-modeling
+name: kotlin-flow-state-event-modeling
 description: Use when writing or reviewing Kotlin Flow state and event APIs with StateFlow, MutableStateFlow.update, SharedFlow, Channel, stateIn, SharingStarted, .value, receiveAsFlow, one-shot events, or sentinel initial values.
 ---
 

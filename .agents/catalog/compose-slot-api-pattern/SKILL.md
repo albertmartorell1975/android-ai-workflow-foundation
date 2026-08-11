@@ -1,5 +1,5 @@
 ---
-name: 🟡 [PLUGIN] compose-slot-api-pattern
+name: compose-slot-api-pattern
 description: Use when designing or reviewing a reusable Jetpack Compose component whose visual regions vary by caller, or when primitive content parameters and boolean shape flags are accumulating.
 ---
 

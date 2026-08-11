@@ -1,5 +1,5 @@
 ---
-name: 🔵 [GUARDRAIL] kotlin-functions
+name: kotlin-functions
 description: Use when choosing Kotlin member, top-level, extension, factory, or service functions for String, primitive, collection, Flow, framework, or third-party receivers.
 ---
 

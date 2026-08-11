@@ -1,5 +1,5 @@
 ---
-name: 🔵 [GUARDRAIL] kotlin-control-flow
+name: kotlin-control-flow
 description: "Use when writing or reviewing Kotlin branching and control flow: when expressions, guard conditions, sealed type exhaustiveness, smart casts, nullable branching, early returns, or replacing complex if/else chains."
 ---
 

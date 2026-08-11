@@ -1,5 +1,5 @@
 ---
-name: 🟡 [PLUGIN] compose-state-deferred-reads
+name: compose-state-deferred-reads
 description: Use when Jetpack Compose code reads scroll, animation, gesture, or other frame-rate State in composition, passes changing values across composable boundaries, uses value-form layout/draw modifiers, or back-writes observable state from a later phase into one that's already run.
 ---
 

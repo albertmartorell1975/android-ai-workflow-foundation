@@ -1,5 +1,5 @@
 ---
-name: 🔵 [GUARDRAIL] edge-to-edge
+name: edge-to-edge
 description: Use this skill to migrate your Jetpack Compose app to add adaptive edge-to-edge
   support and troubleshoot common issues. Use this skill to fix UI components (like
   buttons or lists) that are obscured by or overlapping with the navigation bar or

@@ -1,5 +1,5 @@
 ---
-name: 🟡 [PLUGIN] display-glasses-with-jetpack-compose-glimmer
+name: display-glasses-with-jetpack-compose-glimmer
 description: Provides guidelines for developing projected Android XR apps for display
   glasses using the Jetpack Compose Glimmer UI toolkit. This skill covers foundational
   Glimmer design principles, workflows for implementing Jetpack Compose Glimmer, and

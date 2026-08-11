@@ -1,5 +1,5 @@
 ---
-name: 🟡 [PLUGIN] wear-compose-m3
+name: wear-compose-m3
 description: Expert guidance for working with Wear OS Compose Material3. Use this
   skill when creating, updating, or migrating Wear OS projects. This includes the
   androidx.wear.compose.material3, androidx.wear.compose.foundation, and androidx.wear.compose.navigation3

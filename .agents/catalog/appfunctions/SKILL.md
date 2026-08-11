@@ -1,5 +1,5 @@
 ---
-name: 🟡 [PLUGIN] appfunctions
+name: appfunctions
 description: Analyzes Android apps to identify key user workflows for AppFunctions
   such as creating a note, playing media, or sending an automated or AI agent triggered
   message, voice commands, or system shortcuts, without needing to open the app UI.

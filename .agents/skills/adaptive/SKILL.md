@@ -1,5 +1,5 @@
 ---
-name: 🔵 [GUARDRAIL] adaptive
+name: adaptive
 description: Instructions to make or update an app's UI so that it adapts to different
   Android devices including phones, tablets, foldables, laptops, desktop, TV, Auto
   and XR. It includes how to handle different window sizes, pointing devices (such

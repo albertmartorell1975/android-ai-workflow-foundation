@@ -1,5 +1,5 @@
 ---
-name: 🔵 [GUARDRAIL] compose-stability-diagnostics
+name: compose-stability-diagnostics
 description: Use when writing or reviewing Jetpack Compose parameter stability, compiler reports, skippability, unstable UI state classes, collection parameters, or Kotlin 2.0+ strong skipping behavior.
 ---
 

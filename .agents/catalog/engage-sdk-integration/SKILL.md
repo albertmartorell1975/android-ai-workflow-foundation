@@ -1,5 +1,5 @@
 ---
-name: 🟡 [PLUGIN] engage-sdk-integration
+name: engage-sdk-integration
 description: Helps developers integrate, debug, and resolve Play Engage SDK implementation
   issues. Use when adding Engage SDK support, generating publishing code, mapping
   data classes to entities, or fixing SDK-related errors.
