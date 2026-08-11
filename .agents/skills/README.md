@@ -1,64 +1,67 @@
 # AI-Assisted Workflow - Expert Skills Index
 
-This directory contains the collective intelligence for the project, organized into three specialized groups.
+This directory contains the collective intelligence for the project, organized into three specialized groups to balance power and context efficiency.
 
-## 1. Core Project Skills (Workflow DNA)
-Custom skills created to define this project's unique architecture and governance.
+## 🟢 1. Core Project Skills (The Engine)
+Essential skills for the basic functioning of the workflow. These define the "How we work" baseline.
 
-- **compiler**: Centralized project verification and compilation engine. Handles Gradle Sync, Lint, Compilation, and Deployment.
-- **git-governance**: Defines a strict Git Flow branching model and commit conventions for AI agents.
-- **workflow-feature**: Analyzes the project and builds a standardized workflow for new features with granular checklists and mandatory documentation sync enforcement.
-- **testing-setup**: Analyzes and creates a testing strategy for native Android apps (Unit, UI, Screenshot, and E2E).
-- **hilt**: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns for the project.
-- **foundation-evolve**: Automates the synchronization of new or modified skills from a working project to the foundation repository.
+- **workflow-initializer**: Core system and initial configuration wizard.
+- **workflow-feature**: Standardized workflow for new features with Clean Architecture checklists.
+- **git-governance**: Defined Git Flow branching model and commit conventions.
+- **to-plan**: Repository-aware implementation planning for ready tasks.
+- **compiler**: Centralized project verification, lint, and compilation engine.
+- **foundation-evolve**: Automation for maintainers to evolve and sync the Foundation repository.
+- **skills-index**: This file (README.md) serving as the map for the entire catalog.
 
-## 2. Android CLI & System Skills
-Expert guides for system-level optimizations, tools, and best practices.
+## 🔵 2. Expert Guardrails (System & Quality)
+Skills that guarantee high-quality code and system-level expertise. They prevent common errors and enforce best practices.
 
-- **android-cli**: Manual for the `android` command-line tool (project creation, emulators, screenshots, SDK management).
-- **r8-analyzer**: Analyzes build files and R8 keep rules to identify redundancies and optimize app size.
-- **perfetto-sql**: Translates natural language into SQL queries for Android Perfetto performance traces.
-- **adaptive**: UI instructions to adapt apps to phones, tablets, foldables, laptops, TV, and XR.
-- **camerax**: Technical guidance for Android camera development with CameraX.
-- **navigation-3**: Migration and patterns for Jetpack Navigation 3 (deep links, backstacks, Hilt/ViewModel integration).
-- **agp-9-upgrade**: Migration protocol for upgrading projects to Android Gradle Plugin version 9.
-- **appfunctions**: Exposes app workflows to the Android system for discovery by AI agents.
-- **edge-to-edge**: Migration to adaptive edge-to-edge support (status/navigation bar legibility, IME insets).
-- **play-policy-insights**: Automated auditor for Google Play Policy compliance (Permissions, Data Safety, Privacy).
-- **perfetto-trace-analysis**: Analyzes Perfetto traces to find root causes of latency, memory, or jank.
-- **android-intent-security**: Best practices for secure communication between components via Intents.
-- **play-billing-library-version-upgrade**: Migration guide for the latest Google Play Billing Library versions.
-- **display-glasses-with-jetpack-compose-glimmer**: Guidelines for developing Android XR apps for display glasses.
-- **migrate-xml-views-to-jetpack-compose**: Structured workflow for migrating legacy XML layouts to Jetpack Compose.
-- **wear-compose-m3**: Expert guidance for Wear OS development using Compose Material3.
-- **verified-email**: Implementation of secure, OTP-less email verification flow via Credential Manager.
-- **engage-sdk-integration**: Integration and debugging for the Google Play Engage SDK.
+- **hilt**: Official guidelines for Dependency Injection and multibinding patterns.
+- **testing-setup**: Infrastructure and strategy for Unit, UI, and E2E testing.
+- **compose-ui-testing-patterns**: Patterns and assertions for highly testable UI components.
+- **android-cli**: Expert manual for the `android` command-line tool.
+- **r8-analyzer**: Optimization of app size and R8 keep rules.
+- **adaptive**: Instructions for adaptive UIs (Tablets, Foldables, Multi-pane).
+- **navigation-3**: Modern Jetpack Navigation 3 implementation patterns.
+- **edge-to-edge**: Support for adaptive system bars and IME insets.
+- **compose-stability-diagnostics**: Chris Banes' performance and stability diagnostics.
+- **compose-recomposition-performance**: Investigation of jank and unnecessary recompositions.
+- **compose-state-hoisting**: UI state coordination and hoisting patterns.
+- **compose-side-effects**: Safe management of side effects (`LaunchedEffect`, etc.).
+- **compose-modifier-and-layout-style**: Efficient modifier chains and layout decisions.
+- **compose-state-authoring**: Best practices for state creation and reactive UI flow.
+- **kotlin-flow-state-event-modeling**: Professional MVI modeling with StateFlow.
+- **kotlin-control-flow**: Refined Kotlin branching (guard, when, sealed types).
+- **kotlin-coroutines-structured-concurrency**: Safe concurrency and CoroutineScope management.
+- **kotlin-functions**: Decision-making for function types (Top-level vs Extension).
+- **using-chrisbanes-skills**: Review entry point for Chris Banes' expert guidance.
+- **compose-focus-navigation**: Handling focus for TV, keyboard, and D-pad.
+- **android-intent-security**: Protection against Intent Redirection and security best practices.
 
-## 3. External Expert Skills
-Expert patterns for Compose and Kotlin, managed via `npx skills`.
+## 🟡 3. On-Demand Plugins (Optional Domains)
+Specific or specialized skills activated via the `workflow-initializer` wizard when needed.
 
-- **kotlin-functions**: Choosing the best Kotlin function type (top-level, extension, factory) for any receiver.
-- **firebase-basics**: Foundational Firebase CLI setup, project creation, and app configuration management.
-- **firebase-auth-basics**: Expert patterns for setting up and managing Firebase Authentication (users, providers, tokens).
-- **firebase-remote-config-basics**: Managing feature flags, loading strategies, and real-time updates via Firebase Remote Config.
-- **compose-animations**: Expert guidance on Motion and Animations in Compose (AnimatedVisibility, animate*AsState).
-- **kotlin-flow-state-event-modeling**: Professional UI state and event management using StateFlow, SharedFlow, and Channels.
-- **compose-side-effects**: Safe management of side effects (LaunchedEffect, snapshotFlow, navigation) in Compose.
-- **compose-state-authoring**: Best practices for state creation (remember, mutableStateListOf) in Composables.
-- **compose-stability-diagnostics**: Analysis of parameter stability, skippability, and strong skipping behavior.
-- **compose-slot-api-pattern**: Design of reusable components using slots for highly dynamic content.
-- **kotlin-types-value-class**: Optimized type declarations using @JvmInline value classes for type safety and performance.
-- **compose-focus-navigation**: Focus handling for TV, keyboard, and D-pad navigation.
-- **compose-state-deferred-reads**: Performance optimization by deferring frame-rate state reads to later phases.
-- **compose-ui-testing-patterns**: Patterns for UI tests, screenshot tests, and semantics assertions in Compose.
-- **compose-modifier-and-layout-style**: Best practices for layout APIs, modifier chains, and custom layout decisions.
-- **compose-recomposition-performance**: Investigation of jank, skippability, and unnecessary recompositions.
-- **kotlin-control-flow**: Refined Kotlin branching (when, guard conditions, sealed types) for cleaner logic.
-- **kotlin-coroutines-structured-concurrency**: Safe coroutine management (CoroutineScope, structured launch) to avoid leaks.
-- **kotlin-multiplatform-expect-actual**: Design of interface boundaries for Kotlin Multiplatform projects.
-- **compose-state-hoisting**: Principles for interactive UI state movement and coordination logic.
-- **to-plan**: Repository-aware implementation planning for ready GitHub issues or confirmed specs.
-- **using-chrisbanes-skills**: Entry point for broad Kotlin/Compose reviews spanning multiple design concerns.
+- **camerax**: Camera hardware, ML Kit, and Media3 integration.
+- **migrate-xml-views-to-jetpack-compose**: Structured workflow for legacy code migration.
+- **firebase-basics**: Firebase CLI setup and configuration management.
+- **firebase-auth-basics**: User management and identity providers.
+- **firebase-remote-config-basics**: Feature flags and real-time template updates.
+- **styles**: Jetpack Compose Styles API integration.
+- **compose-state-deferred-reads**: Frame-rate optimization via deferred state reads.
+- **compose-animations**: Expert guidance on Motion, transitions, and animations.
+- **kotlin-types-value-class**: Performance optimization using @JvmInline value classes.
+- **kotlin-multiplatform-expect-actual**: Boundary design for KMP projects.
+- **compose-slot-api-pattern**: Highly reusable component design using slots.
+- **perfetto-sql**: SQL queries for Perfetto performance traces.
+- **perfetto-trace-analysis**: Deep analysis of latency, memory, and CPU traces.
+- **display-glasses-with-jetpack-compose-glimmer**: Projected Android XR development.
+- **play-policy-insights**: Automated auditor for Google Play Policy compliance.
+- **agp-9-upgrade**: Migration protocol for Android Gradle Plugin 9.
+- **appfunctions**: Exposing workflows to the Android system agents.
+- **play-billing-library-version-upgrade**: Subscription and billing management.
+- **verified-email**: OTP-less email verification with Credential Manager.
+- **engage-sdk-integration**: Google Play Engage SDK integration.
+- **wear-compose-m3**: Expert development for Wear OS (Material 3).
 
 ---
-**Note**: All skills must be consulted following the *Mandatory Planning Protocol* defined in `AGENTS.md`.
+**Note**: Group 1 and 2 are installed by default to ensure maximum quality. Group 3 skills must be explicitly requested during initialization.
