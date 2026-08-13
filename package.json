@@ -33,7 +33,8 @@
       "kotlin-coroutines-structured-concurrency": ".agents/skills/kotlin-coroutines-structured-concurrency/SKILL.md",
       "kotlin-functions": ".agents/skills/kotlin-functions/SKILL.md",
       "using-chrisbanes-skills": ".agents/skills/using-chrisbanes-skills/SKILL.md",
-      "compose-focus-navigation": ".agents/skills/compose-focus-navigation/SKILL.md"
+      "compose-focus-navigation": ".agents/skills/compose-focus-navigation/SKILL.md",
+      "dependency-manager": ".agents/skills/dependency-manager/SKILL.md"
     }
   },
   "author": "Albert Martorell Garcia",

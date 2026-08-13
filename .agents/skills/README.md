@@ -36,6 +36,7 @@ Skills that guarantee high-quality code and system-level expertise. They prevent
 - **using-chrisbanes-skills**: Review entry point for Chris Banes' expert guidance.
 - **compose-focus-navigation**: Handling focus for TV, keyboard, and D-pad.
 - **android-intent-security**: Protection against Intent Redirection and security best practices.
+- **dependency-manager**: Strict protocol for dependency management in the libs.versions.toml file.
 
 ## 🟡 3. On-Demand Plugins (Optional Domains)
 Specific or specialized skills activated via the `workflow-initializer` wizard when needed.
