@@ -10,6 +10,7 @@ Essential skills for the basic functioning of the workflow. These define the "Ho
 - **git-governance**: Defined Git Flow branching model and commit conventions.
 - **compiler**: Centralized project verification, lint, and compilation engine.
 - **foundation-evolve**: Automation for maintainers to evolve and sync the Foundation repository.
+- **dependency-manager**: Strict protocol for dependency management in the libs.versions.toml file.
 - **skills-index**: This file (README.md) serving as the map for the entire catalog.
 
 ## 🔵 2. Expert Guardrails (System & Quality)
@@ -36,7 +37,6 @@ Skills that guarantee high-quality code and system-level expertise. They prevent
 - **using-chrisbanes-skills**: Review entry point for Chris Banes' expert guidance.
 - **compose-focus-navigation**: Handling focus for TV, keyboard, and D-pad.
 - **android-intent-security**: Protection against Intent Redirection and security best practices.
-- **dependency-manager**: Strict protocol for dependency management in the libs.versions.toml file.
 
 ## 🟡 3. On-Demand Plugins (Optional Domains)
 Specific or specialized skills activated via the `workflow-initializer` wizard when needed.
