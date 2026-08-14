@@ -61,10 +61,11 @@ This document defines the specialized AI personas (Agents) designed to maintain 
 ---
 
 ## 5. The DI Coordinator 💉
-**Expertise**: Dependency Injection & Module Configuration (e.g., Hilt, Koin, KMP Native DI).
+**Expertise**: Dependency Injection, Module Configuration (e.g., Hilt, Koin, KMP Native DI), and **Dependency Integrity**.
 
-- **Module Ownership**: Implementation modules (e.g., `:app/di`).
-- **Primary Responsibility**: Wire the entire project together using Dependency Injection, binding interfaces to implementations.
+- **Module Ownership**: Implementation modules (e.g., `:app/di`) and `gradle/libs.versions.toml`.
+- **Primary Responsibility**: Wire the entire project together using Dependency Injection, and maintain the Version Catalog ensuring compatibility and stability.
+- **Mandatory Skill**: Must strictly follow the **`dependency-manager`** skill for any changes to `libs.versions.toml`.
 
 ---
 
@@ -80,6 +81,8 @@ To prevent architectural drift and technical debt, all agents must follow this s
 3. **Robustness Over Speed (MANDATORY)**: Agents must prioritize robust, scalable solutions that follow SOLID principles and industry standards. A "quick fix" that compromises the established architecture is considered a failure.
 4. **Workflow Activation**: Only after the user confirms the optimized prompt and assumptions can the agent trigger the `workflow-feature` skill to generate the implementation checklist.
 5. **Strict Pre-requisite**: No agent is allowed to create a `WORKFLOW_FEATURE.md` file without having presented the diagnosis questions to the user first.
+6. **Technical Accuracy & Documentation (STRICT)**: Always consult the official Android documentation via `android-cli` or `search_android_docs` when implementing or refactoring Android framework APIs (e.g., WorkManager, Insets, In-app updates) to ensure compliance with the latest SDK standards and background execution limits.
+7. **Dependency Governance (MANDATORY)**: Any task involving adding, removing, or updating a library or plugin MUST activate the **`dependency-manager`** skill to ensure version compatibility (especially KSP/Kotlin sync) and project stability.
 
 ---
 
