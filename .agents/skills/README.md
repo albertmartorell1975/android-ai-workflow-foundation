@@ -8,9 +8,9 @@ Essential skills for the basic functioning of the workflow. These define the "Ho
 - **workflow-initializer**: Core system and initial configuration wizard.
 - **workflow-feature**: Standardized workflow for new features with Clean Architecture checklists.
 - **git-governance**: Defined Git Flow branching model and commit conventions.
-- **compiler**: Centralized project verification, lint, and compilation engine.
+- **compiler**: Centralized project verification, performance optimizations (Cache/Parallel), and deployment engine.
 - **foundation-evolve**: Automation for maintainers to evolve and sync the Foundation repository.
-- **dependency-manager**: Strict protocol for dependency management in the libs.versions.toml file.
+- **dependency-manager**: Strict protocol for dependency management with AGP compatibility verification and safety rollback.
 - **skills-index**: This file (README.md) serving as the map for the entire catalog.
 
 ## 🔵 2. Expert Guardrails (System & Quality)

@@ -92,15 +92,39 @@ To maintain maximum code health, all agents must adhere to the following rules:
 
 1.  **Notification Protocol (MANDATORY)**: Before making ANY change to the **governance files** (any `.md` file inside the `.agents/` directory), the agent **MUST notify the user**, explain the intended action, and wait for explicit approval. Changes to the codebase can be performed autonomously, but the agent **MUST NOT commit any changes unless explicitly commanded by the user**.
 
-2.  **Definition of Done**: A task is considered completed only after:
-    - Mandatory Verification via the **`compiler` skill** (Linting, Cleanliness, Compilation).
-    - Full compliance with established naming and architectural patterns.
+2.  **Optimized Definition of Done (DoD)**: To maximize velocity, a task is considered completed only after:
+    - **Static Health (Instant)**: Run `analyze_file` on modified files. Fix all syntax errors and remove unused imports/variables.
+    - **Logic Safety (Fast)**: Execute Unit Tests only for the impacted modules (e.g., `./gradlew :usecases:test`).
+    - **Unified Build & Deploy (Single Step)**: Use `android run`. Do NOT run `assembleDebug` separately as `android run` already triggers it.
+    - **Visual Check**: Perform visual verification only if the task involves UI, Navigation, or System Notifications.
+    - **Architectural Compliance**: Full compliance with naming and architectural patterns defined in this document.
 
 3.  **Documentation Sync (MANDATORY)**: Any addition, removal, or update of a Skill must be immediately reflected in the `.agents/skills/README.md` file.
 
 4.  **Code Style & Conventions (MANDATORY)**: 
     - **Language**: All code comments and technical notes MUST be in **English**.
     - **Kotlin Standards**: All Kotlin code MUST strictly adhere to the [Official Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html).
+
+5.  **Engineering Principles (STRICT)**: All agents must apply the following patterns to ensure maintainability:
+    - **DRY (Don't Repeat Yourself)**: Avoid duplication of logic. Centralize common behaviors.
+    - **KISS (Keep It Simple, Stupid)**: Prefer simple, readable solutions over complex architectures.
+    - **SOLID**: Maintain Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion.
+    - **YAGNI (You Ain't Gonna Need It)**: Do not implement functionality until it is actually needed.
+    - **Reference**: Consult [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) and [Android Architecture Guidelines](https://developer.android.com/topic/architecture).
+
+## Interaction Strategy & Mode Optimization (Tokens & Time)
+
+To ensure the most efficient use of resources and time, agents MUST align with the following interaction modes:
+
+1. **FAST Mode**: 
+   - **When to use**: Straightforward tasks, single-file edits, or minor refactors where no deep diagnosis is needed.
+   - **Agent behavior**: Propose and apply changes rapidly.
+
+2. **ASK Mode (Default for Debugging)**:
+   - **When to use**: Complex debugging (e.g., Hilt/KSP errors), multi-module architectural changes, or when the "Gateway Diagnosis" reveals high ambiguity.
+   - **Agent behavior**: Analyze deeply, explain findings, and WAIT for user confirmation before executing potentially destructive or long-running tasks.
+
+3. **Mode Recommendation**: The agent SHOULD recommend switching modes if the current task's complexity doesn't match the selected mode to avoid wasting tokens or causing unnecessary delays.
 
 ---
 
