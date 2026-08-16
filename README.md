@@ -1,8 +1,10 @@
 # 🚀 Android AI Workflow Foundation v1.0
 
-Built on Clean Architecture, SOLID principles, and a modular 3-Group Skill Architecture, the foundation explores how AI agents can be structured and guided within an existing IDE to support software development while keeping engineering decisions under developer control.
+A structured, AI-assisted development workflow for Android and KMP, built around Clean Architecture, SOLID principles and a modular 3-Group Skill Architecture.
 
 This foundation is continuously evolving through experimentation and application to Android projects. The workflow, skills and guardrails are refined as new use cases and learnings emerge.
+
+On the other hand, the foundation is currently being evaluated through real Android development work, including the MeteoMartoCompose project.
 
 ---
 
