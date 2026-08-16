@@ -14,7 +14,7 @@ npx skills add albertmartorell1975/android-ai-workflow-foundation -y && echo ">>
 **"Activate workflow-initializer"**
 
 ### Scenario B: Existing Projects (Add Capabilities)
-Run the same command. Version 2.0 will install the **Core** and **Guardrail** skills automatically, improving your existing project's quality without adding noise.
+Run the same command. Version 1.0 will install the **Core** and **Guardrail** skills automatically, improving your existing project's quality without adding noise.
 
 ---
 
@@ -31,7 +31,7 @@ Use the **foundation-evolve** skill to automate the promotion of local skills to
 
 ---
 
-## 📦 Modular Skill Architecture (v2.0)
+## 📦 Modular Skill Architecture (v1.0)
 To maximize AI performance and minimize context noise, skills are organized into three groups:
 
 ### 🟢 1. Core (Installed by Default)
