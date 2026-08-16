@@ -4,6 +4,8 @@ Built on Clean Architecture, SOLID principles, and a modular 3-Group Skill Archi
 
 This foundation is continuously evolving through experimentation and application to Android projects. The workflow, skills and guardrails are refined as new use cases and learnings emerge.
 
+---
+
 ## 🛠 Installation
 
 ### Scenario A: New Projects (Full Setup)
