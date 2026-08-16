@@ -1,4 +1,4 @@
-# 🚀 Android AI Workflow Foundation v2.0
+# 🚀 Android AI Workflow Foundation v1.0
 
 A standardized, AI-assisted development workflow seed for Android and KMP projects. Built on Clean Architecture, SOLID principles, and a modular **3-Group Skill Architecture**.
 
