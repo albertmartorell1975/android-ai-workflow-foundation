@@ -4,7 +4,7 @@ A structured, AI-assisted development workflow for Android and KMP, built around
 
 This foundation is continuously evolving through experimentation and application to Android projects. The workflow, skills and guardrails are refined as new use cases and learnings emerge.
 
-On the other hand, the foundation is currently being evaluated through real Android development work, including the MeteoMartoCompose project.
+On the other hand, the foundation is currently being evaluated through real Android development work, including the [MeteoMartoCompose](https://github.com/albertmartorell1975/MeteoMartoCompose) project.
 
 ---
 
