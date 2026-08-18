@@ -17,6 +17,7 @@ Essential skills for the basic functioning of the workflow. These define the "Ho
 Skills that guarantee high-quality code and system-level expertise. They prevent common errors and enforce best practices.
 
 - **hilt**: Official guidelines for Dependency Injection and multibinding patterns.
+- **kotlin-style**: Strict adherence to Official Kotlin Coding Conventions (order of declarations, naming, formatting).
 - **testing-setup**: Infrastructure and strategy for Unit, UI, and E2E testing.
 - **compose-ui-testing-patterns**: Patterns and assertions for highly testable UI components.
 - **android-cli**: Expert manual for the `android` command-line tool.
