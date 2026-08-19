@@ -1,6 +1,6 @@
 {
   "name": "@albertmartorell/android-ai-workflow-foundation",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Modular Foundational AI-Assisted Workflow for Android and KMP. Auto-installs Core and Guardrails. Plugins available via wizard.",
   "scripts": {
     "postinstall": "echo \"CORE INSTALLED. Run 'Activate workflow-initializer' in Android Studio.\""
@@ -35,7 +35,10 @@
       "kotlin-style": ".agents/skills/kotlin-style/SKILL.md",
       "using-chrisbanes-skills": ".agents/skills/using-chrisbanes-skills/SKILL.md",
       "compose-focus-navigation": ".agents/skills/compose-focus-navigation/SKILL.md",
-      "dependency-manager": ".agents/skills/dependency-manager/SKILL.md"
+      "dependency-manager": ".agents/skills/dependency-manager/SKILL.md",
+      "firebase-basics": ".agents/skills/firebase-basics/SKILL.md",
+      "firebase-auth-basics": ".agents/skills/firebase-auth-basics/SKILL.md",
+      "firebase-remote-config-basics": ".agents/skills/firebase-remote-config-basics/SKILL.md"
     }
   },
   "author": "Albert Martorell Garcia",
