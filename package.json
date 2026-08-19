@@ -35,10 +35,7 @@
       "kotlin-style": ".agents/skills/kotlin-style/SKILL.md",
       "using-chrisbanes-skills": ".agents/skills/using-chrisbanes-skills/SKILL.md",
       "compose-focus-navigation": ".agents/skills/compose-focus-navigation/SKILL.md",
-      "dependency-manager": ".agents/skills/dependency-manager/SKILL.md",
-      "firebase-basics": ".agents/skills/firebase-basics/SKILL.md",
-      "firebase-auth-basics": ".agents/skills/firebase-auth-basics/SKILL.md",
-      "firebase-remote-config-basics": ".agents/skills/firebase-remote-config-basics/SKILL.md"
+      "dependency-manager": ".agents/skills/dependency-manager/SKILL.md"
     }
   },
   "author": "Albert Martorell Garcia",
