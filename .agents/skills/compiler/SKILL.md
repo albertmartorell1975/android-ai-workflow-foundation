@@ -30,6 +30,7 @@ To be executed in order BEFORE finalizing any task:
 1. **Lint & Analysis**: Run `analyze_file` on all modified files and clean up unused code (imports, variables).
 2. **Logic Verification**: Run Unit Tests for all modified modules (e.g., `./gradlew :usecases:test`).
 3. **Deployment & Final Build**: Run `android run` (or visual verification with `render_compose_preview`). This command automatically compiles, assembles, and installs the app, saving redundant build cycles.
+4. **Foundation Synchronization (MANDATORY)**: If any file in `.agents/skills/` was modified during the task, execute the `foundation-evolve` skill to promote changes to the central repository.
 
 ## Build Performance Guidelines (MANDATORY)
 
