@@ -31,6 +31,7 @@ To be executed in order BEFORE finalizing any task:
 2. **Logic Verification**: Run Unit Tests for all modified modules (e.g., `./gradlew :usecases:test`).
 3. **Deployment & Final Build**: Run `android run` (or visual verification with `render_compose_preview`). This command automatically compiles, assembles, and installs the app, saving redundant build cycles.
 4. **Foundation Synchronization (MANDATORY)**: If any file in `.agents/skills/` was modified during the task, execute the `foundation-evolve` skill to promote changes to the central repository.
+5. **Room Schema Verification**: If any `@Entity` class was modified, verify that the `MeteoMartoDatabase` version has been incremented and all entities are correctly registered with trailing commas.
 
 ## Build Performance Guidelines (MANDATORY)
 
