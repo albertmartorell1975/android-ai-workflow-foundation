@@ -43,7 +43,18 @@ Combining interface bindings and dynamic provider declarations in the same Hilt 
 ### Rule 2: Complete Prohibition of Companion Objects in `@Binds` Modules
 Never embed a `companion object` containing `@Provides` methods inside an abstract class that declares `@Binds` methods. 
 
-#### Compilation Failure Analysis
+### Rule 3: Kotlin 2.x Explicit Annotation Targets
+When using Hilt qualifiers (like `@ApplicationContext`) or custom qualifiers inside a class constructor's properties, you MUST use the `@param:` target prefix to avoid compilation warnings and ensure future-proof bytecode mapping.
+
+#### Example: Correct Target Specificity
+```kotlin
+class WorkScheduler @Inject constructor(
+    @param:ApplicationContext private val context: Context,
+    @param:ApplicationScope private val scope: CoroutineScope
+)
+```
+
+#### Compilation Failure Analysis (Rule 2)
 1. **Redundant Class Generation**: The Kotlin compiler compiles `companion object` blocks into a separate inner class file (e.g., `MyModule$Companion.class`). The annotation processors (Kapt/KSP) are forced to analyze multiple scopes and generate redundant factory boilerplate, bloating compiled method counts.
 2. **Slower Incremental Build Times**: During incremental builds, Kapt or KSP must re-parse and compile the entire enclosing class structure if a single binding in either the parent abstract module or child companion object changes. Purely isolated abstract modules and static object modules allow optimal compiler caching.
 

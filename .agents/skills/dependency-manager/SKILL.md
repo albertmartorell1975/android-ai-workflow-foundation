@@ -21,6 +21,9 @@ this skill establishes an unbreakable protocol to ensure the compatibility and m
     - Verify via official release notes (using `web_search` or `search_android_docs`) if the new library version requires a higher AGP version.
     - **Blocked Action**: If the library requires an AGP version higher than the project's current one, the update MUST be discarded.
 5. **Modern Coordinates Only**: Automatically update migrated libraries (e.g., use androidx.room:room-runtime instead of old versions, and ensure KSP processors are used instead of KAPT for Room and Hilt).
+6. **Zero Redundancy Policy**: PROHIBITED from declaring the same dependency multiple times in `build.gradle.kts` files. If a dependency is part of a `bundle`, do not declare it individually. If it's managed by a `BOM`, do not specify a manual version.
+7. **No Hardcoded Strings**: PROHIBITED from using direct string literals for dependencies (e.g., `implementation("com.lib:version")`) in `build.gradle.kts`. All dependencies MUST be defined in `libs.versions.toml` and referenced via the `libs` object.
+8. **Layer-Aware Dependencies**: Ensure that dependencies are added to the correct module (e.g., Domain should not have Android-specific dependencies).
 
 ## Update Protocols
 
