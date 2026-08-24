@@ -22,7 +22,19 @@ To maintain readability, all Kotlin classes MUST follow this declaration order:
 *   **Functions/Properties**: camelCase (e.g., `mapToThreshold`).
 *   **Constants**: UPPER_SNAKE_CASE (e.g., `DEFAULT_THRESHOLD`).
 
-## 3. Formatting
+## 3. Modifier Order
+Always follow the **canonical order** of Kotlin modifiers to avoid lint warnings and maintain consistency. The most common order is:
+1.  Visibility (`public`, `internal`, `private`)
+2.  `override`
+3.  `suspend`
+4.  `inline`, `infix`, `operator`
+5.  `data`
+
+**Example**:
+*   ✅ `suspend operator fun invoke(...)`
+*   ❌ `operator suspend fun invoke(...)`
+
+## 4. Formatting
 *   Use 4 spaces for indentation.
 *   Avoid "Magic Numbers": All literal values used as thresholds or defaults must be extracted to constants.
 *   Trailing Commas: Always use trailing commas in multi-line parameter lists to reduce diff noise.
