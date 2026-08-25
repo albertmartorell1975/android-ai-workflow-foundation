@@ -22,7 +22,11 @@ To maintain readability, all Kotlin classes MUST follow this declaration order:
 *   **Functions/Properties**: camelCase (e.g., `mapToThreshold`).
 *   **Constants**: UPPER_SNAKE_CASE (e.g., `DEFAULT_THRESHOLD`).
 
-## 3. Modifier Order
+## 3. Imports
+*   **No Wildcards**: Always use explicit imports. Never use `import paquet.*`.
+*   **Unused Imports**: Unused imports MUST be removed as part of the "Definition of Done".
+
+## 4. Modifier Order
 Always follow the **canonical order** of Kotlin modifiers to avoid lint warnings and maintain consistency. The most common order is:
 1.  Visibility (`public`, `internal`, `private`)
 2.  `override`
