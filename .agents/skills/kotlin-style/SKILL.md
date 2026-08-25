@@ -40,7 +40,7 @@ Always follow the **canonical order** of Kotlin modifiers to avoid lint warnings
 
 ## 4. Formatting
 *   Use 4 spaces for indentation.
-*   Avoid "Magic Numbers": All literal values used as thresholds or defaults must be extracted to constants.
+*   Avoid "Magic Literals": All literal values (Strings, Numbers, URI schemes, etc.) used as thresholds, defaults, or keys MUST be extracted to centralized constants (e.g., `AppConstants`).
 *   Trailing Commas: Always use trailing commas in multi-line parameter lists to reduce diff noise.
 
 ## 4. Documentation
