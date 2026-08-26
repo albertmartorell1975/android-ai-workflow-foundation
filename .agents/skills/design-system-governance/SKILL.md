@@ -32,3 +32,7 @@ This skill ensures that any AI agent or developer modifying the UI of **MeteoMar
 - **Typography**: Use variable font axes (weight) for interaction feedback via **Roboto Flex**.
 - **Motion**: Use **Spring Physics** (Spring.StiffnessMediumLow) for all transitions to ensure natural, tactile feedback.
 - **Feedback**: Use `AnimatedIcon` for state changes where expressive feedback adds value.
+
+## 5. Skill Integrity (Foundation Sync)
+- **Automatic Evolution**: Any change to this or other skills MUST be synchronized with the `android-ai-workflow-foundation` repository via the `foundation-evolve` skill before finishing the task.
+- **Lock Management**: `skills-lock.json` MUST be updated with the SHA-256 hash of the modified skill.
