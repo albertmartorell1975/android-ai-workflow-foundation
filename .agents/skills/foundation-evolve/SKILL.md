@@ -23,14 +23,16 @@ Agents MUST invoke this skill automatically before finishing any task if any fil
 When the user asks to "evolve the foundation" with a specific skill:
 
 1. **Target Identification**: Locate the Foundation repository at `/Users/AlbertMartorell/Development/Android/android-ai-workflow-foundation`.
-2. **Skill Extraction**: Copy the requested skill folder from the current project's `.agents/skills/[skill-name]` to the Foundation's `.agents/skills/` directory.
-3. **Manifest Update**: Update the Foundation's `package.json` to include the new skill in the `agent-skills.skills` object if it is a Core or Guardrail skill. Do NOT add optional plugins to the manifest.
-4. **Index Update**: Update the Foundation's `.agents/skills/README.md` file to include the new skill description in the appropriate group.
-5. **Commit & Push**:
+2. **Integrity Lock**: Update the `skills-lock.json` file in the working project with the new/modified skill's SHA-256 hash.
+3. **Skill Extraction**: Copy the requested skill folder from the current project's `.agents/skills/[skill-name]` to the Foundation's `.agents/skills/` directory.
+4. **Manifest Update**: Update the Foundation's `package.json` to include the new skill in the `agent-skills.skills` object if it is a Core or Guardrail skill. Do NOT add optional plugins to the manifest.
+5. **Index Update**: Update the Foundation's `.agents/skills/README.md` file to include the new skill description in the appropriate group.
+6. **Template Synchronization (MANDATORY)**: If any Core Skill is added or modified, the agent MUST synchronize the skill list within the `workflow-initializer/SKILL.md` template (Template: skills/README.md section) to ensure consistency between the project index and the initialization seeds.
+7. **Commit & Push**:
    - Enter the Foundation directory.
    - Execute `git add .`.
    - Execute `git commit -m "feat(skills): add/update [skill-name] expert skill via automation"`.
    - Execute `git push origin main`.
-6. **Final Notification & Action**:
+7. **Final Notification & Action**:
    - Notify the user that the foundation has evolved and the changes are live on GitHub.
    - **MANDATORY**: Instruct the user to run `npx skills update` in their other projects to receive the new skill.
