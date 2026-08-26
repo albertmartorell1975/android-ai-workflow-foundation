@@ -135,7 +135,10 @@ This document defines the specialized AI personas (Agents) designed to maintain 
 ## Mandatory Planning Protocol (GATEWAY)
 
 1. **Gateway Diagnosis (STRICT)**: Every new feature MUST start with the Diagnosis phase defined in `.agents/rules.md`.
-2. **Phase-Level Governance (MANDATORY)**: Every task in a feature workflow MUST begin by consulting the `AGENTS.md` file to ensure the specific constraints of each persona (Domain Architect, UI/UX Engineer, etc.) are respected.
+2. **Phase-Level Governance (MANDATORY)**: Every workflow phase MUST follow the "Check -> Execute -> Verify -> Commit" cycle:
+    - **Check**: Consult `AGENTS.md` before coding to ensure the specific constraints of each persona (Domain Architect, UI/UX Engineer, etc.) are respected.
+    - **Verify**: Execute the `compiler` skill verification suite after completing phase tasks.
+    - **Commit**: Ensure changes are pushed (Manual or `git-governance` skill) before starting the next phase.
 3. **Skill-Based Knowledge Retrieval (MANDATORY)**: Before proposing any solution, search and read relevant files inside `.agents/skills/`.
 4. **Workflow Activation**: Only after prompt confirmation can the agent trigger the `workflow-feature` skill.
 

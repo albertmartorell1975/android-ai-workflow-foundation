@@ -31,7 +31,11 @@ As a Skill, `workflow-feature` provides:
 5. **Testing Analysis**: Systematically evaluates whether a feature requires Unit Tests based on logic complexity.
 6. **Automatic Build Synchronization**: Enforces a mandatory `gradle_sync` task in the checklist whenever `build.gradle.kts` or `libs.versions.toml` are modified. The agent must execute the `gradle_sync` tool directly.
 7. **Expert Knowledge Sync**: Strictly enforces the "Documentation Sync" rule from `.agents/AGENTS.md`. Every time a skill is added, modified, or removed, the agent MUST detect it via `git status .agents/skills/` and update `.agents/skills/README.md` accordingly.
-8. **Governance Enforcement (MANDATORY)**: Every generated `WORKFLOW_*.md` checklist MUST include a mandatory task: "- [ ] **MANDATORY**: Consult `AGENTS.md` for role-specific constraints" at the start of EVERY phase (Infrastructure, Foundation, Components, etc.).
+8. **Governance Enforcement (MANDATORY)**: Every generated `WORKFLOW_*.md` checklist MUST include:
+    - At the START of every phase: "- [ ] **MANDATORY**: Consult `AGENTS.md` for role-specific constraints".
+    - At the END of every phase: 
+        - "- [ ] **MANDATORY**: Execute `compiler` skill verification suite."
+        - "- [ ] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing."
 
 ## Workflow Patterns
 
@@ -66,7 +70,11 @@ Once context is sufficient, construct a comprehensive technical workflow coverin
 
 5. **Granular Actionable Checklist**:
     - Create a step-by-step implementation checklist organized logically (e.g., Schema -> API Contract -> UI implementation). Split the job in small steps to be easier to accomplish the feature goals.
-    - **Governance Step**: Mandatory inclusion of "- [ ] **MANDATORY**: Consult `AGENTS.md` for role-specific constraints" at the top of each phase in the checklist.
+    - **Governance Step**: Mandatory inclusion of:
+        - At the start: "- [ ] **MANDATORY**: Consult `AGENTS.md` for role-specific constraints".
+        - At the end:
+            - "- [ ] **MANDATORY**: Execute `compiler` skill verification suite."
+            - "- [ ] **MANDATORY**: Request Commit & Push (Manual or via `git-governance` skill) before advancing."
     - **Testing Tasks**: Include specific unit testing tasks ONLY if flagged during the Testing Analysis phase.
 
 ---
