@@ -13,6 +13,7 @@ Custom skills created to define this project's unique architecture and governanc
 - **kotlin-style**: Strict adherence to Official Kotlin Coding Conventions (order of declarations, naming, formatting, and the **Magic Literal Prohibition**).
 - **room-schema-governance**: Ensures database integrity, version management, and schema evolution rules for Room.
 - **dependency-manager**: Strict protocol for dependency management in the libs.versions.toml file to ensure compatibility and stability.
+- **design-system-governance**: Codifies A11y, RTL, Adaptive, and Reusability standards for the MeteoMarto Design System.
 
 ## 2. Android CLI & System Skills
 Expert guides downloaded via the Android CLI for system-level optimizations, tools, and best practices.
