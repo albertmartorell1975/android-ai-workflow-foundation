@@ -164,7 +164,11 @@ Custom skills created to define this project's unique architecture and governanc
 - **git-governance**: Defines a strict Git Flow branching model and commit conventions for AI agents.
 - **workflow-feature**: Analyzes the project and builds a standardized workflow for new features with granular checklists and mandatory documentation sync enforcement.
 - **testing-setup**: Analyzes and creates a testing strategy for native Android apps (Unit, UI, Screenshot, and E2E).
-- **hilt**: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns for the project.
+- **hilt**: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns for the MeteoMartoCompose native Android project.
+- **kotlin-style**: Strict adherence to Official Kotlin Coding Conventions (order of declarations, naming, formatting, and the **Magic Literal Prohibition**).
+- **room-schema-governance**: Ensures database integrity, version management, and schema evolution rules for Room.
+- **dependency-manager**: Strict protocol for dependency management in the libs.versions.toml file to ensure compatibility and stability.
+- **design-system-governance**: Codifies A11y, RTL, Adaptive, and Reusability standards for the MeteoMarto Design System.
 
 ## 2. Android CLI & System Skills
 Expert guides for system-level optimizations, tools, and best practices.
