@@ -1,6 +1,6 @@
 ---
 name: hilt
-description: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns for the MeteoMartoCompose native Android project.
+description: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns for the project.
 version: 1.1.0
 ecosystem: Android, Kotlin, Dagger, Hilt, Jetpack Compose
 keywords:
@@ -23,7 +23,7 @@ keywords:
 
 ## 1. Clean Architecture Boundaries
 
-To preserve strict layer isolation in the `MeteoMartoCompose` project, Hilt dependencies must conform to the following architectural rules:
+To preserve strict layer isolation in the project, Hilt dependencies must conform to the following architectural rules:
 
 * **The `:domain` Module**: This module must remain completely agnostic of Hilt, Dagger, or any Android framework classes (such as `Context`). No DI annotations are allowed in this module. All domain entities, use-case contracts, and repository interfaces are defined here purely.
 * **The `:usecases` Module**: Business use cases or interactors must reside in this layer. They must resolve their domain repository dependencies purely via **constructor injection** using the `@Inject` annotation on the constructor. They are not allowed to declare modules or access Android context.
@@ -84,7 +84,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://api.meteomarto.com/")
+            .baseUrl("https://api.example.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

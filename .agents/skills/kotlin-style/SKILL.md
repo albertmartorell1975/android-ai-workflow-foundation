@@ -1,6 +1,6 @@
 ---
 name: kotlin-style
-description: Strict adherence to Official Kotlin Coding Conventions for the MeteoMartoCompose project. Ensures consistency in code layout, naming, and structure to minimize technical debt.
+description: Strict adherence to Official Kotlin Coding Conventions for the project. Ensures consistency in code layout, naming, and structure to minimize technical debt.
 version: 1.0.0
 keywords:
   - kotlin

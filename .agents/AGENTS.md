@@ -146,7 +146,7 @@ When implementing a new feature:
 
 ---
 
-## Core Architectural Mandates (MeteoMarto Way)
+## Core Architectural Mandates
 
 1.  **The Permission Abstraction (Checker Pattern)**: System permissions are considered "Platform Infrastructure". 
     - *Contract*: Define an enum-based interface in `:data` (e.g., `PermissionChecker`).

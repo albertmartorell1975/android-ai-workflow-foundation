@@ -15,7 +15,7 @@ metadata:
 ---
 # Workflow Feature Specialist
 
-This skill provides a structured methodology for implementing new features in the **MeteoMartoCompose** project. It acts as an expert Software Engineering Workflow Architect and Prompt Engineer, ensuring every feature is properly analyzed and planned before coding begins.
+This skill provides a structured methodology for implementing new features in the project. It acts as an expert Software Engineering Workflow Architect and Prompt Engineer, ensuring every feature is properly analyzed and planned before coding begins.
 
 ## Overview
 
