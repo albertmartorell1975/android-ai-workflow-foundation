@@ -12,8 +12,12 @@ This skill ensures that any AI agent or developer modifying the UI adheres to th
 
 ## 1. Architectural Principles (Super-Hoisting)
 - **Statelessness**: Every `MM*` component MUST be stateless. No internal `remember { mutableStateOf(...) }`.
+- **Stateless Previews (CRITICAL)**: Corresponding `@Preview` functions MUST also be stateless. Avoid instantiating components that depend on Firebase, Hilt, or other infrastructure, as the **Roborazzi Automated Scanner** will fail to render them in unit test environments.
 - **Slot API Pattern**: Mandatory for components receiving content. Use `content: @Composable RowScope.() -> Unit` or equivalent.
 - **Modifier Requirement**: Every component MUST include `modifier: Modifier = Modifier` as its first optional parameter.
+
+## 2. Infrastructure Requirements
+- **JDK 21**: Mandatory for projects targeting SDK 36+. Robolectric and Roborazzi require Java 21 to accurately simulate modern Android runtimes.
 
 ## 2. Accessibility (A11y) & Low Vision
 - **Contrast**: Mandatory **WCAG AA** (4.5:1 ratio). Use `MaterialTheme.colorScheme` roles correctly.
