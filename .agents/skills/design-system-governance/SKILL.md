@@ -1,14 +1,14 @@
 ---
 name: design-system-governance
-description: Codifies A11y, RTL, Adaptive, and Reusability standards for the MeteoMarto Design System.
+description: Codifies A11y, RTL, Adaptive, and Reusability standards for the Design System.
 metadata:
   author: Albert Martorell Garcia
-  version: 1.0.0
-  keywords: [design-system, a11y, rtl, adaptive, stateless, compose, tokens]
+  version: 1.1.0
+  keywords: [design-system, a11y, rtl, adaptive, stateless, compose, tokens, testing, roborazzi]
 ---
 # Design System Governance Rules
 
-This skill ensures that any AI agent or developer modifying the UI of **MeteoMartoCompose** adheres to the professional standards defined in feature `MM-02`.
+This skill ensures that any AI agent or developer modifying the UI adheres to the professional standards defined for the project.
 
 ## 1. Architectural Principles (Super-Hoisting)
 - **Statelessness**: Every `MM*` component MUST be stateless. No internal `remember { mutableStateOf(...) }`.
@@ -24,11 +24,30 @@ This skill ensures that any AI agent or developer modifying the UI of **MeteoMar
 - **Persistence**: User legibility settings MUST be saved via **DataStore**.
 
 ## 3. RTL & Adaptive Support
-- **Mirroring**: Use `start/end` exclusively. No `left/right`. Directional icons (arrows, etc.) MUST be mirrored in RTL.
+- **Mirroring**: Use `start/end` exclusively. No `left/right`. Directional icons MUST be mirrored in RTL.
 - **Navigation**: Use `MMNavigation` (wrapping `NavigationSuiteScaffold`) to handle Bar/Rail transitions.
-- **Insets**: Components must handle `WindowInsets` to ensure **Android 15 Edge-to-Edge** compliance.
+- **Insets**: Components must handle `WindowInsets` for **Android 15 Edge-to-Edge** compliance.
 
-## 4. Visual Excellence (M3 Expressive)
+## 4. Visual Excellence & Motion
 - **Typography**: Use variable font axes (weight) for interaction feedback via **Roboto Flex**.
-- **Motion**: Use **Spring Physics** (Spring.StiffnessMediumLow) for all transitions to ensure natural, tactile feedback.
-- **Feedback**: Use `AnimatedIcon` for state changes where expressive feedback adds value.
+- **Motion**: Use **Spring Physics** (Spring.StiffnessMediumLow) for all transitions (natural feedback).
+- **Feedback**: Use `AnimatedIcon` for expressive state changes.
+
+## 5. Behavioral Matrix (Version Compliance)
+
+| Feature | Android 12+ (API 31) | Android 11 & Lower |
+| :--- | :--- | :--- |
+| **Color Palette** | **Dynamic**: Material You (Wallpaper-based). | **Static**: Uses predefined Reference Tokens. |
+| **Font Scaling** | **Non-linear (A14+)**: Adaptive scaling via `sp`. | **Linear**: Uniform scaling. |
+| **Edge-to-Edge** | **Native (A15+)**: Mandatory bar transparency. | **Custom**: Handled via `WindowInsets` logic. |
+| **Navigation** | **Adaptive**: Automatic Bar vs. Rail transition. | **Fixed**: Width-based transition logic. |
+
+## 6. Testing & Verification (Roborazzi)
+To verify UI changes, use the following commands:
+- **Record**: `./gradlew recordRoborazziDebug` (Generate Golden Images).
+- **Verify**: `./gradlew verifyRoborazziDebug` (Check visual regression).
+
+### Testing Matrix
+Every component MUST be verified against **16 permutations**:
+`LayoutDirection (LTR/RTL)` x `Orientation (Port/Land)` x `Font Scale (1.0/2.0)` x `Theme (Light/Dark)`.
+Roborazzi's `generateComposePreviewRobolectricTests` handles this automatically for every `@Preview` found in the `ui` package.
