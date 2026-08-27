@@ -14,13 +14,17 @@ metadata:
 ---
 # Project Compiler & Verification Specialist
 
-This skill serves as the project's quality gateway. It ensures that any code changes meet the technical standards of the project by executing a comprehensive suite of static analysis and build commands.
+This skill serves as the project's quality gateway. It ensures that any code changes meet the technical standards of **MeteoMartoCompose** by executing a comprehensive suite of static analysis and build commands.
 
 ## Skill Capabilities
 
 As a Skill, `compiler` provides both standalone actions and a complete verification suite:
 
 ### 1. Standalone Actions (Immediate Execution)
+- **Environment Validation (MANDATORY)**: Before any compilation, the agent MUST verify that the local environment matches the project's requirements:
+  - Check that `java -version` matches the `jvmToolchain` defined in `build.gradle.kts`.
+  - Check that the IDE's Gradle JDK (from `.idea/gradle.xml`) is correctly aligned.
+  - If a mismatch is detected, the agent MUST stop and report the configuration error to the user before attempting any build.
 - **Static Analysis**: To be executed on specific files during development.
   - **Command**: `analyze_file [file_path]`
 - **Code Cleanliness**: Agents MUST remove all unused imports, variables, and functions detected during the analysis phase or identified through manual review.
@@ -30,8 +34,9 @@ To be executed in order BEFORE finalizing any task:
 1. **Lint & Analysis**: Run `analyze_file` on all modified files and clean up unused code (imports, variables).
 2. **Logic Verification**: Run Unit Tests for all modified modules (e.g., `./gradlew :usecases:test`).
 3. **Deployment & Final Build**: Run `android run` (or visual verification with `render_compose_preview`). This command automatically compiles, assembles, and installs the app, saving redundant build cycles.
-4. **Foundation Synchronization (MANDATORY)**: If any file in `.agents/skills/` was modified during the task, execute the `foundation-evolve` skill to promote changes to the central repository.
-5. **Room Schema Verification**: If any `@Entity` class was modified, verify that the database version has been incremented and all entities are correctly registered with trailing commas.
+4. **Foundation Synchronization (MANDATORY)**: If any file in `.agents/skills/` was modified during the task, update `skills-lock.json` with the new hashes and then execute the `foundation-evolve` skill to promote changes to the central repository.
+5. **Room Schema Verification**: If any `@Entity` class was modified, verify that the `MeteoMartoDatabase` version has been incremented and all entities are correctly registered with trailing commas.
+6. **Skill Lock Integrity**: Verify that `skills-lock.json` is synchronized with the actual content of the `.agents/skills/` directory.
 
 ## Build Performance Guidelines (MANDATORY)
 

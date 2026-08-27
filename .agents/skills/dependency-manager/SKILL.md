@@ -9,17 +9,19 @@ metadata:
 
 # Dependency Integrity Architect
 
-this skill establishes an unbreakable protocol to ensure the compatibility and modernity of dependencies in the project.
+this skill establishes an unbreakable protocol to ensure the compatibility and modernity of dependencies in **MeteoMartoCompose**.
 
 ## Golden Rules (MANDATORY)
 
 1. **Anti-Hallucination Policy**: PROHIBITED from inventing or hallucinating version numbers. If the version is not found via `version_lookup`, the agent must ask the user or consult official documentation.
 2. **Kebab-case Enforcement**: All library aliases and versions in the TOML file MUST use kebab-case (e.g., `androidx-room-runtime`).
 3. **BOM & Plugin Alignment**: For Firebase and Jetpack Compose, use the BOM declaration where applicable. For the Compose Compiler, ensure it aligns with the `org.jetbrains.kotlin.plugin.compose` plugin corresponding to the current Kotlin version.
-4. **AGP Compatibility Verification**: Before proposing any update to Core libraries (Hilt, KSP, Compose, Navigation), the agent MUST:
-    - Identify the current project AGP version from `libs.versions.toml`.
-    - Verify via official release notes (using `web_search` or `search_android_docs`) if the new library version requires a higher AGP version.
-    - **Blocked Action**: If the library requires an AGP version higher than the project's current one, the update MUST be discarded.
+4. **AGP & Infrastructure Compatibility (STRICT)**: Before proposing any update or adding a new library, the agent MUST perform a **Side-Effect Analysis**:
+    - **AGP Verification**: Check if the library requires a higher Android Gradle Plugin version. If so, discard the update.
+    - **JDK Verification**: Check if the library (especially testing tools like Robolectric/Roborazzi) requires a higher JDK version than the project's current one.
+    - **Gradle Verification**: Check for minimum Gradle version requirements.
+    - **IDE Impact**: Identify if manual user intervention is needed (e.g., changing "Gradle JDK" in Android Studio settings).
+    - **Blocked Action**: If any infrastructure requirement (JDK, Gradle, AGP) is not met by the current environment and cannot be updated automatically, the operation MUST be discarded and the user notified.
 5. **Modern Coordinates Only**: Automatically update migrated libraries (e.g., use androidx.room:room-runtime instead of old versions, and ensure KSP processors are used instead of KAPT for Room and Hilt).
 6. **Zero Redundancy Policy**: PROHIBITED from declaring the same dependency multiple times in `build.gradle.kts` files. If a dependency is part of a `bundle`, do not declare it individually. If it's managed by a `BOM`, do not specify a manual version.
 7. **No Hardcoded Strings**: PROHIBITED from using direct string literals for dependencies (e.g., `implementation("com.lib:version")`) in `build.gradle.kts`. All dependencies MUST be defined in `libs.versions.toml` and referenced via the `libs` object.
