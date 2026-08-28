@@ -1,13 +1,14 @@
 ---
 name: kotlin-style
 description: Strict adherence to Official Kotlin Coding Conventions for the project. Ensures consistency in code layout, naming, and structure to minimize technical debt.
-version: 1.0.0
+version: 1.2.0
 keywords:
   - kotlin
   - coding-conventions
   - style-guide
   - formatting
-  - companion-object
+  - naming
+  - error-handling
 ---
 
 ## 1. Class Layout & Order
@@ -18,12 +19,12 @@ To maintain readability, all Kotlin classes MUST follow this declaration order:
 4.  **Companion Object**: MUST be situated at the very end of the class, just before the closing brace.
 
 ## 2. Naming Conventions
-*   **Classes/Objects**: PascalCase (e.g., `RemoteConfigMapper`).
-*   **Functions/Properties**: camelCase (e.g., `mapToThreshold`).
-*   **Constants**: UPPER_SNAKE_CASE (e.g., `DEFAULT_THRESHOLD`).
+*   **Classes/Objects**: PascalCase (e.g., `MyClass`).
+*   **Functions/Properties**: lowerCamelCase (e.g., `myFunction`). Property names MUST start with a lowercase letter (e.g., use `xs` instead of `XS`).
+*   **Constants**: UPPER_SNAKE_CASE (e.g., `DEFAULT_VALUE`).
 
 ## 3. Imports
-*   **No Wildcards**: Always use explicit imports. Never use `import paquet.*`.
+*   **No Wildcards**: Always use explicit imports. Never use `import package.*`.
 *   **Unused Imports**: Unused imports MUST be removed as part of the "Definition of Done".
 
 ## 4. Modifier Order
@@ -38,14 +39,19 @@ Always follow the **canonical order** of Kotlin modifiers to avoid lint warnings
 *   ✅ `suspend operator fun invoke(...)`
 *   ❌ `operator suspend fun invoke(...)`
 
-## 4. Formatting
+## 5. Formatting
 *   Use 4 spaces for indentation.
-*   Avoid "Magic Literals": All literal values (Strings, Numbers, URI schemes, etc.) used as thresholds, defaults, or keys MUST be extracted to centralized constants (e.g., `AppConstants`).
+*   Avoid "Magic Literals": All literal values (Strings, Numbers, URI schemes, etc.) used as thresholds, defaults, or keys MUST be extracted to centralized constants.
 *   Trailing Commas: Always use trailing commas in multi-line parameter lists to reduce diff noise.
 
-## 4. Documentation
+## 6. Documentation
 *   KDoc for public APIs and complex logic.
 *   Keep comments in English.
+
+## 7. Error Handling & Logic Flow
+*   **No Control Flow via Exceptions**: NEVER use `try-catch` blocks to manage standard application logic or navigation. 
+*   **Proactive State Checking**: Always check conditions proactively (e.g., using `if`, `isEmpty()`, `hasRoute<T>()`, etc.) before performing an action that might fail. 
+*   **Exception Rationale**: Exceptions must be reserved for truly exceptional and unpredictable system failures (e.g., I/O errors, network loss), not for predictable UI or navigation states.
 
 ---
 **Enforcement**: Every agent MUST verify their proposed code changes against this checklist as part of their "Definition of Done".
