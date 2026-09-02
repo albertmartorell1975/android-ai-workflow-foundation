@@ -8,14 +8,16 @@ metadata:
 ---
 # Design System Governance Rules
 
-This skill ensures that any AI agent or developer modifying the UI adheres to the professional standards defined for the project.
+This skill ensures that any AI agent or developer modifying the UI adheres to the professional standards defined for the project, following the [Official Compose Component API Guidelines](https://android.googlesource.com/platform/frameworks/support/+/androidx-main/compose/docs/compose-component-api-guidelines.md).
 
 ## 1. Architectural Principles & Boundaries
 - **Statelessness**: Every `MM*` component MUST be stateless. No internal `remember { mutableStateOf(...) }`.
-- **Typographic Boundary**: Use `MMText` exclusively for typography in feature screens. Direct dependency on M3 `Text` is prohibited to prevent token leaks.
-- **M3 Leak Prevention**: Feature modules MUST NOT depend directly on Material 3 components if an equivalent `MM*` component exists.
-- **Slot API Pattern**: Mandatory for components receiving content. Use `content: @Composable RowScope.() -> Unit` or equivalent.
-- **Modifier Requirement**: Every component MUST include `modifier: Modifier = Modifier` as its first optional parameter.
+- **API Parameter Order**: Following the official Android standards, parameters MUST follow this order:
+    1. **Required parameters**: Those without default values (e.g., `onClick`, `text`).
+    2. **Modifier**: `modifier: Modifier = Modifier` MUST be the first optional parameter.
+    3. **Optional parameters**: Other parameters with default values.
+    4. **Trailing Lambda**: If the component accepts content, the Composable lambda MUST be the last parameter.
+- **Typographic Boundary**: Use `MMText` exclusively for typography in feature screens.
 
 ## 2. Accessibility (A11y), Adaptive & Scaling
 - **Universal RTL**: Use `start/end` exclusively. No `left/right`. Directional icons MUST be mirrored.
