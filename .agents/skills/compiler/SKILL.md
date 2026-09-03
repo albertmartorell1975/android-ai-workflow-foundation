@@ -43,17 +43,18 @@ To be executed in order BEFORE finalizing any task:
 To minimize token usage and wait times, all agents MUST follow these performance rules:
 
 1. **Modular Verification**: In the "Logic Verification" phase, DO NOT run a full project build if only one module was modified. Use targeted Gradle tasks (e.g., `./gradlew :domain:test` instead of `./gradlew test`).
-2. **Parallel & Cache Execution**: When running shell-based Gradle commands, always use the following flags to maximize performance:
+2. **On-Demand Documentation**: Dokka documentation tasks are **disabled by default** to optimize developer velocity. They are OPTIONAL during development but RECOMMENDED before finalizing major design system updates or during release phases using the `-PgenerateDocs` flag to verify KDoc integrity.
+3. **Parallel & Cache Execution**: When running shell-based Gradle commands, always use the following flags to maximize performance:
    - `--parallel`: Executes tasks in parallel.
    - `--build-cache`: Reuses outputs from previous builds.
    - `--configuration-cache`: Caches the result of the configuration phase.
-3. **KSP Optimization Check**: Ensure the project uses the optimized KSP configuration in `build.gradle.kts`:
+4. **KSP Optimization Check**: Ensure the project uses the optimized KSP configuration in `build.gradle.kts`:
    ```kotlin
    ksp {
        arg("dagger.formatGeneratedSource", "disabled")
    }
    ```
-4. **Incremental Sync**: Only trigger `gradle_sync` when changes to `libs.versions.toml` or `build.gradle.kts` are completed and verified by the agent's logic. Avoid redundant syncs during mid-refactor.
+5. **Incremental Sync**: Only trigger `gradle_sync` when changes to `libs.versions.toml` or `build.gradle.kts` are completed and verified by the agent's logic. Avoid redundant syncs during mid-refactor.
 
 ## Operational Rules
 - Agents MUST invoke this skill before finalizing any task.
