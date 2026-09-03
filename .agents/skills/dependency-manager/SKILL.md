@@ -9,7 +9,7 @@ metadata:
 
 # Dependency Integrity Architect
 
-this skill establishes an unbreakable protocol to ensure the compatibility and modernity of dependencies in **MeteoMartoCompose**.
+this skill establishes an unbreakable protocol to ensure the compatibility and modernity of dependencies in the project.
 
 ## Golden Rules (MANDATORY)
 
@@ -23,7 +23,9 @@ this skill establishes an unbreakable protocol to ensure the compatibility and m
     - **IDE Impact**: Identify if manual user intervention is needed (e.g., changing "Gradle JDK" in Android Studio settings).
     - **Blocked Action**: If any infrastructure requirement (JDK, Gradle, AGP) is not met by the current environment and cannot be updated automatically, the operation MUST be discarded and the user notified.
 5. **Modern Coordinates Only**: Automatically update migrated libraries (e.g., use androidx.room:room-runtime instead of old versions, and ensure KSP processors are used instead of KAPT for Room and Hilt).
-6. **Zero Redundancy Policy**: PROHIBITED from declaring the same dependency multiple times in `build.gradle.kts` files. If a dependency is part of a `bundle`, do not declare it individually. If it's managed by a `BOM`, do not specify a manual version.
+6. **Zero Redundancy Policy (STRICT)**: PROHIBITED from declaring the same dependency multiple times in `build.gradle.kts` files across different configurations (e.g., `implementation` and `testImplementation`). 
+    - **BOM Inheritance**: If a `BOM` (like Compose or Firebase) is declared in `implementation`, do NOT redeclare it in `testImplementation` or `androidTestImplementation`. It is automatically inherited.
+    - **No Manual Duplicates**: If a dependency is part of a `bundle`, do not declare it individually. If it's managed by a `BOM`, do not specify a manual version.
 7. **No Hardcoded Strings**: PROHIBITED from using direct string literals for dependencies (e.g., `implementation("com.lib:version")`) in `build.gradle.kts`. All dependencies MUST be defined in `libs.versions.toml` and referenced via the `libs` object.
 8. **Layer-Aware Dependencies**: Ensure that dependencies are added to the correct module (e.g., Domain should not have Android-specific dependencies).
 
