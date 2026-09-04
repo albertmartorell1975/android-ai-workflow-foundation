@@ -9,7 +9,7 @@ metadata:
 
 # Dependency Integrity Architect
 
-this skill establishes an unbreakable protocol to ensure the compatibility and modernity of dependencies in the project.
+this skill establishes an unbreakable protocol to ensure the compatibility and modernity of dependencies in **[ProjectName]**.
 
 ## Golden Rules (MANDATORY)
 
