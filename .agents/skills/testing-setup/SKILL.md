@@ -3,196 +3,78 @@ name: testing-setup
 description: Analyze and create a testing strategy for native Android apps - install
   testing libraries, set up test infrastructure, create harnesses for unit tests,
   UI tests, screenshot tests, and end-to-end tests.
-license: Complete terms in LICENSE.txt
 metadata:
-  author: Google LLC
-  last-updated: '2026-06-25'
+  author: Albert Martorell Garcia
+  version: 2.0.0
   keywords:
   - android
   - testing
   - ui tests
   - screenshot tests
-  - coverage
+  - roborazzi
+  - robolectric
+  - design-system
 ---
 
-## Step 1: analyze the current testing setup
+## Step 1: Analyze the current testing setup
 
-To understand the testing setup of an existing project, look for these
-dependencies in the libs.versions.toml file, or build files:
+To understand the testing setup of an existing project, look for these dependencies in the `libs.versions.toml` file:
 
-1. Dependency Injection framework used. Examples: Hilt, Koin, Anvil, vanilla Dagger...
-2. Unit (local) testing framework this project uses, Example JUnit4, JUnit5...
-3. Mocking framework (if any) used for unit tests, and for Instrumented and UI tests. Examples: Mockito, Mockk...
-4. Robolectric. It can be used in 3 ways:
-   1. Used in unit tests to have fakes for platform entities
-   2. To run behavior UI tests without a device or emulator. For example, used to run Espresso or Compose tests.
-   3. To do screenshot testing with Roborazzi
-5. Is the app 100% Compose, Views or hybrid?
-6. Behavior UI tests:
-   1. Compose Tests (`androidx.compose.ui:ui-test-*`)
-   2. Espresso Tests for Views. Might use wrappers like Kaspresso. Dependencies: `androidx.test.espresso:espresso-core`, `androidx.test:runner`, `androidx.test:rules`.
-7. Screenshot tests can be:
-   1. Instrumented (device-based). For example, using Dropshots.
-   2. Based on Robolectric, so they run locally. For example, using Roborazzi.
-   3. Based on LayoutLib, so they run locally. For example, Paparazzi, or the Compose Preview Screenshot Testing tool.
-8. End to end tests (also known as Release Candidate tests) always run on device and use high-level frameworks such as UIAutomator, Appium, or Robotium.
-9. Generate a Markdown report with the analysis
+1. **Dependency Injection**: Hilt is the project standard. Verify `hilt-android-testing`.
+2. **Unit Testing**: JUnit 4 with `MockK` and `Turbine`.
+3. **Simulation Engine**: Robolectric for JVM-based UI and behavior testing.
+4. **Visual Regression**: Roborazzi for JVM-speed screenshot testing.
+5. **Environment**: JDK 21 is mandatory for targeting SDK 36+.
 
-## Step 2: Set up Dependency Injection frameworks for testing
+## Step 2: Set up Hilt for Testing
 
-If there is no Dependency Injection framework, install one: if it's a
-multiplatform application, ask the user whether they want to install Koin, or
-kotlin-inject. If it's not multiplatform, install Hilt.
+Ensure testing dependencies are applied with `kspTest` and `testImplementation`.
+For Robolectric tests, use a custom `@Config(application = TestApplication::class)` to avoid infrastructure leaks (Firebase, production Hilt modules).
 
-Install the testing dependencies (for example `com.google.dagger:hilt-compiler`
-that should be applied with a `kspAndroidTest` configuration).
+## Step 3: Architecture-Driven Testing Standards
 
-> [!IMPORTANT]
-> **Important:** Always consult the documentation of the applicable framework to learn about testing (for example: [Hilt testing guide](references/android/training/dependency-injection/hilt-testing.md), [Koin Instrumented tests](https://insert-koin.io/docs/reference/koin-android/instrumented-testing)).
+Follow the established architectural decisions (ADRs) of the project:
 
-For instrumented tests, create and configure (by adding
-`testInstrumentationRunner` to the build gradle files) a new test runner and
-apply the testing rules required by the framework (for example in Hilt, annotate
-your test classes with `@HiltAndroidTest` and apply the `HiltAndroidRule`).
-Other frameworks use other mechanisms, consult their documentation.
+- **Stateless by Contract**: Every UI component MUST be stateless to be easily verifiable.
+- **Roborazzi Preference**: Use Roborazzi for visual regression on the JVM. Avoid emulator-based screenshot tools unless hardware interaction (camera, sensors) is required.
+- **Pragmatic Snapshot Testing**: Move away from rigid multi-size matrices. Focus on dimensions that impact UX:
+    - **Themes**: Light vs. Dark.
+    - **Directionality**: LTR vs. RTL.
+    - **Accessibility**: Font scale 1.0 vs. 2.0.
 
-## Step 3: Install frameworks
+## Step 4: Unit Testing (Business Logic)
 
-Unless otherwise specified, respect the current stack of testing frameworks.
+Implement unit tests for ViewModels, Repositories, and UseCases.
+- Use `runTest` from `kotlinx-coroutines-test`.
+- Use `Turbine` to collect and verify `StateFlow` and `SharedFlow` emissions.
+- Mock external dependencies with `MockK`, but prefer **Fakes** for complex repository logic.
 
-If there are no testing frameworks, and the user didn't specify any preference,
-install the following:
+## Step 5: UI Behavior Testing (Robolectric)
 
-- JUnit4 for local and instrumented tests
-- Jacoco for test coverage
-- For UI tests: if the project has views, Espresso. If it's fully Compose, use the Compose Testing APIs.
-- Robolectric to run UI Tests
-- Compose Preview Screenshot Testing tool for screenshot tests - check [setup
-  documentation](references/android/studio/preview/compose-screenshot-testing.md) and follow it strictly.
-- Dropshots for device screenshot tests
-- If a mocking framework is necessary, install Mockk (`io.mockk:mockk`). Do not install it unless it is clearly necessary.
+Verify UI logic using `ComposeTestRule` running on the JVM via Robolectric.
+- **Goal**: Ensure the UI reacts correctly to user input (e.g., button enabled/disabled, error visibility).
+- **Execution**: Run via `./gradlew :app:testDebugUnitTest`.
 
-If instrumented screenshot tests are requested, install Dropshots.
+## Step 6: Screenshot Testing (Roborazzi)
 
-If end-to-end testing is requested, install UI Automator.
+Implement visual regression tests for Design System components and Feature Screens.
+- **Component Level**: Capture previews for all Design System components.
+- **Screen Level**: Capture Initial, Loading, and Error states.
+- **Permutations**: Use automated previews (Theme x RTL x Scale) to scan variations.
+- **Storage**: Snapshots reside in `app/src/test/snapshots/`.
+- **Workflow**:
+    - Record: `./gradlew recordRoborazziDebug`
+    - Verify: `./gradlew verifyRoborazziDebug`
 
-## Step 4: Refactor and create fakes for testing
+## Step 7: Navigation Testing
 
-### **Refactor for unit tests**
+Verify navigation logic using `TestNavHostController` or behavior tests that check for route changes on interaction. Ensure backstacks are handled as per project requirements.
 
-In the next sections you'll be asked to create tests. If you have dependencies
-on Android framework classes, or entities that are not part of the codebase:
+## Step 8: Documentation & Governance
 
-- First, use a fake. If it doesn't exist, create an interface for the class
-  and a "Default" implementation with the existing code. Add the Fake version
-  to the test sourceset (test or androidTest).
+- Update project testing documentation whenever a new framework or major testing pattern is introduced.
+- Ensure all new features include their corresponding Unit and UI Behavior tests before merge.
+- All `@Preview` functions MUST be stateless to support automated scanning.
 
-- If not possible to use a fake (example: no access to the class or
-  interface), mock the dependencies.
-
-### **Refactor for UI tests**
-
-If you need to fake components to make testing easier and faster and more
-reliable, replace slow and problematic dependencies with fakes. Use runtime
-fakes using the Dependency Injection framework installed to:
-
-- **Simulate** different scenarios with the user (wrong credentials, reset password flow...), with a server (no connection, server down, bad JSON from server...) or with a platform component (insufficient permissions, no disk space, no front camera available)
-- **Improve** speed and reliability (replacing a database with an in-memory database, replacing a repository with an in-memory fake to avoid hitting the network)
-
-## Step 5: Unit testing
-
-Create a task to add or review unit tests in every file that contains business
-logic (ViewModels, Repositories, database-related classes such as DAOs, etc.).
-Don't create unit tests for Activities, Compose layouts, or dependency injection
-configuration files.
-
-## Step 6: UI testing
-
-Espresso or Compose UI tests live in the `test` sourceset because they will be
-run with Robolectric. If instrumented (emulator or device) tests are requested,
-put them in the `androidTest` sourceset.
-
-## Step 7: Test databases
-
-If the database is using SQLite (using Room, SQLDelight, etc.), create
-instrumented tests using an in-memory database to make sure that they work with
-the SQLite engine on device.
-
-## Step 8: Screenshot tests
-
-Irrespective of the framework used, screenshot tests focus on 2 types of tests:
-
-- Screen-level screenshot tests, where each screen is tested in 9 different sizes, combining compact, medium and expanded widths (400, 610, 900 dp) and heights (400, 500 and 1000 dp).
-- Screen-level variations. Add a mobile (400x500) screenshot of:
-  - All the alternative themes, if used.
-  - Font scale set to 1.5.
-- Component-level screenshot tests, where each component is tested in different themes and font scales.
-
-Behavior isn't tested with screenshots, but do test different common scenarios
-if their UIs change a lot depending on the state. For example, test loading
-screens by injecting a loading state to the UI or simulating it with a fake.
-
-## Step 9: UI Behavior tests
-
-Test the UI logic using behavior tests, which ensures that the UIs react as
-expected when different states are passed, and when user actions are performed.
-
-### **Compose UI behavior tests**
-
-- Use the ComposeTestRule with a `ComponentActivity` to access resources such as strings.
-- Always try to match with semantic matchers first. If the matcher is too complicated to write (using more than 3 matchers to find a single element), use `testTag`.
-- Always verify state restoration
-
-### **Views (XML) UI behavior tests**
-
-Use Espresso to match views and interact with them.
-
-## Step 10: Navigation tests
-
-Create a test suite to verify navigation logic. Include:
-
-- Back handling
-- Deeplinks
-- Special patterns like "exit through home" with multiple backstacks.
-
-## Step 11: Simulate different window sizes and settings
-
-For Compose layouts, use `DeviceConfigurationOverride` described in "[UI testing
-common patterns](references/android/develop/ui/compose/testing/common-patterns.md)" to simulate different window sizes, font scales
-
-## Step 12: End-to-end tests
-
-Create a low number (about 5% of all tests) of end-to-end tests that cover big
-user journeys. Use Compose Test APIs or Espresso for that. If you have to access
-platform features (notifications, system UI...), use UI Automator.
-
-If you need to take screenshots of the app running in a device, use
-[Dropshots](https://raw.githubusercontent.com/dropbox/dropshots/refs/heads/main/README.md). You need a device for screenshot tests when verifying
-interaction with the system UI (examples: edge-to-edge rendering, notifications,
-picture-in-picture)
-
-### Step 13: Instrumented Screenshot tests
-
-Install the `com.dropbox.dropshots` plugin in the module and a `Dropshots()`
-JUnit Rule. Create a new instrumented screenshot test for one of the app's
-features.
-
-### Step 14: Install jacoco
-
-Install jacoco for local testing code coverage.
-
-- Add the `jacoco` plugin to each module that contains tests.
-
-## Final touches
-
-- Ask whether to document the findings of the analysis and the changes applied
-  to the testing strategy. If the user agrees:
-
-  - If there is an AGENTS.md file present in the project, update it with any
-    changes you've made to the testing strategy.
-
-  - If there is no AGENTS.md file, create a new file (docs/testing.md) with
-    a description of the testing strategy, including the commands needed to
-    run every type of test, where the screenshot reference files live, etc.
-    Also create a new AGENTS.md file in the root and create a link to
-    docs/testing.md.
+---
+**Enforcement**: All AI agents must adhere to the project's testing strategy documented in the repository.
