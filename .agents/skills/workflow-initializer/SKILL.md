@@ -122,6 +122,8 @@ This document defines the specialized AI personas (Agents) designed to maintain 
 **Expertise**: UI Frameworks (Jetpack Compose, XML), Design Systems (Material 3), and State Management (e.g., MVI, MVVM).
 
 - **Module Ownership**: `:app` (specifically `ui/` and `viewmodel/` or `presenter/` packages).
+- **Architectural Constraints**:
+    - **Zero Side-Effects in Content**: Prohibit explictly the use of `LaunchedEffect`, `DisposableEffect`, or `SideEffect` inside `*Content` composables. All reactive logic and navigation events MUST be hoisted to the `*Screen` (Wiring) composable.
 
 ---
 
@@ -141,6 +143,19 @@ This document defines the specialized AI personas (Agents) designed to maintain 
     - **Commit**: Ensure changes are pushed (Manual or `git-governance` skill) before starting the next phase.
 3. **Skill-Based Knowledge Retrieval (MANDATORY)**: Before proposing any solution, search and read relevant files inside `.agents/skills/`.
 4. **Workflow Activation**: Only after prompt confirmation can the agent trigger the `workflow-feature` skill.
+
+---
+
+## Core Architectural Mandates (THE MANDATES)
+
+1.  **The Permission Abstraction (Checker Pattern)**: System permissions are considered "Platform Infrastructure". Handle all logic strictly in the infrastructure implementation.
+2.  **Stateless UI First**: Every Screen must be split into a Stateful "Wiring" Composable and a Stateless "Content" Composable.
+    - **Wiring (Screen)**: Handles `LaunchedEffect`, event collection, navigation calls, and ViewModel interaction.
+    - **Content (Stateless)**: MUST be a pure function. It is STRICTLY FORBIDDEN to perform navigation or trigger side-effects directly from within a `Content` composable.
+3.  **Magic Literal Prohibition**: Any value that is not a business entity or a transient UI state must live in `AppConstants.kt` or `config.xml`.
+4.  **Modifier Propagation Mandate**: To avoid the "Double-Application" bug, every `@Composable` that accepts a `modifier` parameter MUST follow these rules:
+    - **Root Only**: The `modifier` parameter MUST only be applied to the **root** layout component of the function.
+    - **Internal Independence**: All children components MUST use a fresh `Modifier` instance instead of chaining from the passed parameter.
 
 ---
 
