@@ -178,7 +178,7 @@ Custom skills created to define this project's unique architecture and governanc
 - **compiler**: Centralized project verification and compilation engine. Handles Gradle Sync, Lint, Compilation, and Deployment.
 - **git-governance**: Defines a strict Git Flow branching model and commit conventions for AI agents.
 - **workflow-feature**: Analyzes the project and builds a standardized workflow for new features with granular checklists and mandatory documentation sync enforcement.
-- **testing-setup**: Analyzes and creates a testing strategy for native Android apps based on JVM simulation (Robolectric) and Visual Regression (Roborazzi).
+- **testing-setup**: Analyzes and creates a testing strategy for native Android apps (Unit, UI Behavior, and Visual Regression).
 - **hilt**: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns.
 - **kotlin-style**: Strict adherence to Official Kotlin Coding Conventions (order of declarations, naming, formatting, **no control flow via exceptions**, and the **Magic Literal Prohibition**).
 - **room-schema-governance**: Ensures database integrity, version management, and schema evolution rules for Room.
