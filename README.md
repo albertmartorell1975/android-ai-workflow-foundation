@@ -1,10 +1,14 @@
 # 🚀 Android AI Workflow Foundation v1.0
 
-A structured, AI-assisted development workflow for Android and KMP, built around Clean Architecture, SOLID principles and a modular 3-Group Skill Architecture.
+Exploring how AI agents can become part of a disciplined software engineering process.
 
-This foundation is continuously evolving through experimentation and application to Android projects. The workflow, skills and guardrails are refined as new use cases and learnings emerge.
+Android AI Workflow Foundation is a structured, AI-assisted development workflow for Android and KMP projects.
 
-The foundation is continuously evaluated through real-world Android development work to ensure its effectiveness.
+It provides a reusable set of workflows, skills and technical guardrails that help AI agents operate within established engineering practices, including Clean Architecture, SOLID, testing, code quality and project-specific technical constraints.
+
+The goal is not to automate software development completely, but to establish a human-supervised development model where AI can assist with implementation while the developer remains responsible for architecture, technical decisions and final validation.
+
+The foundation is continuously evolving through experimentation and real-world Android projects. Each application is used as a feedback loop to validate the workflow, discover limitations and refine the skills and guardrails.
 
 ---
 
