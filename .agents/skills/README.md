@@ -14,6 +14,7 @@ Custom skills created to define this project's unique architecture and governanc
 - **room-schema-governance**: Ensures database integrity, version management, and schema evolution rules for Room.
 - **dependency-manager**: Strict protocol for dependency management in the libs.versions.toml file to ensure compatibility and stability.
 - **design-system-governance**: Codifies A11y, RTL, Adaptive, and Reusability standards for the Design System.
+- **viewmodel-lifecycle-governance**: Standard architectural rules for UI-driven state management and ViewModel testability.
 
 ## 2. Android CLI & System Skills
 Expert guides downloaded via the Android CLI for system-level optimizations, tools, and best practices.
