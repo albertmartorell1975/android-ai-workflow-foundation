@@ -1,8 +1,8 @@
-# MeteoMartoCompose - Expert Skills Index
+# AI Workflow Foundation - Expert Skills Index
 
 This directory contains the collective intelligence for the project, organized into three specialized groups.
 
-## 1. Core Project Skills (MeteoMarto DNA)
+## 1. Core Project Skills (Foundation DNA)
 Custom skills created to define this project's unique architecture and governance.
 
 - **compiler**: Centralized project verification and compilation engine. Handles Gradle Sync, Lint, Compilation, and Deployment.
@@ -10,10 +10,10 @@ Custom skills created to define this project's unique architecture and governanc
 - **workflow-feature**: Analyzes the project and builds a standardized workflow for new features with granular checklists and mandatory documentation sync enforcement.
 - **testing-setup**: Analyzes and creates a testing strategy for native Android apps (Unit, UI Behavior, and Visual Regression).
 - **hilt**: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns.
-- **kotlin-style**: Strict adherence to Official Kotlin Coding Conventions (order of declarations, naming, formatting, **no control flow via exceptions**, and the **Magic Literal Prohibition**). It prioritizes **Descriptive Naming over Brevity** to ensure high codebase legibility.
+- **kotlin-style**: Strict adherence to Official Kotlin Coding Conventions (order of declarations, naming, formatting, **no control flow via exceptions**, and the **Magic Literal Prohibition**).
 - **room-schema-governance**: Ensures database integrity, version management, and schema evolution rules for Room.
 - **dependency-manager**: Strict protocol for dependency management in the libs.versions.toml file to ensure compatibility and stability.
-- **design-system-governance**: Codifies A11y, RTL, Adaptive, and Reusability standards for the MeteoMarto Design System.
+- **design-system-governance**: Codifies A11y, RTL, Adaptive, and Reusability standards for the Design System.
 
 ## 2. Android CLI & System Skills
 Expert guides downloaded via the Android CLI for system-level optimizations, tools, and best practices.
