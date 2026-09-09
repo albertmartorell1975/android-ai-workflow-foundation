@@ -49,7 +49,7 @@ LaunchedEffect(Unit) {
 
 For data that is naturally a `Flow` (Database observers, Real-time updates), avoid manual launches in `init` or `onStart`. Use the **`stateIn`** operator.
 
-### The "Leiva Pattern"
+### Declarative State Pattern
 Use `SharingStarted.WhileSubscribed(5000)` to ensure the flow is only active when needed, while handling configuration changes (like rotation) gracefully.
 
 #### ❌ BAD: Manual collection in `init`
