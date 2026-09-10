@@ -78,19 +78,22 @@ class StreamViewModel(repository: DataRepository) : ViewModel() {
 
 To ensure a robust interface between the ViewModel and the UI, use the **Hybrid Model**: a `data class` for global coordination and a `sealed interface` for mutually exclusive content.
 
-### Rationale
+### Mandate: Separate "Base Content" from "Additive UI Layers"
 
-| Approach | ✅ Pros | ❌ Cons |
-| :--- | :--- | :--- |
-| **Data Class** | Easy updates via `.copy()`, persists background data. | Risk of "Impossible States" (e.g. Loading + Error). |
-| **Sealed Class** | Zero impossible states, clean UI `when` block. | Verbose updates, loss of context in transitions. |
-| **Hybrid Model** | **Combines safety for main content with ease of use.** | Requires separation of main vs additive state. |
+1. **Mutually Exclusive States** (Loading, Success, Error): Use a `sealed interface`.
+2. **Additive States** (Dialogs, Overlays, Snackbars): Use `Boolean` flags in the parent `data class`.
 
-### Implementation Pattern
+### Detailed Implementation Example
+
+#### A. Modeling at the ViewModel
 ```kotlin
 data class ScreenUiState(
-    val content: MainContent = MainContent.Loading, // Mutually exclusive (Safe)
-    val isOverlayVisible: Boolean = false,          // Additive flag (Independent)
+    // 1. The primary phase of the screen (Exclusive)
+    val content: MainContent = MainContent.Loading,
+    
+    // 2. Transitory or overlapping UI elements (Additive)
+    val isOverlayVisible: Boolean = false,
+    val showFab: Boolean = false
 )
 
 sealed interface MainContent {
@@ -99,3 +102,28 @@ sealed interface MainContent {
     data class Error(val message: String) : MainContent
 }
 ```
+
+#### B. Implementation at the UI (Stateless Content)
+```kotlin
+@Composable
+fun FeatureContent(state: ScreenUiState) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        // 1. Handle primary content with a clean 'when'
+        when (val content = state.content) {
+            is MainContent.Loading -> LoadingView()
+            is MainContent.Success -> DataView(content.data)
+            is MainContent.Error -> ErrorView(content.message)
+        }
+
+        // 2. Overlap additive elements based on independent flags
+        if (state.isOverlayVisible) {
+            ConfirmationDialog()
+        }
+    }
+}
+```
+
+### Why this is better?
+- **Continuity**: The background data stays visible under dialogs or overlays.
+- **Safety**: The compiler ensures all primary states are handled.
+- **Predictability**: Prevents "Impossible States" (e.g. showing error and loading at once).
