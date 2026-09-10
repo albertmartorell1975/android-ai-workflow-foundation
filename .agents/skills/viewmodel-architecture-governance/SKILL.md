@@ -12,22 +12,21 @@ This skill centralizes architectural mandates for ViewModels to ensure consisten
 The `ViewModel` constructor and `init` block MUST remain **passive**. It is strictly forbidden to launch coroutines or start data collection during construction.
 
 ### Rationale
-- **Testability**: Mocks and test rules must be configured *before* any work starts.
+- **Testability**: Mocks and test rules must be configured *before* any work starts. If `init` launches work, the test cannot control the starting conditions.
 - **Resource Efficiency**: Avoid wasting CPU/Battery if the ViewModel is instantiated but the UI is not yet visible.
-- **Race Conditions**: Ensures the UI is observing the state before the first emission occurs.
+- **Predictability**: Ensures the UI is observing the state before the first emission occurs, avoiding missed events.
 
 ### Strategies to stay passive:
 
 #### A. For Imperative Actions (One-shot loads, manual triggers)
-Use a **UI-driven trigger**. The ViewModel exposes a function that the UI calls when ready (e.g., via `LaunchedEffect`).
+Expose a dedicated function (e.g., `onStart()`) and trigger it explicitly from the UI when ready.
 
 **❌ BAD (Active constructor)**
 ```kotlin
 class FeatureViewModel(private val repository: DataRepository) : ViewModel() {
     init {
-        viewModelScope.launch { 
-            repository.loadInitialData() // ❌ Starts immediately, hard to test
-        }
+        // ❌ Starts immediately. Hard to mock 'repository' in tests.
+        viewModelScope.launch { repository.loadInitialData() }
     }
 }
 ```
@@ -37,14 +36,21 @@ class FeatureViewModel(private val repository: DataRepository) : ViewModel() {
 class FeatureViewModel(private val repository: DataRepository) : ViewModel() {
     fun onStart() {
         viewModelScope.launch { 
-            repository.loadInitialData() // ✅ Triggered explicitly by the UI
+            _state.update { it.copy(isLoading = true) }
+            repository.loadInitialData() 
+            _state.update { it.copy(isLoading = false) }
         }
     }
+}
+
+// In the Screen Composable (Wiring):
+LaunchedEffect(Unit) {
+    viewModel.onStart() // ✅ Triggered explicitly
 }
 ```
 
 #### B. For Reactive Data Streams (Database observers, Config flows)
-Use the **Declarative State Pattern** with `stateIn`. This is the preferred way to handle asynchronous data as it is lazily started by the UI subscription.
+Avoid manual collection in `init`. Use the **Declarative State Pattern** with the `stateIn` operator.
 
 **❌ BAD (Manual collection in init)**
 ```kotlin
@@ -53,8 +59,9 @@ class StreamViewModel(private val repository: DataRepository) : ViewModel() {
     val data = _data.asStateFlow()
 
     init {
+        // ❌ Manual management, redundant boilerplate, starts immediately.
         viewModelScope.launch {
-            repository.observeData().collect { _data.value = it } // ❌ Manual management
+            repository.observeData().collect { _data.value = it }
         }
     }
 }
@@ -63,12 +70,33 @@ class StreamViewModel(private val repository: DataRepository) : ViewModel() {
 **✅ GOOD (Declarative stateIn)**
 ```kotlin
 class StreamViewModel(repository: DataRepository) : ViewModel() {
+    // ✅ Flow is converted to StateFlow lazily. 
+    // It only starts when the UI subscribes.
     val data: StateFlow<List<Item>> = repository.observeData()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000), // ✅ Lazy & Rotation-safe
+            started = SharingStarted.WhileSubscribed(5000), // ✅ Rotation-safe
             initialValue = emptyList()
         )
+}
+```
+
+### Benefits for Unit Testing
+With a passive constructor, your tests become deterministic:
+```kotlin
+@Test
+fun `when screen starts, data is loaded`() = runTest {
+    // 1. Setup mocks (Possible because init is passive)
+    coEvery { repository.loadData() } returns successResult
+    
+    // 2. Instantiate ViewModel
+    val viewModel = MyViewModel(repository)
+    
+    // 3. Trigger work manually
+    viewModel.onStart()
+    
+    // 4. Verify results
+    assertEquals(expectedState, viewModel.state.value)
 }
 ```
 
@@ -122,8 +150,3 @@ fun FeatureContent(state: ScreenUiState) {
     }
 }
 ```
-
-### Why this is better?
-- **Continuity**: The background data stays visible under dialogs or overlays.
-- **Safety**: The compiler ensures all primary states are handled.
-- **Predictability**: Prevents "Impossible States" (e.g. showing error and loading at once).
