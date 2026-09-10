@@ -1,52 +1,47 @@
 ---
 name: viewmodel-architecture-governance
-description: Unified architectural rules for ViewModels, covering initialization, UI state modeling (Hybrid Pattern), and efficient reactive streams.
+description: Unified architectural rules for ViewModels, covering passive initialization, Hybrid UI state modeling, and efficient declarative streams.
 ---
 
 # ViewModel Architecture Governance
 
-This skill centralizes architectural mandates for ViewModels to ensure consistency, testability, and performance across the project.
+This skill centralizes architectural mandates for ViewModels to ensure maximum testability, resource efficiency, and state consistency across the project.
 
-## 1. Lazy Initialization (UI-Driven)
+## 1. Passive Initialization Mandate
 
-To ensure maximum testability and resource efficiency, all **active work** (API calls, GPS start, intensive collection) MUST be triggered by the UI rather than in the `init` block.
+The `ViewModel` constructor and `init` block MUST remain **passive**. It is strictly forbidden to launch coroutines or start data collection (imperative or reactive) during construction.
 
 ### Rationale
-- **Predictable Tests**: Tests can setup mocks before triggering work.
-- **Resource Efficiency**: Work only starts when the screen is actually visible.
+- **Predictable Testing**: Tests can configure mocks and establish initial conditions before any side effect occurs.
+- **Resource Efficiency**: Work only starts when the UI is actually visible and needs the data.
+- **Avoid Race Conditions**: Ensures the UI is ready to receive state updates or events before the ViewModel starts emitting them.
 
-### Pattern
-```kotlin
-class FeatureViewModel(private val repository: DataRepository) : ViewModel() {
-    fun onStart() {
-        viewModelScope.launch {
-            repository.loadData()
-        }
-    }
-}
-
-// In the Screen Composable:
-LaunchedEffect(Unit) {
-    viewModel.onStart()
-}
-```
+### Correct Patterns
+- **For Imperative Work (API, GPS)**: Trigger explicitly from the UI via a lifecycle-aware event (e.g., `LaunchedEffect(Unit)`) calling a ViewModel function.
+- **For Reactive Streams**: Use the `stateIn` operator instead of manual collection in `init`.
 
 ---
 
 ## 2. UI State Modeling (The Hybrid Pattern)
 
-To avoid "State Explosion" and "Impossible States" while maintaining easy partial updates and continuous background ddata, use a combination of `data class` and `sealed interface`.
+To ensure a robust and clean interface between the ViewModel and the UI, use the **Hybrid Model**: a combination of a `data class` for global coordination and a `sealed interface` for mutually exclusive content.
 
-### Mandatory Structure
+### Rationale
+
+| Approach | ✅ Pros | ❌ Cons |
+| :--- | :--- | :--- |
+| **Data Class** | Easy updates via `.copy()`, persists background data during loading. | Risk of "Impossible States" (e.g., `loading` and `error` simultaneously). |
+| **Sealed Class** | Zero impossible states, clean `when` block in UI. | Verbose updates, loss of context/data during transitions. |
+| **Hybrid Model** | **Combines both**: safety for main content, ease of use for overlays/dialogs. | Requires careful separation of main vs. additive state. |
+
+### Implementation Strategy
 1. **Global `data class`**: For additive flags that can coexist (overlays, dialogs, snackbars).
-2. **Sealed `MainContent`**: For the mutually exclusive primary states of the screen.
+2. **Sealed `MainContent`**: For the primary states of the screen (Loading, Success, Error).
 
-### Pattern
 ```kotlin
 data class ScreenUiState(
-    val content: MainContent = MainContent.Loading, // Mutually exclusive
-    val isDialogVisible: Boolean = false,           // Additive flag
-    val isLoadingOverlay: Boolean = false           // Additive flag
+    val content: MainContent = MainContent.Loading, // Mutually exclusive (Safe)
+    val isOverlayVisible: Boolean = false,          // Additive (Independent)
 )
 
 sealed interface MainContent {
@@ -58,14 +53,19 @@ sealed interface MainContent {
 
 ---
 
-## 3. Reactive Data Streams (`stateIn`)
+## 3. Declarative State Streams (`stateIn`)
 
-For data that is naturally a `Flow` (Database observers, Configuration), avoid manual collection. Use the **Declarative State Pattern** with `stateIn`.
+For data that is naturally a `Flow` (Database, Config), avoid manual `launch { collect { ... } }`. Use the **Declarative State Pattern**.
 
 ### Mandate
-Use `SharingStarted.WhileSubscribed(5000)` to handle configuration changes (like rotation) without restarting the flow, while saving resources when the app is in the background.
+Use the **`stateIn`** operator with **`SharingStarted.WhileSubscribed(5000)`**.
 
-### Pattern
+### Rationale
+- **Rotation Safety**: The 5-second buffer keeps the stream alive during the gap of a screen rotation, avoiding unnecessary restarts.
+- **Battery Efficiency**: If the user leaves the app, the flow stops automatically after 5 seconds.
+- **Boilerplate Reduction**: Eliminates manual state management and collection loops.
+
+### Correct Pattern
 ```kotlin
 class StreamViewModel(repository: DataRepository) : ViewModel() {
     val data: StateFlow<List<Item>> = repository.observeData()
