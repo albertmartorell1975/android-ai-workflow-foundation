@@ -37,7 +37,7 @@
       "compose-focus-navigation": ".agents/skills/compose-focus-navigation/SKILL.md",
       "dependency-manager": ".agents/skills/dependency-manager/SKILL.md",
       "design-system-governance": ".agents/skills/design-system-governance/SKILL.md",
-      "viewmodel-lifecycle-governance": ".agents/skills/viewmodel-lifecycle-governance/SKILL.md"
+      "viewmodel-architecture-governance": ".agents/skills/viewmodel-architecture-governance/SKILL.md"
     }
   },
   "author": "Albert Martorell Garcia",

@@ -49,7 +49,7 @@ The engine of the workflow: `workflow-initializer`, `workflow-feature`, `git-gov
 
 ### 🔵 2. Expert Guardrails (Installed by Default)
 Professional quality standards for every project:
-- **Architecture**: `hilt`, `testing-setup`, `viewmodel-lifecycle-governance`, `compose-ui-testing-patterns`.
+- **Architecture**: `hilt`, `testing-setup`, `viewmodel-architecture-governance`, `compose-ui-testing-patterns`.
 - **System**: `android-cli`, `r8-analyzer`, `adaptive`, `navigation-3`, `edge-to-edge`, `android-intent-security`.
 - **Compose/Kotlin Quality**: `compose-stability`, `compose-state-hoisting`, `compose-state-authoring`, `kotlin-flow-modeling`, `kotlin-functions`.
 
