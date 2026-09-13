@@ -205,6 +205,8 @@ By moving the scope to the ViewModel, your unit tests can use `StandardTestDispa
 While ViewModel-managed coroutines are preferred, be aware of the following:
 
 - **One-shot UI Effects (Navigation/Snackbars)**: Since the UI doesn't "await" the result, you must use an "Event" stream (e.g., `Channel<Event>`) to signal the UI layer to perform these actions after an async task completes.
+    - **Note on Snackbars**: To maintain the Design System identity while respecting the async nature of events, use the `suspend` extensions provided by the system (e.g., `snackbarHostState.showMmSnackbar(...)`). 
+      - *Why?*: Events like errors are not persistent state. Using the `suspend` extension prevents "state-clearing boilerplate" (manually resetting flags) and avoids the technical prohibition of calling `@Composable` functions inside non-composable asynchronous blocks like `LaunchedEffect`.
 - **Critical Background Work**: `viewModelScope` is cancelled when the user navigates away. For tasks that MUST complete (e.g., database synchronization), delegate the work to a Repository using an `applicationScope` or `WorkManager`.
 - **UI Responsiveness**: Since the function is non-suspending, you must be diligent in updating the `isLoading` state immediately within the launched coroutine to provide visual feedback.
 
