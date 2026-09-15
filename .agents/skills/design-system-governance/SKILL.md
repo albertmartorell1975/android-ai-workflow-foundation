@@ -42,6 +42,17 @@ This skill ensures that any AI agent or developer modifying the UI adheres to th
     - The visual regression pipeline fails in CI due to intentional changes.
 - **Stateless Previews**: `@Preview` functions MUST be stateless and must not instantiate infrastructure-dependent components.
 - **AsyncImage in Previews**: To avoid network calls and potential crashes in Previews or visual regression tests, any preview containing an `AsyncImage` MUST be wrapped in a `CompositionLocalProvider` providing a fake image handler. This ensures consistent visual regression without external dependencies.
+  ```kotlin
+  @Preview
+  @Composable
+  fun MyComponentPreview() {
+      DSTheme {
+          CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewAsyncImageHandler) {
+              MyComponentWithAsyncImage()
+          }
+      }
+  }
+  ```
 - **Dialog Previews**: Because Roborazzi has issues capturing separate windows, Previews for Dialogs MUST NOT use the actual `AlertDialog` or `Dialog` components. Instead, they MUST use an internal layout (e.g., `DSDialogPreviewLayout`) that mimics the dialog's visual structure (Surface, shape, elevation) to ensure capture within the main test window.
 
 ## 5. Behavioral Matrix (Version Compliance)
