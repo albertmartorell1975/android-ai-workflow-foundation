@@ -32,6 +32,7 @@ This skill ensures that any AI agent or developer modifying the UI adheres to th
 
 ## 4. Verification & Testing Protocol
 - **JDK 21**: Mandatory for projects targeting SDK 36+ (Robolectric/Roborazzi simulation).
+- **Multipreview Mandate**: Every `@Composable` preview MUST be annotated with both `@DSPreview` (for theme/font variations) AND `@DSDevicePreview` (for screen size/orientation variations) to ensure full adaptive coverage.
 - **Multipreview Infrastructure**: Establish reusable annotation-based Previews (e.g., `@DSPreview`) for common configurations.
 - **Pragmatic Snapshots**: Do not blindly follow a 16-permutation rule. Determine significant behavioral dimensions per component for Roborazzi verification to avoid snapshot bloat.
 - **Snapshot Regeneration Trigger**: New snapshots MUST be generated (`recordRoborazzi*` tasks) whenever:
