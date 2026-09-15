@@ -212,6 +212,16 @@ Button(onClick = { viewModel.deleteItem(id) }) { ... }
 ### Testing Benefits
 By moving the scope to the ViewModel, your unit tests can use `StandardTestDispatcher` to precisely control execution and verify intermediate states (like `isDeleting = true`).
 
+### Final Verdict: Why it's worth it
+
+Moving coroutine management to the ViewModel is a trade-off that favors **long-term stability** over initial simplicity.
+
+**Key Benefits Summary:**
+1. **Architectural Predictability**: The app's state depends on business logic rules, not on Composable lifecycle.
+2. **Zombie-Bug Prevention**: `viewModelScope` automatically prevents memory leaks and crashes from outdated UI updates.
+3. **KISS UI**: Screen composables are focused 100% on layout and tokens, free of "plumbing" code.
+4. **Scalability**: New requirements (analytics, side-effects) can be added entirely within the ViewModel.
+
 ---
 
 ## 4. Action Idempotency & Job Guarding
@@ -253,25 +263,3 @@ fun startMonitoring() {
 - **Efficiency**: Avoids duplicate CPU/Battery usage for identical tasks.
 - **Predictability**: Guarantees that side-effect channels (like navigation or alerts) don't receive duplicate events.
 - **Stability**: Prevents race conditions where two coroutines might try to update the same state in conflicting ways.
-
----
-
-### Common Pitfalls & Considerations
-
-While ViewModel-managed coroutines are preferred, be aware of the following:
-
-- **One-shot UI Effects (Navigation/Snackbars)**: Since the UI doesn't "await" the result, you must use an "Event" stream (e.g., `Channel<Event>`) to signal the UI layer to perform these actions after an async task completes.
-    - **Note on Snackbars**: To maintain the Design System identity while respecting the async nature of events, use the `suspend` extensions provided by the system (e.g., `snackbarHostState.showMmSnackbar(...)`). 
-      - *Why?*: Events like errors are not persistent state. Using the `suspend` extension prevents "state-clearing boilerplate" (manually resetting flags) and avoids the technical prohibition of calling `@Composable` functions inside non-composable asynchronous blocks like `LaunchedEffect`.
-- **Critical Background Work**: `viewModelScope` is cancelled when the user navigates away. For tasks that MUST complete (e.g., database synchronization), delegate the work to a Repository using an `applicationScope` or `WorkManager`.
-- **UI Responsiveness**: Since the function is non-suspending, you must be diligent in updating the `isLoading` state immediately within the launched coroutine to provide visual feedback.
-
-### Final Verdict: Why it's worth it
-
-Moving coroutine management to the ViewModel is a trade-off that favors **long-term stability** over initial simplicity.
-
-**Key Benefits Summary:**
-1. **Architectural Predictability**: The app's state depends on business logic rules, not on Composable lifecycle.
-2. **Zombie-Bug Prevention**: `viewModelScope` automatically prevents memory leaks and crashes from outdated UI updates.
-3. **KISS UI**: Screen composables are focused 100% on layout and tokens, free of "plumbing" code.
-4. **Scalability**: New requirements (analytics, side-effects) can be added entirely within the ViewModel.
