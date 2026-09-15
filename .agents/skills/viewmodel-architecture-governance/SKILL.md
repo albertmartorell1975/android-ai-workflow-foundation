@@ -146,18 +146,18 @@ To ensure pragmatism without sacrificing architectural integrity, follow these r
 #### B. Implementation at the UI (Stateless Content)
 ```kotlin
 @Composable
-fun CityWeatherContent(state: ScreenUiState) {
+fun FeatureContent(state: ScreenUiState) {
     Box(modifier = Modifier.fillMaxSize()) {
         // 1. Handle primary content with a clean 'when'
         when (val content = state.content) {
-            is MainContent.Loading -> CircularProgressIndicator()
-            is MainContent.Success -> WeatherDetails(content.city)
+            is MainContent.Initial -> { /* Splash or empty state */ }
+            is MainContent.Success -> DataDetails(content.data)
             is MainContent.Error -> ErrorView(content.type)
         }
 
         // 2. Overlap additive elements based on independent flags
-        if (state.isLoggingOut) {
-            LogoutDialog(onConfirm = { /* ... */ })
+        if (state.isLoading) {
+            LoadingOverlay()
         }
     }
 }
@@ -211,6 +211,50 @@ Button(onClick = { viewModel.deleteItem(id) }) { ... }
 
 ### Testing Benefits
 By moving the scope to the ViewModel, your unit tests can use `StandardTestDispatcher` to precisely control execution and verify intermediate states (like `isDeleting = true`).
+
+---
+
+## 4. Action Idempotency & Job Guarding
+
+To prevent redundant work, resource leaks, or double side-effects (like showing a dialog twice), the ViewModel MUST ensure that its actions are **idempotent**. 
+
+When a non-suspending action starts a coroutine that performs a long-running task (like a `Flow.collect` or a large upload), use a **Job Guard**.
+
+### The Two Guard Patterns:
+
+#### A. The "Restart" Pattern (Last one wins)
+Use this when you want to cancel the previous work and start fresh (e.g., search-as-you-type, or a manual refresh).
+```kotlin
+private var fetchJob: Job? = null
+
+fun onRefresh() {
+    fetchJob?.cancel() // Cancel previous if still running
+    fetchJob = viewModelScope.launch {
+        // ... perform work
+    }
+}
+```
+
+#### B. The "First One Wins" Pattern (Guarded)
+Use this for "engines" or monitors that should only be started once (e.g., location tracking, temperature monitoring).
+```kotlin
+private var monitorJob: Job? = null
+
+fun startMonitoring() {
+    if (monitorJob?.isActive == true) return // Already running, ignore
+
+    monitorJob = viewModelScope.launch {
+        repository.observeData().collect { /* ... */ }
+    }
+}
+```
+
+### Rationale
+- **Efficiency**: Avoids duplicate CPU/Battery usage for identical tasks.
+- **Predictability**: Guarantees that side-effect channels (like navigation or alerts) don't receive duplicate events.
+- **Stability**: Prevents race conditions where two coroutines might try to update the same state in conflicting ways.
+
+---
 
 ### Common Pitfalls & Considerations
 
