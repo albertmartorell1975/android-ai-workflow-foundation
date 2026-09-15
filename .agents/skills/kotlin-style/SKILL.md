@@ -15,8 +15,12 @@ keywords:
 To maintain readability, all Kotlin classes MUST follow this declaration order:
 1.  **Properties and Initializer Blocks**: Grouped by visibility and purpose.
 2.  **Secondary Constructors**: Following the primary constructor.
-3.  **Function Declarations**: Business logic, sorted by visibility (public first) or logical flow.
-4.  **Companion Object**: MUST be situated at the very end of the class, just before the closing brace.
+3.  **Public/Internal Functions**: The entry points and public API of the class.
+4.  **Private Functions**: Helper methods and implementation details. These MUST be situated after all public functions to keep the API at the top.
+5.  **Companion Object**: MUST be situated at the very end of the class, just before the closing brace.
+
+### The Step-down Rule
+Organize functions so that they can be read as a narrative from top to bottom. A high-level function should be followed by the lower-level private functions it calls. If a private function is shared by multiple public ones, place it at the very bottom of the function block.
 
 ## 2. Naming Conventions
 *   **Classes/Objects**: PascalCase (e.g., `RemoteConfigMapper`).

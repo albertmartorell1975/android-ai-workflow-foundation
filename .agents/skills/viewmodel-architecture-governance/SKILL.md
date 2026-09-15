@@ -108,8 +108,11 @@ To ensure a robust interface, use the **Hybrid Model**: a `data class` for globa
 
 ### Mandate: Separate "Base Content" from "Additive UI Layers"
 
-1. **Mutually Exclusive States** (Loading, Success, Error): Use a `sealed interface`.
-2. **Additive States** (Dialogs, Overlays, FAB visibility): Use `Boolean` flags in the parent `data class`.
+1. **Mutually Exclusive Phases** (Initial, Success, Error, NeedsPermission): Use a `sealed interface`.
+2. **Additive/Overlay States** (isLoading, Dialogs, FAB visibility): Use `Boolean` flags in the parent `data class`.
+
+### Rationale for additive `isLoading`:
+Using a boolean flag for loading instead of a branch in the `sealed interface` allows for **Data Continuity**. It ensures that if the user refreshes data (e.g., Pull-to-refresh), the existing data remains visible in the `Success` branch while a loader overlay is shown on top.
 
 ### Detailed Implementation Example
 
@@ -117,19 +120,28 @@ To ensure a robust interface, use the **Hybrid Model**: a `data class` for globa
 ```kotlin
 data class ScreenUiState(
     // 1. The primary phase of the screen (Exclusive)
-    val content: MainContent = MainContent.Loading,
+    val content: MainContent = MainContent.Initial,
     
     // 2. Transitory or overlapping UI elements (Additive)
+    val isLoading: Boolean = false,
     val isLoggingOut: Boolean = false,
-    val showFab: Boolean = false
 )
 
 sealed interface MainContent {
-    object Loading : MainContent
-    data class Success(val city: CityWeatherDomain) : MainContent
+    data object Initial : MainContent
+    data object NeedsLocation : MainContent
+    data class Success(val data: DomainModel) : MainContent
     data class Error(val type: CustomError) : MainContent
 }
 ```
+
+### Hybrid Pattern Flexibility Clause
+
+To ensure pragmatism without sacrificing architectural integrity, follow these rules when deciding how to structure your UI State:
+
+1. **Mandatory Sealed Content**: If a screen involves an asynchronous lifecycle with mutually exclusive states (e.g., *Initial* phase, *Success* when data arrives, or *Error* if it fails), you **MUST** use a `sealed interface` for the `content` property.
+2. **Root Data Class Recommendation**: Even if a screen currently lacks additive states (like dialogs or FABs), the root state should remain a `data class` wrapping the `content`. This ensures that adding additive UI layers in the future does not require a breaking change in the UI-ViewModel contract.
+3. **Static Screens (KISS)**: For 100% static screens that do not load external data and only represent a single phase (e.g., a simple "About" screen or a purely local "Settings" form), a plain `data class` without a `sealed interface` is preferred to avoid overengineering.
 
 #### B. Implementation at the UI (Stateless Content)
 ```kotlin
