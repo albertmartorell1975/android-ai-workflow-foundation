@@ -226,46 +226,31 @@ Moving coroutine management to the ViewModel is a trade-off that favors **long-t
 
 ## 4. Action Idempotency & Mutex Guarding
 
-To prevent redundant work, resource leaks, or double side-effects (like showing a dialog twice), the ViewModel MUST ensure that its actions are **idempotent**. Following "Concurrency at Scale" standards, the preferred mechanism for this is the **`Mutex`**.
+To prevent redundant work or double side-effects, the ViewModel MUST ensure that its actions are idempotent. The `Mutex` is the preferred mechanism for this.
 
-### The Two Guard Patterns:
+### The Three Guard Patterns:
 
-#### A. The "Sequential/Atomic" Pattern (withLock)
-Use this when you want to ensure that work is performed but never overlaps (e.g., a manual refresh that must wait for a previous one to finish or simply ensure sequentiality).
-```kotlin
-private val loadMutex = Mutex()
+#### A. The "Sequential" Pattern (`withLock`)
+Use this when you want to ensure work never overlaps but eventually executes (e.g., manual refreshes).
+- **Behavior**: Queues the next task if the lock is held.
+- **Implementation**: `loadMutex.withLock { /* task */ }` (Built-in try-finally).
 
-fun onRefresh() {
-    viewModelScope.launch {
-        loadMutex.withLock {
-            // ... perform work sequentially
-        }
+#### B. The "Fast-Entry" Guard (`tryLock` + `finally`)
+Use this for UI-driven initializations (e.g., `onStart`) that should be ignored if already active.
+- **Behavior**: Exits immediately if the lock is held.
+- **Implementation**: 
+    ```kotlin
+    if (!mutex.tryLock()) return
+    launch {
+        try { /* task */ } 
+        finally { mutex.unlock() } // Mandatory manual release
     }
-}
-```
+    ```
 
-#### B. The "First One Wins" Pattern (tryLock)
-The most common for Staff Engineers. It provides a non-blocking entry guard. Ideal for `onStart` or monitors that should only have one active instance.
-```kotlin
-private val monitorMutex = Mutex()
+#### C. The "Singleton Engine" Guard (`tryLock` without `unlock`)
+Use this for background monitors or streams that must only exist once for the ViewModel's lifetime.
+- **Behavior**: Locks the door and "throws away the key".
+- **Implementation**: `if (!mutex.tryLock()) return` (No unlock).
 
-fun startMonitoring() {
-    // Immediate exit if already active, no Job variable needed
-    if (!monitorMutex.tryLock()) return 
-
-    viewModelScope.launch {
-        try {
-            repository.observeData().collect { /* ... */ }
-        } finally {
-            // Only unlock if you want to allow restarting the monitor later
-            // monitorMutex.unlock() 
-        }
-    }
-}
-```
-
-### Rationale
-- **Atomic Entry**: `Mutex.tryLock()` is thread-safe and atomic, preventing race conditions that manual boolean checks or Job-state checks might suffer from in high-concurrency scenarios.
-- **Clean State**: Eliminates "shadow state" variables like `private var job: Job?` or `private var isLoadingManual: Boolean`.
-- **Non-blocking**: Does not freeze the UI or the ViewModel thread while checking for ownership.
-- **Scalability**: Follows modern coroutine best practices for systems that might scale to handle multiple rapid signals (recompositions, lifecycle events).
+### Rationale: The `try-finally` Mandate
+When using manual locks (`tryLock`), a `finally` block is **MANDATORY** to prevent "Deadlocks". It ensures the lock is released even if the task fails or the coroutine is cancelled (e.g., screen rotation or navigating away).
