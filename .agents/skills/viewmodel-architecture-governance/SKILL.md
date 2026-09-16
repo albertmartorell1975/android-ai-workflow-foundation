@@ -231,26 +231,51 @@ To prevent redundant work or double side-effects, the ViewModel MUST ensure that
 ### The Three Guard Patterns:
 
 #### A. The "Sequential" Pattern (`withLock`)
-Use this when you want to ensure work never overlaps but eventually executes (e.g., manual refreshes).
+Use this when you want to ensure work never overlaps but eventually executes (e.g., manual refreshes or database writes that must be ordered).
 - **Behavior**: Queues the next task if the lock is held.
-- **Implementation**: `loadMutex.withLock { /* task */ }` (Built-in try-finally).
+```kotlin
+private val loadMutex = Mutex()
+
+fun onRefresh() {
+    viewModelScope.launch {
+        loadMutex.withLock { // Built-in try-finally
+            performLoad()
+        }
+    }
+}
+```
 
 #### B. The "Fast-Entry" Guard (`tryLock` + `finally`)
-Use this for UI-driven initializations (e.g., `onStart`) that should be ignored if already active.
+Use this for UI-driven initializations (e.g., `onStart`) that should be ignored if already active to avoid flickering.
 - **Behavior**: Exits immediately if the lock is held.
-- **Implementation**: 
-    ```kotlin
-    if (!mutex.tryLock()) return
-    launch {
-        try { /* task */ } 
-        finally { mutex.unlock() } // Mandatory manual release
+```kotlin
+private val loadMutex = Mutex()
+
+fun onStart() {
+    if (!loadMutex.tryLock()) return // Immediate exit
+    viewModelScope.launch {
+        try {
+            performInitialLoad()
+        } finally {
+            loadMutex.unlock() // Mandatory manual release
+        }
     }
-    ```
+}
+```
 
 #### C. The "Singleton Engine" Guard (`tryLock` without `unlock`)
-Use this for background monitors or streams that must only exist once for the ViewModel's lifetime.
+Use this for background monitors, socket connections, or streams that must only be started once for the entire ViewModel lifetime.
 - **Behavior**: Locks the door and "throws away the key".
-- **Implementation**: `if (!mutex.tryLock()) return` (No unlock).
+```kotlin
+private val monitoringMutex = Mutex()
+
+fun startMonitoring() {
+    if (!monitoringMutex.tryLock()) return // Lock forever
+    viewModelScope.launch {
+        repository.observeUpdates().collect { /* ... */ }
+    }
+}
+```
 
 ### Rationale: The `try-finally` Mandate
 When using manual locks (`tryLock`), a `finally` block is **MANDATORY** to prevent "Deadlocks". It ensures the lock is released even if the task fails or the coroutine is cancelled (e.g., screen rotation or navigating away).
