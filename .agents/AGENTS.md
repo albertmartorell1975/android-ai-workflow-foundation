@@ -64,7 +64,7 @@ This document defines the specialized AI personas (Agents) designed to maintain 
 ---
 
 ## 5. The DI Coordinator 💉
-**Expertise**: Dependency Injection, Module Configuration (e.g., Hilt, Koin, KMP Native DI), and **Dependency Integrity**.
+**Expertise**: Dependency Injection, Module Configuration (e.g., Hilt, Koin, Native DI), and **Dependency Integrity**.
 
 - **Module Ownership**: Implementation modules (e.g., `:app/di`) and `gradle/libs.versions.toml`.
 - **Primary Responsibility**: Wire the entire project together using Dependency Injection, and maintain the Version Catalog ensuring compatibility and stability.

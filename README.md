@@ -15,7 +15,7 @@ The foundation is continuously evolving through experimentation and real-world A
 ## 🛠 Installation
 
 ### Scenario A: New Projects (Full Setup)
-1. Initialize your new Android or KMP project.
+1. Initialize your new Android project.
 2. Run the following command in the project's root directory:
 ```bash
 npx skills add albertmartorell1975/android-ai-workflow-foundation -y && echo ">>> SUCCESS: Core & Guardrails installed. NEXT STEP: Open Android Studio and say 'Activate workflow-initializer' to configure your Tech Stack and select optional Plugins (Firebase, CameraX, etc.) from the catalog."
@@ -55,7 +55,7 @@ Professional quality standards for every project:
 
 ### 🟡 3. On-Demand Plugins (Optional)
 Specialized domains activated via the Wizard:
-- `to-plan`, `firebase-*`, `camerax`, `compose-animations`, `kmp-expect-actual`, `perfetto-*`, `wear-compose`, `billing`, and more.
+- `to-plan`, `firebase-*`, `camerax`, `compose-animations`, `perfetto-*`, `wear-compose`, `billing`, and more.
 
 [See the Full Expert Skills Index for details](.agents/skills/README.md).
 

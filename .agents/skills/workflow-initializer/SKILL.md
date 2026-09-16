@@ -1,6 +1,6 @@
 ---
 name: workflow-initializer
-description: Initializes a new Android or KMP project with the AI-assisted development workflow seed. It sets up the governance files and guides the initial customization of agents and skills.
+description: Initializes a new Android project with the AI-assisted development workflow seed. It sets up the governance files and guides the initial customization of agents and skills.
 metadata:
   author: Albert Martorell Garcia
   version: 1.3.0

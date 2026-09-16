@@ -26,7 +26,7 @@ The agent will ask you about your architecture to adjust the roles:
 - **Architecture**: MVI or MVVM.
 - **DI**: Hilt, Koin, or Native.
 - **Data**: Retrofit, Room, etc.
-- **Platform**: Android or KMP.
+- **Platform**: Android.
 
 ### Phase 3: Git Baseline
 If the project doesn't have Git, the agent will:
