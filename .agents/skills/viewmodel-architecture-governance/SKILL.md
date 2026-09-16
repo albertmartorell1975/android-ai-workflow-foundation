@@ -146,18 +146,18 @@ To ensure pragmatism without sacrificing architectural integrity, follow these r
 #### B. Implementation at the UI (Stateless Content)
 ```kotlin
 @Composable
-fun FeatureContent(state: ScreenUiState) {
+fun CityWeatherContent(state: ScreenUiState) {
     Box(modifier = Modifier.fillMaxSize()) {
         // 1. Handle primary content with a clean 'when'
         when (val content = state.content) {
-            is MainContent.Initial -> { /* Splash or empty state */ }
-            is MainContent.Success -> DataDetails(content.data)
+            is MainContent.Loading -> CircularProgressIndicator()
+            is MainContent.Success -> WeatherDetails(content.city)
             is MainContent.Error -> ErrorView(content.type)
         }
 
         // 2. Overlap additive elements based on independent flags
-        if (state.isLoading) {
-            LoadingOverlay()
+        if (state.isLoggingOut) {
+            LogoutDialog(onConfirm = { /* ... */ })
         }
     }
 }
@@ -224,42 +224,48 @@ Moving coroutine management to the ViewModel is a trade-off that favors **long-t
 
 ---
 
-## 4. Action Idempotency & Job Guarding
+## 4. Action Idempotency & Mutex Guarding
 
-To prevent redundant work, resource leaks, or double side-effects (like showing a dialog twice), the ViewModel MUST ensure that its actions are **idempotent**. 
-
-When a non-suspending action starts a coroutine that performs a long-running task (like a `Flow.collect` or a large upload), use a **Job Guard**.
+To prevent redundant work, resource leaks, or double side-effects (like showing a dialog twice), the ViewModel MUST ensure that its actions are **idempotent**. Following "Concurrency at Scale" standards, the preferred mechanism for this is the **`Mutex`**.
 
 ### The Two Guard Patterns:
 
-#### A. The "Restart" Pattern (Last one wins)
-Use this when you want to cancel the previous work and start fresh (e.g., search-as-you-type, or a manual refresh).
+#### A. The "Sequential/Atomic" Pattern (withLock)
+Use this when you want to ensure that work is performed but never overlaps (e.g., a manual refresh that must wait for a previous one to finish or simply ensure sequentiality).
 ```kotlin
-private var fetchJob: Job? = null
+private val loadMutex = Mutex()
 
 fun onRefresh() {
-    fetchJob?.cancel() // Cancel previous if still running
-    fetchJob = viewModelScope.launch {
-        // ... perform work
+    viewModelScope.launch {
+        loadMutex.withLock {
+            // ... perform work sequentially
+        }
     }
 }
 ```
 
-#### B. The "First One Wins" Pattern (Guarded)
-Use this for "engines" or monitors that should only be started once (e.g., location tracking, temperature monitoring).
+#### B. The "First One Wins" Pattern (tryLock)
+The most common for Staff Engineers. It provides a non-blocking entry guard. Ideal for `onStart` or monitors that should only have one active instance.
 ```kotlin
-private var monitorJob: Job? = null
+private val monitorMutex = Mutex()
 
 fun startMonitoring() {
-    if (monitorJob?.isActive == true) return // Already running, ignore
+    // Immediate exit if already active, no Job variable needed
+    if (!monitorMutex.tryLock()) return 
 
-    monitorJob = viewModelScope.launch {
-        repository.observeData().collect { /* ... */ }
+    viewModelScope.launch {
+        try {
+            repository.observeData().collect { /* ... */ }
+        } finally {
+            // Only unlock if you want to allow restarting the monitor later
+            // monitorMutex.unlock() 
+        }
     }
 }
 ```
 
 ### Rationale
-- **Efficiency**: Avoids duplicate CPU/Battery usage for identical tasks.
-- **Predictability**: Guarantees that side-effect channels (like navigation or alerts) don't receive duplicate events.
-- **Stability**: Prevents race conditions where two coroutines might try to update the same state in conflicting ways.
+- **Atomic Entry**: `Mutex.tryLock()` is thread-safe and atomic, preventing race conditions that manual boolean checks or Job-state checks might suffer from in high-concurrency scenarios.
+- **Clean State**: Eliminates "shadow state" variables like `private var job: Job?` or `private var isLoadingManual: Boolean`.
+- **Non-blocking**: Does not freeze the UI or the ViewModel thread while checking for ownership.
+- **Scalability**: Follows modern coroutine best practices for systems that might scale to handle multiple rapid signals (recompositions, lifecycle events).
