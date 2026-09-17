@@ -29,281 +29,238 @@ Foundation Core
      Single Agent  Multi-Agent
 ```
 
-The same Foundation can therefore support different AI-assisted development methodologies without changing the underlying engineering standards.
+The same Foundation can therefore support different AI-assisted development methodologies while sharing the same engineering standards, technical expertise, and project governance.
+
+The selected workflow determines **how feature development is organized**. The Foundation Core defines **the technical environment and constraints under which that work takes place**.
 
 ---
 
-## 1. Foundation Core
+## 🛠 Installation & Setup
 
-The Foundation Core provides the common capabilities shared by all projects and workflows.
+The Foundation uses a two-step setup process. The same process works for both **new** and **existing** Android projects.
 
-### Project Initialization
+### Step 1: Install the Foundation
 
-`workflow-initializer` bootstraps and customizes the project. It performs stack diagnosis, configures the project-specific context, manages optional plugins, and lets the project select its development workflow.
-
-### Engineering Governance
-
-Core skills provide the common rules and verification mechanisms used across the project, including:
-
-* `compiler`
-* `git-governance`
-* `dependency-manager`
-* `testing-setup`
-* `kotlin-style`
-* `to-plan`
-* `foundation-evolve`
-* architecture and platform governance skills
-
-### Android & System Expertise
-
-The Foundation also includes technical Android and system-level skills covering areas such as:
-
-* Android CLI
-* adaptive UI
-* edge-to-edge
-* Navigation 3
-* Android Intent security
-* R8
-* Compose and Kotlin practices
-
-See the [Expert Skills Index](.agents/skills/README.md) for the complete list.
-
----
-
-## 2. Pluggable Development Methodologies
-
-The Foundation can use different workflows to organize feature development.
-
-The main distinction is **how responsibility is distributed between AI agents**.
-
-### Foundation Workflow
-
-**Single-agent, centralized workflow.**
-
-`workflow-feature` acts as the Foundation's native Workflow Architect.
-
-The same agent can:
-
-1. Analyze the feature and the current repository.
-2. Define the technical approach.
-3. Generate a persistent `WORKFLOW_FEATURE.md` roadmap.
-4. Guide the implementation.
-5. Apply the project's engineering and verification rules.
-
-This approach keeps the feature context centralized and minimizes handoff and coordination overhead.
-
-Use it when one agent can effectively own the feature from analysis through implementation and verification.
-
-### AI Expert Workflow
-
-**Multi-agent, specialized workflow.**
-
-The AI Expert Workflow introduces explicit roles for different stages of feature development.
-
-The workflow includes:
-
-1. **build-brief** — guided discovery and clarification of the product or feature.
-2. **harness-starter** — prepares the minimal project harness and development context.
-3. **feature-spec** — creates an implementation-ready specification.
-4. **feature-implementer** — implements the approved specification.
-5. **feature-validator** — independently validates the implementation.
-6. **feature-flow** — orchestrates the feature workflow and coordinates the specialized agents.
-
-The key characteristic is the separation between planning, implementation, and validation.
-
-This approach is useful when explicit handoffs, specialized agent roles, and independent validation provide enough value to justify the additional coordination.
-
-### Choosing a Workflow
-
-The choice is not strictly based on whether the project is new or existing.
-
-A practical rule is:
-
-> **Use the Foundation Workflow when one agent can efficiently own the task end to end.**
-
-> **Use the AI Expert Workflow when the task benefits from separating planning, implementation, and validation across specialized agents.**
-
-Both workflows can be used with new or existing projects.
-
----
-
-## 3. Human Supervision
-
-Both workflows are designed to remain **human-supervised**.
-
-The difference is not autonomous AI versus human-controlled AI. The human remains the highest-level supervisor in both models.
-
-### Foundation Workflow
-
-```text
-Human
-  ↓
-Single AI Agent
-  ├── Analyze
-  ├── Plan
-  ├── Implement
-  └── Verify
-  ↓
-Human Review
-```
-
-### AI Expert Workflow
-
-```text
-Human
-  ↓
-Workflow Orchestrator
-  ├── Planner
-  ├── Implementer
-  └── Validator
-  ↓
-Human Review
-```
-
-The human can review, correct, approve, or interrupt the process at any stage.
-
----
-
-## 4. Workflow Routing
-
-The active workflow is stored in:
-
-```text
-.agents/workflow.json
-```
-
-For example:
-
-```json
-{
-  "activeWorkflow": "foundation"
-}
-```
-
-or:
-
-```json
-{
-  "activeWorkflow": "ai-expert-workflow"
-}
-```
-
-This configuration acts as a routing and safety boundary.
-
-When the Foundation Workflow is active:
-
-```text
-activeWorkflow = foundation
-        ↓
-workflow-feature
-```
-
-When the AI Expert Workflow is active:
-
-```text
-activeWorkflow = ai-expert-workflow
-        ↓
-feature-flow
-```
-
-The inactive workflow remains available where installed, but must not orchestrate feature development.
-
-This prevents mixing the two methodologies within the same feature workflow.
-
----
-
-## 🛠 Installation
-
-### Scenario A: New Project
-
-Initialize your Android project first, then run:
+Run the following command from your project's root directory:
 
 ```bash
 npx skills add albertmartorell1975/android-ai-workflow-foundation
 ```
 
-Open Android Studio and the Agent chat, then activate:
-
-```text
-Activate workflow-initializer
-```
-
-The initializer will:
-
-* inspect the project,
-* customize the Foundation,
-* configure the project context,
-* present workflow options,
-* and activate optional skills or workflow plugins as needed.
-
-### Scenario B: Existing Project
-
-Run the same command from the project root:
-
-```bash
-npx skills add albertmartorell1975/android-ai-workflow-foundation
-```
-
-Then activate:
-
-```text
-Activate workflow-initializer
-```
-
-The Foundation can be introduced into an existing project without requiring the project to adopt a new development methodology.
-
----
-
-## 🧩 Optional Plugins & Workflows
-
-The Foundation catalog contains optional skills and workflow methodologies that are not part of the mandatory Foundation Core.
-
-They can be activated through `workflow-initializer` when appropriate.
-
-Examples include:
-
-* specialized Android technologies,
-* Firebase or other platform integrations,
-* expert Compose/Kotlin skills,
-* alternative development workflows.
-
-### AI Expert Workflow
-
-The AI Expert Workflow was originally created by **Antonio Leiva / Nino Ruano** for the **AI Expert** course and is integrated and adapted here with the author's permission.
-
-Its workflow skills are maintained under `.agents/catalog`.
-
----
-
-## 🔄 Maintaining & Updating
-
-### Syncing Installed Skills
-
-To receive updates to skills already installed in the project:
-
-```bash
-npx skills update
-```
-
-### Evolving the Foundation
-
-The `foundation-evolve` skill is used to promote useful skills and improvements from working projects back into the Foundation.
-
-The repository separates:
+This installs the **Active Foundation Skills** into:
 
 ```text
 .agents/skills/
 ```
 
-for active Foundation skills from:
+These skills provide the Foundation's core workflow capabilities, shared engineering guardrails, and Android & Kotlin expertise.
+
+### Step 2: Activate the Initializer
+
+Open **Android Studio**, open the Agent chat, and type:
+
+```text
+Activate workflow-initializer
+```
+
+The initializer will guide you through the project setup:
+
+1. **Workflow Selection**
+   Choose between the **Foundation Workflow** (single-agent) and the **AI Expert Workflow** (multi-agent).
+
+2. **Stack Diagnosis**
+   Analyze the project context and configure project-specific information such as architecture, persistence, dependency injection, and existing technical conventions.
+
+3. **Catalog Activation**
+   Select optional skills and workflow plugins from `.agents/catalog/` according to the project's needs.
+
+The selected workflow is stored in:
+
+```text
+.agents/workflow.json
+```
+
+### Result
+
+After initialization, the project has a customized Foundation environment:
+
+```text
+.agents/
+├── skills/          # Active Foundation + selected catalog skills
+├── catalog/         # Available optional skills and workflows
+├── AGENTS.md        # Project-specific agent instructions
+├── rules.md         # Project-specific workflow rules
+└── workflow.json    # Active development workflow
+```
+
+The Foundation provides the shared engineering environment, while the selected workflow determines how feature development is organized.
+
+---
+
+## 🧩 Managing Skills
+
+The Foundation separates skills by their **operational status** and **role**.
+
+### 1. Active Foundation Skills
+
+These skills are installed automatically under:
+
+```text
+.agents/skills/
+```
+
+They provide the common capabilities shared by all projects and workflows.
+
+#### Core Workflow
+
+Skills responsible for project initialization, workflow management, automation, and Foundation governance.
+
+* **workflow-initializer**: Project bootstrapping, stack diagnosis, customization, catalog management, and workflow selection.
+* **workflow-feature**: Foundation-native single-agent feature workflow.
+* **compiler**: Centralized project verification, compilation, and deployment.
+* **git-governance**: Git Flow conventions, branching rules, and commit practices.
+* **foundation-evolve**: Synchronizes useful skills and improvements from working projects back into the Foundation.
+
+#### Shared Engineering Guardrails
+
+Technical standards shared across the active Foundation environment regardless of the selected workflow.
+
+* **dependency-manager**: Dependency and version-catalog governance.
+* **design-system-governance**: Design System standards for Material 3, accessibility, RTL, adaptive UI, and reusability.
+* **kotlin-style**: Kotlin coding conventions and project-specific style rules.
+* **testing-setup**: Testing strategy covering Unit, UI Behavior, and Visual Regression testing.
+* **viewmodel-architecture-governance**: Architectural rules for ViewModels and UI state.
+
+#### Android & Expert Skills
+
+Active technical expertise for Android, Kotlin, Compose, and platform-specific engineering.
+
+Examples include:
+
+* **adaptive**
+* **android-cli**
+* **android-intent-security**
+* **compose-focus-navigation**
+* **compose-modifier-and-layout-style**
+* **compose-recomposition-performance**
+* **compose-side-effects**
+* **compose-stability-diagnostics**
+* **compose-state-authoring**
+* **compose-state-hoisting**
+* **compose-ui-testing-patterns**
+* **edge-to-edge**
+* **kotlin-control-flow**
+* **kotlin-coroutines-structured-concurrency**
+* **kotlin-flow-state-event-modeling**
+* **kotlin-functions**
+* **navigation-3**
+* **r8-analyzer**
+* **using-chrisbanes-skills**
+
+The complete active set is defined by the skills physically installed under `.agents/skills/`.
+
+> A skill's external origin does not make it optional. Once installed under `.agents/skills/`, it is part of the active Foundation environment.
+
+---
+
+### 2. Optional Catalog Skills & Workflows
+
+The catalog contains skills and complete workflows that are **not installed by default**.
+
+They are maintained under:
 
 ```text
 .agents/catalog/
 ```
 
-for optional skills and workflow plugins.
+and can be activated when a project requires additional capabilities.
 
-See the [Expert Skills Index](.agents/skills/README.md) for the current Foundation skill set.
+#### Workflow Plugins
+
+Alternative development methodologies.
+
+##### AI Expert Workflow
+
+A multi-agent development workflow originally created by **Antonio Leiva / Nino Ruano** for the **AI Expert** course and integrated and adapted for use in other projects with permission.
+
+It consists of:
+
+* **build-brief**: Guided project and feature discovery.
+* **harness-starter**: Creates the minimal project harness from the confirmed discovery.
+* **feature-spec**: Creates implementation-ready feature specifications.
+* **feature-implementer**: Implements the approved specification.
+* **feature-validator**: Independently validates the implementation.
+* **feature-flow**: Orchestrates the workflow and coordinates the specialized agents.
+
+When the AI Expert Workflow is active, it replaces `workflow-feature` as the feature orchestration methodology.
+
+#### Planning & Project Management
+
+Optional planning capabilities for projects that need repository-aware planning around external issues or confirmed specifications.
+
+* **to-plan**: Produces a repository-aware implementation plan from a ready GitHub issue or an explicitly confirmed specification.
+
+#### Technology & Expert Plugins
+
+Optional technical capabilities that depend on the project's technology stack or specific needs.
+
+Examples include:
+
+* **hilt**
+* **room-schema-governance**
+* **firebase-basics**
+* **firebase-auth-basics**
+* **firebase-remote-config-basics**
+* **camerax**
+* **wear-compose-m3**
+* **perfetto-trace-analysis**
+* **verified-email**
+* **agp-9-upgrade**
+
+The complete optional set is available under `.agents/catalog/`.
+
+---
+
+## 🔄 Maintaining & Updating
+
+### Syncing Active Skills
+
+To receive the latest improvements for skills already installed in the project:
+
+```bash
+npx skills update
+```
+
+### Activating Catalog Skills
+
+Catalog skills and workflows can be activated during `workflow-initializer` setup or requested later when the project requires them.
+
+When a catalog skill is activated, it becomes part of the project's active skill set.
+
+The Foundation repository keeps the original catalog entry under:
+
+```text
+.agents/catalog/
+```
+
+The consuming project receives the activated skill under:
+
+```text
+.agents/skills/
+```
+
+### Evolving the Foundation
+
+Use the `foundation-evolve` skill to promote useful skills and improvements discovered in working projects back into the Foundation.
+
+The Foundation distinguishes between:
+
+```text
+.agents/skills/       Active Foundation skills
+.agents/catalog/      Optional skills and workflows
+```
+
+A skill has one canonical location in the Foundation repository.
 
 ---
 
@@ -312,7 +269,7 @@ See the [Expert Skills Index](.agents/skills/README.md) for the current Foundati
 This Foundation incorporates knowledge and methodologies from multiple sources:
 
 * **Foundation Methodology:** Albert Martorell Garcia.
-* **AI Expert Workflow:** **Antonio Leiva** / **Nino Ruano**, originally created for the AI Expert course.
+* **AI Expert Workflow:** Originally created by **Antonio Leiva / Nino Ruano** for the AI Expert course and integrated into this Foundation with permission.
 * **External Expert Patterns:** Includes curated skills from experts such as **Chris Banes**.
 * **Official Documentation:** Integrates knowledge and guidance from Google Android and Firebase documentation.
 
@@ -322,8 +279,18 @@ Included skills retain their original authorship and source metadata. Please res
 
 ## Core Principle
 
-The Foundation is designed around a simple idea:
-
 > **Same Foundation, different development methodology.**
 
-Shared engineering standards provide consistency, while the selected workflow determines how AI agents collaborate to build the software.
+The Foundation provides a shared engineering environment, while the selected workflow determines how AI agents collaborate to build the software.
+
+```text
+Shared Foundation
+        │
+        ├── Foundation Workflow
+        │      └── Single-agent
+        │
+        └── AI Expert Workflow
+               └── Multi-agent
+```
+
+In both approaches, the developer remains the highest-level supervisor, responsible for architecture, technical decisions, review, and final validation.
