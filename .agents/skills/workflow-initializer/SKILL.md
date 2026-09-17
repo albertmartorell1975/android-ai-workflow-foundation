@@ -22,7 +22,7 @@ If you are loaded in a project where `.agents/rules.md` or `.agents/AGENTS.md` a
 ### PHASE 1: Mandatory Foundation Deployment
 When this skill is activated, the agent MUST first acknowledge the core foundation already installed via `npx skills`. 
 
-1. **List Mandatory Skills**: The agent MUST display the following list of core skills that are now active in the project, providing a brief explanation for each:
+1. **List Mandatory Skills**: The agent MUST display the following list of core skills and shared guardrails that are now active in the project, providing a brief explanation for each:
    - **adaptive**: Adaptive layouts for all device form factors (phones, tablets, foldables).
    - **android-cli**: Expert usage of Android SDK command-line tools.
    - **android-intent-security**: Secure component communication and Intent redirection prevention.

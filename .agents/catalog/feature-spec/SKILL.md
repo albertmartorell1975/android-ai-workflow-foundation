@@ -9,12 +9,6 @@ Originally created by Antonio Leiva / DevExpert for the AI Expert course.
 Integrated and adapted for Android AI Workflow Foundation with permission.
 
 
-# Origin
-
-Originally created by Antonio Leiva / DevExpert for the AI Expert course.
-Integrated and adapted for Android AI Workflow Foundation with permission.
-
-
 # Feature Spec
 
 Use this skill to turn one harness feature into an implementation-ready contract for another agent. The output is not a PRD and not implementation code. It is a planning artifact that lets a future implementation session execute with minimal rediscovery, and lets a later validation session judge the result.

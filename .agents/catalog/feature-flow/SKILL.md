@@ -8,6 +8,16 @@ description: Orchestrate the planner, implementer, and validator workflow for on
 Originally created by Antonio Leiva / DevExpert for the AI Expert course.
 Integrated and adapted for Android AI Workflow Foundation with permission.
 
+## Mandatory Workflow Routing
+
+Before performing any workflow action, the agent MUST read:
+
+`.agents/workflow.json`
+
+This skill is authorized to execute only when:
+
+`activeWorkflow = ai-expert-workflow`
+
 # Feature Flow
 
 Use this skill to let the main agent coordinate the three project subagents:

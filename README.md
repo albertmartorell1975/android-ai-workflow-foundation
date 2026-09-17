@@ -1,14 +1,32 @@
-# 🚀 Android AI Workflow Foundation v1.0
+# 🚀 Android AI Workflow Foundation v3.0.0
 
 Exploring how AI agents can become part of a disciplined software engineering process.
 
-Android AI Workflow Foundation is a structured, AI-assisted development workflow for Android and KMP projects.
-
-It provides a reusable set of workflows, skills and technical guardrails that help AI agents operate within established engineering practices, including Clean Architecture, SOLID, testing, code quality and project-specific technical constraints.
+Android AI Workflow Foundation is a modular, structured development framework for Android projects. It allows developers to choose between different agentic methodologies while sharing a common core of Android expert guardrails.
 
 The goal is not to automate software development completely, but to establish a human-supervised development model where AI can assist with implementation while the developer remains responsible for architecture, technical decisions and final validation.
 
-The foundation is continuously evolving through experimentation and real-world Android projects. Each application is used as a feedback loop to validate the workflow, discover limitations and refine the skills and guardrails.
+---
+
+## 🏗 Modular Multi-Workflow Architecture
+
+The foundation is organized as a pluggable system that scales with your project needs:
+
+### 🟢 1. Core Engine (Motor)
+The essential skills that manage the foundation itself. Installed automatically via `npx skills add`.
+- `workflow-initializer`, `workflow-feature`, `foundation-evolve`, `git-governance`, `compiler`, `to-plan`.
+
+### 🔵 2. Shared Expert Guardrails
+Professional quality standards shared across all workflows. Installed automatically via `npx skills add` to ensure architectural integrity:
+- **Style & Architecture**: `kotlin-style`, `viewmodel-architecture-governance`, `testing-setup`, `design-system-governance`, `dependency-manager`.
+- **System & Compose**: `android-*`, `compose-*`, `edge-to-edge`, `navigation-3`, `r8-analyzer`, `adaptive`.
+
+### 🟡 3. Workflow & Architecture Selection
+During initialization (`workflow-initializer`), the foundation allows you to select your preferred methodology and tools:
+
+*   **Workflows**: Choose between the native **Foundation Workflow** or the **AI Expert Workflow** (optional plugin).
+*   **Architecture**: Opt-in to specialized plugins like **Hilt** or **Room Schema Governance**.
+*   **Domain Plugins**: Activate on-demand plugins for **Firebase**, **CameraX**, **Perfetto**, and more.
 
 ---
 
@@ -18,53 +36,34 @@ The foundation is continuously evolving through experimentation and real-world A
 1. Initialize your new Android project.
 2. Run the following command in the project's root directory:
 ```bash
-npx skills add albertmartorell1975/android-ai-workflow-foundation && echo ">>> SUCCESS: Core & Guardrails installed. NEXT STEP: Open Android Studio and say 'Activate workflow-initializer' to configure your Tech Stack and select optional Plugins (Firebase, CameraX, etc.) from the catalog."
+npx skills add albertmartorell1975/android-ai-workflow-foundation && echo ">>> SUCCESS: Motor installed. NEXT STEP: Open Android Studio and say 'Activate workflow-initializer' to deploy Guardrails and select your Workflow."
 ```
 3. **IMPORTANT**: Open **Android Studio** and the Agent chat, then type:
 **"Activate workflow-initializer"**
 
 ### Scenario B: Existing Projects (Add Capabilities)
-Run the same command. Version 1.0 will install the **Core** and **Guardrail** skills automatically, improving your existing project's quality without adding noise.
+Run the same command. Version 3.0.0 will install the **Motor** skills. Then, run the **workflow-initializer** to deploy the **Guardrails** and select or migrate your workflow.
 
 ---
 
-## 📦 Modular Skill Architecture (Multi-Workflow)
-To maximize AI performance and minimize context noise, the foundation is now a **multi-workflow framework**. You can choose your preferred methodology during initialization.
+## 🛠 How to Install Optional Plugins & Workflows
+If your project needs a specialized skill or a different workflow from the catalog, you have two ways to "bring them to the field":
 
-### 🏟️ 1. The Field: `.agents/skills/` (Starters)
-These skills are **installed automatically** via `npx skills add`. They represent the engine and the shared Android guardrails.
-- **Core Engine**: `workflow-initializer`, `workflow-feature`, `git-governance`, `compiler`, `to-plan`.
-- **Expert Guardrails**: `testing-setup`, `viewmodel-architecture-governance`, `kotlin-style`, `design-system-governance`, etc.
-- **System & Compose Patterns**: `android-cli`, `r8-analyzer`, `navigation-3`, `edge-to-edge`, `compose-stability`, etc.
-
-### 🪑 2. The Bench: `.agents/catalog/` (Substitutes)
-On-demand plugins and specialized workflows:
-- **Workflows**: `ai-expert-workflow` (DevExpert).
-- **Architecture**: `hilt`, `room-schema-governance`.
-- **Plugins**: `firebase-*`, `camerax`, `wear-compose-m3`, `perfetto-*`, `verified-email`, etc.
-
----
-
-## 🛠 How to Select a Workflow
-During the `Activate workflow-initializer` process, you will be asked to select an **Active Workflow**:
-
-1. **Foundation Workflow**: The native, lean Android AI Workflow Foundation methodology.
-2. **AI Expert Workflow**: A complete AI expert development workflow.
-
-The selection is persisted in `.agents/workflow.json` and automatically installs all necessary dependencies.
+1.  **The Wizard (Recommended)**: Run `Activate workflow-initializer` in Android Studio. During the setup, the agent will present the complete catalog and install your choices automatically.
+2.  **On-Demand Chat**: At any time, simply ask the agent: *"Install the [plugin-name] plugin from the catalog"*. The agent will fetch the latest expert patterns from GitHub and set them up for you.
 
 ---
 
 ## 🔄 Maintaining & Updating
 
 ### 1. Syncing active Skills
-To receive the latest improvements for the skills already "on the field" in your active projects, run:
+To receive the latest improvements for the skills already active in your projects (Motor and Guardrails), run:
 ```bash
 npx skills update
 ```
 
 ### 2. Refreshing the Catalog
-The catalog skills are fetched directly from GitHub during on-demand installation, ensuring you always get the latest expert patterns without having to manage them manually.
+Catalog skills and workflows are fetched directly from GitHub during on-demand installation, ensuring you always get the latest expert knowledge without manual management.
 
 ### 3. Evolving the Foundation (For Maintainers)
 Use the **foundation-evolve** skill to promote local project skills to either the `skills/` (mandatory) or `catalog/` (optional) directories in this repository.
