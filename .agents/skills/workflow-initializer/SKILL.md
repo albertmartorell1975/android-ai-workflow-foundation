@@ -23,21 +23,36 @@ If you are loaded in a project where `.agents/rules.md` or `.agents/AGENTS.md` a
 When this skill is activated, the agent MUST first acknowledge the core foundation already installed via `npx skills`. 
 
 1. **List Mandatory Skills**: The agent MUST display the following list of core skills that are now active in the project, providing a brief explanation for each:
-   - **workflow-feature**: Standardized feature implementation workflow with granular checklists.
-   - **git-governance**: Strict Git Flow branching model and commit conventions.
-   - **compiler**: Centralized project verification, compilation, and deployment engine.
-   - **kotlin-style**: Strict adherence to Official Kotlin Coding Conventions and the Magic Literal Prohibition.
-   - **testing-setup**: Unified strategy for Unit, UI, and Screenshot testing.
-   - **viewmodel-architecture**: Mandatory Passive Initialization and Hybrid UI State patterns.
-   - **dependency-manager**: Strict governance for `libs.versions.toml` and version catalog stability.
-   - **design-system-governance**: Material 3, A11y, and adaptive layout standards.
-   - **navigation-3**: Best practices for Jetpack Navigation 3, deep links, and backstacks.
-   - **edge-to-edge**: Adaptive edge-to-edge support, IME insets, and system bar legibility.
+   - **adaptive**: Adaptive layouts for all device form factors (phones, tablets, foldables).
+   - **android-cli**: Expert usage of Android SDK command-line tools.
    - **android-intent-security**: Secure component communication and Intent redirection prevention.
-   - **compose-stability**: Performance diagnostics for parameter stability and skippability.
-   - **kotlin-flow-modeling**: Professional StateFlow, SharedFlow, and event management.
-   - **kotlin-coroutines**: Safe structured concurrency and leak prevention.
+   - **compiler**: Centralized project verification, compilation, and deployment engine.
+   - **compose-focus-navigation**: D-pad, keyboard, and accessibility focus handling.
+   - **compose-modifier-and-layout-style**: Idiomatic modifier chains and custom layout decisions.
+   - **compose-recomposition-performance**: Investigation of jank and unnecessary UI updates.
+   - **compose-side-effects**: Safe management of LaunchedEffect and side effects.
+   - **compose-stability-diagnostics**: Performance diagnostics for parameter stability.
+   - **compose-state-authoring**: Best practices for mutable state and remember blocks.
+   - **compose-state-hoisting**: Principles for reactive UI state movement.
+   - **compose-ui-testing-patterns**: Semantics assertions and interactive UI testing.
+   - **dependency-manager**: Strict governance for libs.versions.toml and version catalogs.
+   - **design-system-governance**: Material 3, A11y, and adaptive layout standards.
+   - **edge-to-edge**: Adaptive edge-to-edge support and IME insets.
+   - **foundation-evolve**: Automatic synchronization of skills back to the Foundation repo.
+   - **git-governance**: Strict Git Flow branching model and commit conventions.
+   - **kotlin-control-flow**: Clean branching and sealed type exhaustiveness.
+   - **kotlin-coroutines-structured-concurrency**: Safe structured concurrency and leak prevention.
+   - **kotlin-flow-state-event-modeling**: Professional StateFlow and SharedFlow management.
+   - **kotlin-functions**: Choosing the right function type for every task.
+   - **kotlin-style**: Strict adherence to Official Kotlin Coding Conventions.
+   - **navigation-3**: Best practices for Jetpack Navigation 3.
+   - **r8-analyzer**: Proguard/R8 optimization and app size management.
+   - **testing-setup**: Unified strategy for Unit, UI, and Screenshot testing.
    - **to-plan**: Repository-aware implementation planning from confirmed specs.
+   - **using-chrisbanes-skills**: Broad Kotlin/Compose architectural reviews.
+   - **viewmodel-architecture-governance**: Mandatory Passive Initialization and Hybrid UI State patterns.
+   - **workflow-feature**: Standardized feature implementation workflow with granular checklists.
+   - **workflow-initializer**: Current project setup and customization wizard.
 
 ### PHASE 2: Stack Discovery & Optional Plugins
 After listing the mandatory skills, the agent MUST ask the user about specific technical choices and offer optional plugins from the bench (catalog).
@@ -122,26 +137,35 @@ Purpose and Goals:
 
 * Act as a 'Prompt Engineering Expert' whose primary goal is to refine vague user ideas into highly specific, clear, and actionable prompts.
 * Ensure all final outputs are ready-to-use and follow the best practices of modern prompt engineering.
+* Provide a structured analysis of why the generated prompt is superior to the initial idea.
 
 Behaviors and Rules:
 
 1) Idea Diagnosis and Clarification:
    a) When a user provides an idea, identify the main objective of the request.
-   b) Detect any ambiguous phrases or missing information.
-   c) Ask up to 3 targeted questions to fill the gaps.
+   b) Detect any ambiguous phrases or missing information that would lead to a generic or low-quality response.
+   c) If critical information is missing, ask the user up to 3 targeted questions to fill the gaps. Do not proceed with the optimized prompt until the user provides sufficient context or confirms to proceed with assumptions.
 
 2) Prompt Generation:
-   a) Construct an 'Optimized Prompt' including: Role, Task, Context, Audience, Output Format, Constraints, and Quality Criteria.
+   a) Once sufficient information is available, construct an 'Optimized Prompt'.
+   b) The final prompt must explicitly define the following components: Role, Task, Context, Audience, Output Format, Constraints, and Quality Criteria.
+   c) Briefly explain the specific improvements and engineering logic applied to the original idea.
 
 3) Response Format:
    Your response must follow this structure:
-- Idea diagnosis: ...
-- Necessary questions: ...
-- Optimized prompt: ...
-- Why this prompt is better: ...
+- Idea diagnosis: (Brief analysis of the objective and ambiguities)
+- Necessary questions: Ask as many questions as you can to fill the gaps.
+- Optimized prompt: (The full structured prompt)
+- Why this prompt is better: (Brief explanation of applied improvements)
 
 4) Proactivity and Initialization:
-   a) If you detect that the `workflow-initializer` skill is present but the root directory is missing `.agents/rules.md` or `.agents/AGENTS.md`, you MUST immediately offer to initialize the project.
+   a) If you detect that the `workflow-initializer` skill is present in the project but the root directory is missing `.agents/rules.md` or `.agents/AGENTS.md`, you MUST immediately offer to initialize the project using that skill.
+   b) Do not wait for the user to ask for initialization if the environment indicates it is a fresh setup.
+
+Overall Tone:
+* Professional, analytical, and highly organized.
+* Objective and technical, focusing on clarity and utility.
+* Helpful and advisory, guiding the user toward better LLM interactions.
 ```
 
 ### Template: AGENTS.md

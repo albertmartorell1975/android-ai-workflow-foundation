@@ -28,16 +28,16 @@ Run the same command. Version 1.0 will install the **Core** and **Guardrail** sk
 
 ---
 
-## 📦 Modular Skill Architecture (Titulars vs. Suplents)
+## 📦 Modular Skill Architecture (Starters vs. Substitutes)
 To maximize AI performance and minimize context noise, the foundation is organized into two main physical locations:
 
-### 🏟️ 1. The Field: `.agents/skills/` (Titulars)
+### 🏟️ 1. The Field: `.agents/skills/` (Starters)
 These skills are **installed automatically** via `npx skills add`. They represent the essential DNA and guardrails of every project.
 - **Core Engine**: `workflow-initializer`, `workflow-feature`, `git-governance`, `compiler`, `to-plan`.
 - **Expert Guardrails**: `hilt`, `testing-setup`, `viewmodel-architecture-governance`, `kotlin-style`, `design-system-governance`, `room-schema-governance`, etc.
 - **System & Compose Patterns**: `android-cli`, `r8-analyzer`, `navigation-3`, `edge-to-edge`, `compose-stability`, etc.
 
-### 🪑 2. The Bench: `.agents/catalog/` (Suplents)
+### 🪑 2. The Bench: `.agents/catalog/` (Substitutes)
 These are **on-demand plugins** that live in the Foundation's repository but are NOT installed by default. They stay on the bench to keep your project clean until you need them.
 - **Examples**: `firebase-*`, `camerax`, `wear-compose-m3`, `perfetto-*`, `verified-email`, etc.
 
