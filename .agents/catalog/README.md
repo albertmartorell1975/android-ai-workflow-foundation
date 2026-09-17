@@ -7,7 +7,7 @@ the mandatory Foundation Core.
 
 ### DevExpert AI Workflow
 
-**Provider:** Antonio Leiva / DevExpert  
+**Provider:** Antonio Leiva / Nino Ruano  
 **Course:** AI Expert
 
 A complete agentic development workflow including:

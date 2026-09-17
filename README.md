@@ -1,82 +1,329 @@
 # 🚀 Android AI Workflow Foundation v3.0.0
 
-Exploring how AI agents can become part of a disciplined software engineering process.
+Exploring how AI agents can become part of a disciplined, human-supervised software engineering process.
 
-Android AI Workflow Foundation is a modular, structured development framework for Android projects. It allows developers to choose between different agentic methodologies while sharing a common core of Android expert guardrails.
+**Android AI Workflow Foundation** is a modular development framework for Android projects. It provides a shared foundation of engineering standards, technical expertise, and governance while allowing projects to choose how AI agents collaborate during feature development.
 
-The goal is not to automate software development completely, but to establish a human-supervised development model where AI can assist with implementation while the developer remains responsible for architecture, technical decisions and final validation.
+The goal is not to automate software development completely. The developer remains responsible for architecture, technical decisions, review, and final validation.
 
 ---
 
-## 🏗 Modular Multi-Workflow Architecture
+## 🏗 Architecture
 
-The foundation is organized as a pluggable system that scales with your project needs:
+The Foundation separates three concerns:
 
-### 🟢 1. Core Engine (Motor)
-The essential skills that manage the foundation itself. Installed automatically via `npx skills add`.
-- `workflow-initializer`, `workflow-feature`, `foundation-evolve`, `git-governance`, `compiler`, `to-plan`.
+```text
+Foundation Core
+      │
+      ├── Project Initialization
+      ├── Engineering Governance
+      ├── Android & Kotlin Expertise
+      └── Technical Guardrails
+                │
+                ▼
+        Workflow Selection
+          ┌─────┴─────┐
+          │           │
+     Foundation    AI Expert
+      Workflow     Workflow
+     Single Agent  Multi-Agent
+```
 
-### 🔵 2. Shared Expert Guardrails
-Professional quality standards shared across all workflows. Installed automatically via `npx skills add` to ensure architectural integrity:
-- **Style & Architecture**: `kotlin-style`, `viewmodel-architecture-governance`, `testing-setup`, `design-system-governance`, `dependency-manager`.
-- **System & Compose**: `android-*`, `compose-*`, `edge-to-edge`, `navigation-3`, `r8-analyzer`, `adaptive`.
+The same Foundation can therefore support different AI-assisted development methodologies without changing the underlying engineering standards.
 
-### 🟡 3. Workflow & Architecture Selection
-During initialization (`workflow-initializer`), the foundation allows you to select your preferred methodology and tools:
+---
 
-*   **Workflows**: Choose between the native **Foundation Workflow** or the **AI Expert Workflow** (optional plugin).
-*   **Architecture**: Opt-in to specialized plugins like **Hilt** or **Room Schema Governance**.
-*   **Domain Plugins**: Activate on-demand plugins for **Firebase**, **CameraX**, **Perfetto**, and more.
+## 1. Foundation Core
+
+The Foundation Core provides the common capabilities shared by all projects and workflows.
+
+### Project Initialization
+
+`workflow-initializer` bootstraps and customizes the project. It performs stack diagnosis, configures the project-specific context, manages optional plugins, and lets the project select its development workflow.
+
+### Engineering Governance
+
+Core skills provide the common rules and verification mechanisms used across the project, including:
+
+* `compiler`
+* `git-governance`
+* `dependency-manager`
+* `testing-setup`
+* `kotlin-style`
+* `to-plan`
+* `foundation-evolve`
+* architecture and platform governance skills
+
+### Android & System Expertise
+
+The Foundation also includes technical Android and system-level skills covering areas such as:
+
+* Android CLI
+* adaptive UI
+* edge-to-edge
+* Navigation 3
+* Android Intent security
+* R8
+* Compose and Kotlin practices
+
+See the [Expert Skills Index](.agents/skills/README.md) for the complete list.
+
+---
+
+## 2. Pluggable Development Methodologies
+
+The Foundation can use different workflows to organize feature development.
+
+The main distinction is **how responsibility is distributed between AI agents**.
+
+### Foundation Workflow
+
+**Single-agent, centralized workflow.**
+
+`workflow-feature` acts as the Foundation's native Workflow Architect.
+
+The same agent can:
+
+1. Analyze the feature and the current repository.
+2. Define the technical approach.
+3. Generate a persistent `WORKFLOW_FEATURE.md` roadmap.
+4. Guide the implementation.
+5. Apply the project's engineering and verification rules.
+
+This approach keeps the feature context centralized and minimizes handoff and coordination overhead.
+
+Use it when one agent can effectively own the feature from analysis through implementation and verification.
+
+### AI Expert Workflow
+
+**Multi-agent, specialized workflow.**
+
+The AI Expert Workflow introduces explicit roles for different stages of feature development.
+
+The workflow includes:
+
+1. **build-brief** — guided discovery and clarification of the product or feature.
+2. **harness-starter** — prepares the minimal project harness and development context.
+3. **feature-spec** — creates an implementation-ready specification.
+4. **feature-implementer** — implements the approved specification.
+5. **feature-validator** — independently validates the implementation.
+6. **feature-flow** — orchestrates the feature workflow and coordinates the specialized agents.
+
+The key characteristic is the separation between planning, implementation, and validation.
+
+This approach is useful when explicit handoffs, specialized agent roles, and independent validation provide enough value to justify the additional coordination.
+
+### Choosing a Workflow
+
+The choice is not strictly based on whether the project is new or existing.
+
+A practical rule is:
+
+> **Use the Foundation Workflow when one agent can efficiently own the task end to end.**
+
+> **Use the AI Expert Workflow when the task benefits from separating planning, implementation, and validation across specialized agents.**
+
+Both workflows can be used with new or existing projects.
+
+---
+
+## 3. Human Supervision
+
+Both workflows are designed to remain **human-supervised**.
+
+The difference is not autonomous AI versus human-controlled AI. The human remains the highest-level supervisor in both models.
+
+### Foundation Workflow
+
+```text
+Human
+  ↓
+Single AI Agent
+  ├── Analyze
+  ├── Plan
+  ├── Implement
+  └── Verify
+  ↓
+Human Review
+```
+
+### AI Expert Workflow
+
+```text
+Human
+  ↓
+Workflow Orchestrator
+  ├── Planner
+  ├── Implementer
+  └── Validator
+  ↓
+Human Review
+```
+
+The human can review, correct, approve, or interrupt the process at any stage.
+
+---
+
+## 4. Workflow Routing
+
+The active workflow is stored in:
+
+```text
+.agents/workflow.json
+```
+
+For example:
+
+```json
+{
+  "activeWorkflow": "foundation"
+}
+```
+
+or:
+
+```json
+{
+  "activeWorkflow": "ai-expert-workflow"
+}
+```
+
+This configuration acts as a routing and safety boundary.
+
+When the Foundation Workflow is active:
+
+```text
+activeWorkflow = foundation
+        ↓
+workflow-feature
+```
+
+When the AI Expert Workflow is active:
+
+```text
+activeWorkflow = ai-expert-workflow
+        ↓
+feature-flow
+```
+
+The inactive workflow remains available where installed, but must not orchestrate feature development.
+
+This prevents mixing the two methodologies within the same feature workflow.
 
 ---
 
 ## 🛠 Installation
 
-### Scenario A: New Projects (Full Setup)
-1. Initialize your new Android project.
-2. Run the following command in the project's root directory:
-```bash
-npx skills add albertmartorell1975/android-ai-workflow-foundation && echo ">>> SUCCESS: Motor installed. NEXT STEP: Open Android Studio and say 'Activate workflow-initializer' to deploy Guardrails and select your Workflow."
-```
-3. **IMPORTANT**: Open **Android Studio** and the Agent chat, then type:
-**"Activate workflow-initializer"**
+### Scenario A: New Project
 
-### Scenario B: Existing Projects (Add Capabilities)
-Run the same command. Version 3.0.0 will install the **Motor** skills. Then, run the **workflow-initializer** to deploy the **Guardrails** and select or migrate your workflow.
+Initialize your Android project first, then run:
+
+```bash
+npx skills add albertmartorell1975/android-ai-workflow-foundation
+```
+
+Open Android Studio and the Agent chat, then activate:
+
+```text
+Activate workflow-initializer
+```
+
+The initializer will:
+
+* inspect the project,
+* customize the Foundation,
+* configure the project context,
+* present workflow options,
+* and activate optional skills or workflow plugins as needed.
+
+### Scenario B: Existing Project
+
+Run the same command from the project root:
+
+```bash
+npx skills add albertmartorell1975/android-ai-workflow-foundation
+```
+
+Then activate:
+
+```text
+Activate workflow-initializer
+```
+
+The Foundation can be introduced into an existing project without requiring the project to adopt a new development methodology.
 
 ---
 
-## 🛠 How to Install Optional Plugins & Workflows
-If your project needs a specialized skill or a different workflow from the catalog, you have two ways to "bring them to the field":
+## 🧩 Optional Plugins & Workflows
 
-1.  **The Wizard (Recommended)**: Run `Activate workflow-initializer` in Android Studio. During the setup, the agent will present the complete catalog and install your choices automatically.
-2.  **On-Demand Chat**: At any time, simply ask the agent: *"Install the [plugin-name] plugin from the catalog"*. The agent will fetch the latest expert patterns from GitHub and set them up for you.
+The Foundation catalog contains optional skills and workflow methodologies that are not part of the mandatory Foundation Core.
+
+They can be activated through `workflow-initializer` when appropriate.
+
+Examples include:
+
+* specialized Android technologies,
+* Firebase or other platform integrations,
+* expert Compose/Kotlin skills,
+* alternative development workflows.
+
+### AI Expert Workflow
+
+The AI Expert Workflow was originally created by **Antonio Leiva / Nino Ruano** for the **AI Expert** course and is integrated and adapted here with the author's permission.
+
+Its workflow skills are maintained under `.agents/catalog`.
 
 ---
 
 ## 🔄 Maintaining & Updating
 
-### 1. Syncing active Skills
-To receive the latest improvements for the skills already active in your projects (Motor and Guardrails), run:
+### Syncing Installed Skills
+
+To receive updates to skills already installed in the project:
+
 ```bash
 npx skills update
 ```
 
-### 2. Refreshing the Catalog
-Catalog skills and workflows are fetched directly from GitHub during on-demand installation, ensuring you always get the latest expert knowledge without manual management.
+### Evolving the Foundation
 
-### 3. Evolving the Foundation (For Maintainers)
-Use the **foundation-evolve** skill to promote local project skills to either the `skills/` (mandatory) or `catalog/` (optional) directories in this repository.
+The `foundation-evolve` skill is used to promote useful skills and improvements from working projects back into the Foundation.
 
+The repository separates:
+
+```text
+.agents/skills/
+```
+
+for active Foundation skills from:
+
+```text
+.agents/catalog/
+```
+
+for optional skills and workflow plugins.
+
+See the [Expert Skills Index](.agents/skills/README.md) for the current Foundation skill set.
 
 ---
 
 ## 🙏 Acknowledgments & Credits
 
-This workflow foundation orchestrates collective intelligence from several sources:
-- **Core Methodology**: Developed by Albert Martorell Garcia.
-- **External Expert Patterns**: Includes curated skills from experts like **Chris Banes**.
-- **AI Expert Workflow**: Developed by **Antonio Leiva / DevExpert** for the **AI Expert** course.
-- **Official Documentation**: Integrates knowledge from **Google** Android and Firebase teams.
+This Foundation incorporates knowledge and methodologies from multiple sources:
 
-All included skills retain their original author metadata. Please respect the licenses and authorship of the included modules.
+* **Foundation Methodology:** Albert Martorell Garcia.
+* **AI Expert Workflow:** **Antonio Leiva** / **Nino Ruano**, originally created for the AI Expert course.
+* **External Expert Patterns:** Includes curated skills from experts such as **Chris Banes**.
+* **Official Documentation:** Integrates knowledge and guidance from Google Android and Firebase documentation.
+
+Included skills retain their original authorship and source metadata. Please respect the corresponding licenses and attribution requirements.
+
+---
+
+## Core Principle
+
+The Foundation is designed around a simple idea:
+
+> **Same Foundation, different development methodology.**
+
+Shared engineering standards provide consistency, while the selected workflow determines how AI agents collaborate to build the software.

@@ -5,7 +5,7 @@ description: Implement exactly one planned feature from a feature spec file unde
 
 # Origin
 
-Originally created by Antonio Leiva / DevExpert for the AI Expert course.
+Originally created by Antonio Leiva / Nino Ruano for the AI Expert course.
 Integrated and adapted for Android AI Workflow Foundation with permission.
 
 # Feature Implementer

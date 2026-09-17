@@ -5,7 +5,7 @@ description: Independently validate one implemented feature against a feature sp
 
 # Origin
 
-Originally created by Antonio Leiva / DevExpert for the AI Expert course.
+Originally created by Antonio Leiva / Nino Ruano for the AI Expert course.
 Integrated and adapted for Android AI Workflow Foundation with permission.
 
 
