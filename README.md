@@ -18,7 +18,7 @@ The foundation is continuously evolving through experimentation and real-world A
 1. Initialize your new Android project.
 2. Run the following command in the project's root directory:
 ```bash
-npx skills add albertmartorell1975/android-ai-workflow-foundation -y && echo ">>> SUCCESS: Core & Guardrails installed. NEXT STEP: Open Android Studio and say 'Activate workflow-initializer' to configure your Tech Stack and select optional Plugins (Firebase, CameraX, etc.) from the catalog."
+npx skills add albertmartorell1975/android-ai-workflow-foundation && echo ">>> SUCCESS: Core & Guardrails installed. NEXT STEP: Open Android Studio and say 'Activate workflow-initializer' to configure your Tech Stack and select optional Plugins (Firebase, CameraX, etc.) from the catalog."
 ```
 3. **IMPORTANT**: Open **Android Studio** and the Agent chat, then type:
 **"Activate workflow-initializer"**
