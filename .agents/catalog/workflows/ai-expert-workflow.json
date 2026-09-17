@@ -1,0 +1,18 @@
+{
+  "name": "AI Expert Workflow",
+  "provider": "Antonio Leiva / Nino Ruano",
+  "source": "AI Expert",
+  "permission": "Granted by Antonio Leiva and Nino Ruano for use and adaptation outside the course project",
+  "skills": [
+    "build-brief",
+    "harness-starter",
+    "feature-spec",
+    "feature-implementer",
+    "feature-validator",
+    "feature-flow"
+  ],
+  "excludes": [
+    "workflow-feature"
+  ],
+  "entryPoint": "feature-flow"
+}

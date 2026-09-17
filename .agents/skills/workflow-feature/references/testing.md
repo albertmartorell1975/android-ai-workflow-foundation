@@ -1,6 +1,6 @@
 # Pragmatic Testing Strategy
 
-The goal of testing in **MeteoMartoCompose** is to ensure the reliability of complex logic and critical data transformations, avoiding the overhead of testing boilerplate or simple data pass-throughs.
+The goal of testing in the project is to ensure the reliability of complex logic and critical data transformations, avoiding the overhead of testing boilerplate or simple data pass-throughs.
 
 ## When to write Unit Tests?
 

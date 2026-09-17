@@ -1,6 +1,6 @@
 ---
-name: hilt-dependency-injection
-description: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns for the MeteoMartoCompose native Android project.
+name: hilt
+description: Official guidelines, clean architecture boundaries, static graph optimizations, and comprehensive multibinding patterns for the project.
 version: 1.1.0
 ecosystem: Android, Kotlin, Dagger, Hilt, Jetpack Compose
 keywords:
@@ -23,7 +23,7 @@ keywords:
 
 ## 1. Clean Architecture Boundaries
 
-To preserve strict layer isolation in the `MeteoMartoCompose` project, Hilt dependencies must conform to the following architectural rules:
+To preserve strict layer isolation in the project, Hilt dependencies must conform to the following architectural rules:
 
 * **The `:domain` Module**: This module must remain completely agnostic of Hilt, Dagger, or any Android framework classes (such as `Context`). No DI annotations are allowed in this module. All domain entities, use-case contracts, and repository interfaces are defined here purely.
 * **The `:usecases` Module**: Business use cases or interactors must reside in this layer. They must resolve their domain repository dependencies purely via **constructor injection** using the `@Inject` annotation on the constructor. They are not allowed to declare modules or access Android context.
@@ -43,7 +43,18 @@ Combining interface bindings and dynamic provider declarations in the same Hilt 
 ### Rule 2: Complete Prohibition of Companion Objects in `@Binds` Modules
 Never embed a `companion object` containing `@Provides` methods inside an abstract class that declares `@Binds` methods. 
 
-#### Compilation Failure Analysis
+### Rule 3: Kotlin 2.x Explicit Annotation Targets
+When using Hilt qualifiers (like `@ApplicationContext`) or custom qualifiers inside a class constructor's properties, you MUST use the `@param:` target prefix to avoid compilation warnings and ensure future-proof bytecode mapping.
+
+#### Example: Correct Target Specificity
+```kotlin
+class WorkScheduler @Inject constructor(
+    @param:ApplicationContext private val context: Context,
+    @param:ApplicationScope private val scope: CoroutineScope
+)
+```
+
+#### Compilation Failure Analysis (Rule 2)
 1. **Redundant Class Generation**: The Kotlin compiler compiles `companion object` blocks into a separate inner class file (e.g., `MyModule$Companion.class`). The annotation processors (Kapt/KSP) are forced to analyze multiple scopes and generate redundant factory boilerplate, bloating compiled method counts.
 2. **Slower Incremental Build Times**: During incremental builds, Kapt or KSP must re-parse and compile the entire enclosing class structure if a single binding in either the parent abstract module or child companion object changes. Purely isolated abstract modules and static object modules allow optimal compiler caching.
 
@@ -73,7 +84,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://api.meteomarto.com/")
+            .baseUrl("https://api.example.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
