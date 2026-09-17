@@ -14,6 +14,7 @@ Custom skills created to define this project's unique architecture and governanc
 - **kotlin-style**: Strict adherence to Official Kotlin Coding Conventions (order of declarations, naming, formatting, **no control flow via exceptions**, and the **Magic Literal Prohibition**).
 - **room-schema-governance**: Ensures database integrity, version management, and schema evolution rules for Room.
 - **testing-setup**: Analyzes and creates a testing strategy for native Android apps (Unit, UI Behavior, and Visual Regression).
+- **to-plan**: Repository-aware implementation planning for ready GitHub issues or confirmed specs.
 - **viewmodel-architecture-governance**: Unified architectural rules for ViewModels, focusing on the Passive Initialization Mandate, the Hybrid UI State Pattern, and non-suspending UI Actions (internal coroutine management).
 - **workflow-feature**: Analyzes the project and builds a standardized workflow for new features with granular checklists.
 - **workflow-initializer**: Initializes a new project with the AI-assisted workflow seed, governance files, and customized agents.
@@ -39,9 +40,6 @@ Expert patterns for Compose and Kotlin, managed via `npx skills` and tracked in 
 - **compose-state-authoring**: Best practices for state creation (remember, mutableStateListOf) in Composables.
 - **compose-state-hoisting**: Principles for interactive UI state movement and coordination logic.
 - **compose-ui-testing-patterns**: Patterns for UI tests, screenshot tests, and semantics assertions in Compose.
-- **firebase-auth-basics**: Expert patterns for setting up and managing Firebase Authentication (users, providers, tokens).
-- **firebase-basics**: Foundational Firebase CLI setup, project creation, and app configuration management.
-- **firebase-remote-config-basics**: Managing feature flags, loading strategies, and real-time updates via Firebase Remote Config.
 - **kotlin-control-flow**: Refined Kotlin branching (when, guard conditions, sealed types) for cleaner logic.
 - **kotlin-coroutines-structured-concurrency**: Safe coroutine management (CoroutineScope, structured launch) to avoid leaks.
 - **kotlin-flow-state-event-modeling**: Professional UI state and event management using StateFlow, SharedFlow, and Channels.

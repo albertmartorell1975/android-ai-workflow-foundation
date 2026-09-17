@@ -1,6 +1,6 @@
 {
   "name": "@albertmartorell/android-ai-workflow-foundation",
-  "version": "2.3.3",
+  "version": "2.3.5",
   "description": "Modular Foundational AI-Assisted Workflow for Android. Auto-installs Core and Guardrails. Plugins available via wizard.",
   "scripts": {
     "postinstall": "echo \"CORE INSTALLED. Run 'Activate workflow-initializer' in Android Studio.\""
@@ -22,12 +22,8 @@
       "dependency-manager": ".agents/skills/dependency-manager/SKILL.md",
       "design-system-governance": ".agents/skills/design-system-governance/SKILL.md",
       "edge-to-edge": ".agents/skills/edge-to-edge/SKILL.md",
-      "firebase-auth-basics": ".agents/skills/firebase-auth-basics/SKILL.md",
-      "firebase-basics": ".agents/skills/firebase-basics/SKILL.md",
-      "firebase-remote-config-basics": ".agents/skills/firebase-remote-config-basics/SKILL.md",
       "foundation-evolve": ".agents/skills/foundation-evolve/SKILL.md",
       "git-governance": ".agents/skills/git-governance/SKILL.md",
-      "hilt": ".agents/skills/hilt/SKILL.md",
       "kotlin-control-flow": ".agents/skills/kotlin-control-flow/SKILL.md",
       "kotlin-coroutines-structured-concurrency": ".agents/skills/kotlin-coroutines-structured-concurrency/SKILL.md",
       "kotlin-flow-state-event-modeling": ".agents/skills/kotlin-flow-state-event-modeling/SKILL.md",
@@ -35,9 +31,9 @@
       "kotlin-style": ".agents/skills/kotlin-style/SKILL.md",
       "navigation-3": ".agents/skills/navigation-3/SKILL.md",
       "r8-analyzer": ".agents/skills/r8-analyzer/SKILL.md",
-      "room-schema-governance": ".agents/skills/room-schema-governance/SKILL.md",
       "skills-index": ".agents/skills/README.md",
       "testing-setup": ".agents/skills/testing-setup/SKILL.md",
+      "to-plan": ".agents/skills/to-plan/SKILL.md",
       "using-chrisbanes-skills": ".agents/skills/using-chrisbanes-skills/SKILL.md",
       "viewmodel-architecture-governance": ".agents/skills/viewmodel-architecture-governance/SKILL.md",
       "workflow-feature": ".agents/skills/workflow-feature/SKILL.md",

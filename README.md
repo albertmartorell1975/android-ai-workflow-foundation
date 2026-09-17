@@ -28,36 +28,43 @@ Run the same command. Version 1.0 will install the **Core** and **Guardrail** sk
 
 ---
 
+## 📦 Modular Skill Architecture (Titulars vs. Suplents)
+To maximize AI performance and minimize context noise, the foundation is organized into two main physical locations:
+
+### 🏟️ 1. The Field: `.agents/skills/` (Titulars)
+These skills are **installed automatically** via `npx skills add`. They represent the essential DNA and guardrails of every project.
+- **Core Engine**: `workflow-initializer`, `workflow-feature`, `git-governance`, `compiler`, `to-plan`.
+- **Expert Guardrails**: `hilt`, `testing-setup`, `viewmodel-architecture-governance`, `kotlin-style`, `design-system-governance`, `room-schema-governance`, etc.
+- **System & Compose Patterns**: `android-cli`, `r8-analyzer`, `navigation-3`, `edge-to-edge`, `compose-stability`, etc.
+
+### 🪑 2. The Bench: `.agents/catalog/` (Suplents)
+These are **on-demand plugins** that live in the Foundation's repository but are NOT installed by default. They stay on the bench to keep your project clean until you need them.
+- **Examples**: `firebase-*`, `camerax`, `wear-compose-m3`, `perfetto-*`, `verified-email`, etc.
+
+---
+
+## 🛠 How to Install Optional Plugins
+If your project needs a specialized skill from the catalog, you have two ways to "bring them to the field":
+
+1. **The Wizard (Recommended)**: Run `Activate workflow-initializer` in Android Studio. During the setup, the agent will present the catalog and install your choices automatically.
+2. **On-Demand Chat**: Simply ask the agent: *"Install the [plugin-name] plugin from the catalog"*. The agent will fetch the latest version from GitHub and set it up for you.
+
+---
+
 ## 🔄 Maintaining & Updating
 
-### 1. Syncing changes in your Projects (For Users)
-To receive the latest improvements from the foundation in your active projects, run:
+### 1. Syncing active Skills
+To receive the latest improvements for the skills already "on the field" in your active projects, run:
 ```bash
 npx skills update
 ```
 
-### 2. Evolving the Foundation (For Maintainers)
-Use the **foundation-evolve** skill to automate the promotion of local skills to this repository.
+### 2. Refreshing the Catalog
+The catalog skills are fetched directly from GitHub during on-demand installation, ensuring you always get the latest expert patterns without having to manage them manually.
 
----
+### 3. Evolving the Foundation (For Maintainers)
+Use the **foundation-evolve** skill to promote local project skills to either the `skills/` (mandatory) or `catalog/` (optional) directories in this repository.
 
-## 📦 Modular Skill Architecture (v1.0)
-To maximize AI performance and minimize context noise, skills are organized into three groups:
-
-### 🟢 1. Core (Installed by Default)
-The engine of the workflow: `workflow-initializer`, `workflow-feature`, `git-governance`, `compiler`, `foundation-evolve`.
-
-### 🔵 2. Expert Guardrails (Installed by Default)
-Professional quality standards for every project:
-- **Architecture**: `hilt`, `testing-setup`, `viewmodel-architecture-governance`, `compose-ui-testing-patterns`.
-- **System**: `android-cli`, `r8-analyzer`, `adaptive`, `navigation-3`, `edge-to-edge`, `android-intent-security`.
-- **Compose/Kotlin Quality**: `compose-stability`, `compose-state-hoisting`, `compose-state-authoring`, `kotlin-flow-modeling`, `kotlin-functions`.
-
-### 🟡 3. On-Demand Plugins (Optional)
-Specialized domains activated via the Wizard:
-- `to-plan`, `firebase-*`, `camerax`, `compose-animations`, `perfetto-*`, `wear-compose`, `billing`, and more.
-
-[See the Full Expert Skills Index for details](.agents/skills/README.md).
 
 ---
 
