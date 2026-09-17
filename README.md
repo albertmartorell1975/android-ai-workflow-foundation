@@ -77,6 +77,7 @@ Use the **foundation-evolve** skill to promote local project skills to either th
 This workflow foundation orchestrates collective intelligence from several sources:
 - **Core Methodology**: Developed by Albert Martorell Garcia.
 - **External Expert Patterns**: Includes curated skills from experts like **Chris Banes**.
+- **AI Expert Workflow**: Developed by **Antonio Leiva / DevExpert** for the **AI Expert** course.
 - **Official Documentation**: Integrates knowledge from **Google** Android and Firebase teams.
 
 All included skills retain their original author metadata. Please respect the licenses and authorship of the included modules.
