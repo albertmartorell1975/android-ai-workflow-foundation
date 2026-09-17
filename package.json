@@ -1,9 +1,9 @@
 {
   "name": "@albertmartorell/android-ai-workflow-foundation",
-  "version": "2.3.5",
-  "description": "Modular Foundational AI-Assisted Workflow for Android. Auto-installs Core and Guardrails. Plugins available via wizard.",
+  "version": "3.0.0",
+  "description": "Modular Multi-Workflow Foundation for Android. Supports Foundation and AI Expert methodologies.",
   "scripts": {
-    "postinstall": "echo \"CORE INSTALLED. Run 'Activate workflow-initializer' in Android Studio.\""
+    "postinstall": "echo \">>> MOTOR INSTALLED. Run 'Activate workflow-initializer' in Android Studio to select your workflow (Foundation or AI Expert).\""
   },
   "agent-skills": {
     "skills": {

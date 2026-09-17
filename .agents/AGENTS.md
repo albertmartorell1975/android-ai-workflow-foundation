@@ -82,10 +82,29 @@ To prevent architectural drift and technical debt, all agents must follow this s
     - **Smart Filtering**: To optimize context usage, the agent must first read the **YAML frontmatter** to identify the skill's `name`, `description`, and `keywords`.
     - The full skill content should only be loaded if its metadata indicates relevance to the current task.
 3. **Robustness Over Speed (MANDATORY)**: Agents must prioritize robust, scalable solutions that follow SOLID principles and industry standards. A "quick fix" that compromises the established architecture is considered a failure.
-4. **Workflow Activation**: Only after the user confirms the optimized prompt and assumptions can the agent trigger the `workflow-feature` skill to generate the implementation checklist.
-5. **Strict Pre-requisite**: No agent is allowed to create a `WORKFLOW_FEATURE.md` file without having presented the diagnosis questions to the user first.
-6. **Technical Accuracy & Documentation (STRICT)**: Always consult the official Android documentation via `android-cli` or `search_android_docs` when implementing or refactoring Android framework APIs (e.g., WorkManager, Insets, In-app updates) to ensure compliance with the latest SDK standards and background execution limits.
-7. **Dependency Governance (MANDATORY)**: Any task involving adding, removing, or updating a library or plugin MUST activate the **`dependency-manager`** skill to ensure version compatibility (especially KSP/Kotlin sync) and project stability.
+4. **Workflow Activation**:
+      After the Gateway Diagnosis and required user confirmation, the agent MUST
+      route feature work according to `.agents/workflow.json`.
+
+    - `activeWorkflow = foundation`:
+      activate `workflow-feature`.
+    - `activeWorkflow = ai-expert-workflow`:
+      activate `feature-flow` and follow the DevExpert AI Workflow.
+      Do NOT activate `workflow-feature`.
+
+5. **Workflow Isolation**:
+   Only the active workflow may orchestrate feature development.
+   Alternative workflow engines MUST NOT be invoked while another workflow
+   is active.
+
+   In `foundation` mode, do not invoke the DevExpert AI Workflow.
+   In `ai-expert-workflow` mode, do not invoke `workflow-feature`.
+6. **Strict Pre-requisite**:
+      No agent is allowed to create a `WORKFLOW_FEATURE.md` file unless
+      `activeWorkflow = foundation` and the `workflow-feature` prerequisites
+      have been satisfied.
+7. **Technical Accuracy & Documentation (STRICT)**: Always consult the official Android documentation via `android-cli` or `search_android_docs` when implementing or refactoring Android framework APIs (e.g., WorkManager, Insets, In-app updates) to ensure compliance with the latest SDK standards and background execution limits.
+8. **Dependency Governance (MANDATORY)**: Any task involving adding, removing, or updating a library or plugin MUST activate the **`dependency-manager`** skill to ensure version compatibility (especially KSP/Kotlin sync) and project stability.
 
 ---
 

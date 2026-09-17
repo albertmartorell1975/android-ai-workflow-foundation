@@ -1,0 +1,5 @@
+{
+  "activeWorkflow": "foundation",
+  "version": "1.0.0",
+  "_comment": "Valid values: 'foundation' or 'ai-expert-workflow'"
+}

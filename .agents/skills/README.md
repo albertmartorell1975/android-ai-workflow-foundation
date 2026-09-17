@@ -1,6 +1,7 @@
 # AI Workflow Foundation - Expert Skills Index
 
-This directory contains the collective intelligence for the project, organized into three specialized groups.
+This directory contains the Foundation's active skills, organized into three specialized groups. 
+Optional workflow plugins are maintained separately under`.agents/catalog`.
 
 ## 1. Core Project Skills (Foundation DNA)
 Custom skills created to define this project's unique architecture and governance.
@@ -45,6 +46,33 @@ Expert patterns for Compose and Kotlin, managed via `npx skills` and tracked in 
 - **kotlin-flow-state-event-modeling**: Professional UI state and event management using StateFlow, SharedFlow, and Channels.
 - **kotlin-functions**: Choosing the best Kotlin function type (top-level, extension, factory) for any receiver.
 - **using-chrisbanes-skills**: Entry point for broad Kotlin/Compose reviews spanning multiple design concerns.
+
+## 4. Workflow Plugins
+
+Optional workflow methodologies available from `.agents/catalog`.
+
+These workflows are not installed by default. A project may activate one
+through `workflow-initializer`, depending on its development needs.
+
+### AI Expert Workflow
+
+A complete agentic development workflow originally created by **Antonio Leiva /
+DevExpert** for the **AI Expert** course. Integrated and adapted for use in
+other projects with the author's permission.
+
+It provides:
+
+- **build-brief**: Guided project and feature discovery before implementation.
+- **harness-starter**: Creates the minimal project harness from the confirmed
+  discovery.
+- **feature-spec**: Creates an implementation-ready specification for a feature.
+- **feature-implementer**: Implements one planned feature from its specification.
+- **feature-validator**: Independently validates the implemented feature.
+- **feature-flow**: Orchestrates the specification, implementation, and
+  validation workflow.
+
+When the **AI Expert Workflow** is active, it replaces `workflow-feature` as
+the feature orchestration workflow.
 
 ---
 **Note**: All skills must be consulted following the *Mandatory Planning Protocol* defined in `AGENTS.md`.

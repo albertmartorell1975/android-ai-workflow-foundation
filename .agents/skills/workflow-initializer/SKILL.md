@@ -3,7 +3,7 @@ name: workflow-initializer
 description: Initializes a new Android project with the AI-assisted development workflow seed. It sets up the governance files and guides the initial customization of agents and skills.
 metadata:
   author: Albert Martorell Garcia
-  version: 2.3.0
+  version: 3.2.0
   keywords:
   - setup
   - initialization
@@ -54,8 +54,25 @@ When this skill is activated, the agent MUST first acknowledge the core foundati
    - **workflow-feature**: Standardized feature implementation workflow with granular checklists.
    - **workflow-initializer**: Current project setup and customization wizard.
 
-### PHASE 2: Stack Discovery & Optional Plugins
-After listing the mandatory skills, the agent MUST ask the user about specific technical choices and offer optional plugins from the bench (catalog).
+### PHASE 2: Development Workflow Selection
+After foundation deployment and before Stack Diagnosis, the agent MUST determine the active development workflow.
+
+1. **Workflow Comparison**: Present a clear comparison between available workflows:
+   - **Foundation Workflow (`foundation`)**:
+     - *Best for*: Lean projects and standard feature development.
+     - *Orchestrator*: `workflow-feature`.
+     - *Methodology*: Direct implementation through Domain -> Data -> UseCase -> UI layers.
+   - **AI Expert Workflow (`ai-expert-workflow`)**:
+     - *Best for*: Highly structured agentic development and complex project discovery.
+     - *Orchestrator*: `feature-flow`.
+     - *Methodology*: Formalized lifecycle (Build Brief -> Harness Starter -> Feature Spec -> Implementation -> Validator).
+
+2. **Persistence**: The selected workflow MUST be persisted in `.agents/workflow.json`.
+   - If the file exists, ask the user if they wish to switch.
+   - If a non-foundation workflow is selected, trigger the **Workflow Plugin Installation** logic.
+
+### PHASE 3: Stack Discovery & Optional Plugins
+After determining the workflow, the agent MUST ask the user about specific technical choices and offer optional plugins from the bench (catalog).
 
 1. **Stack Diagnosis**:
    - **Project Name**: What is the name of this project?
@@ -67,44 +84,52 @@ After listing the mandatory skills, the agent MUST ask the user about specific t
 
    **A. Core Architecture (Highly Recommended)**:
    - **hilt**: Expert Dependency Injection boundaries and static graph optimizations.
-   - **room-schema-governance**: Database integrity, version management, and schema evolution rules for Room.
+   - **room-schema-governance**: Database integrity, version management, and migration rules for Room.
 
    **B. Firebase Cloud Suite**:
    - **firebase-basics**: CLI setup, project creation, and app config management.
-   - **firebase-auth-basics**: Expert patterns for secure user authentication.
-   - **firebase-remote-config-basics**: Feature flag and remote configuration management.
+   - **firebase-auth-basics**: Expert patterns for secure user authentication (users, providers, tokens).
+   - **firebase-remote-config-basics**: Feature flag and remote configuration management with real-time updates.
 
    **C. Hardware & Media**:
-   - **camerax**: Advanced camera development and Media3 integration.
-   - **display-glasses-with-jetpack-compose-glimmer**: Android XR development for display glasses.
+   - **camerax**: Advanced camera development including lifecycle handling and Media3 integration.
+   - **display-glasses-with-jetpack-compose-glimmer**: Android XR development guidelines for display glasses using Glimmer UI.
 
    **D. UI Expert Patterns**:
-   - **compose-animations**: Expert motion and animation guidance in Compose.
-   - **styles**: Integration of the Jetpack Compose Styles API.
-   - **compose-slot-api-pattern**: Design of reusable, dynamic UI components using slots.
-   - **compose-state-deferred-reads**: Performance optimization via phase-deferred state reads.
-   - **migrate-xml-views-to-jetpack-compose**: Structured workflow for legacy XML to Compose migration.
+   - **compose-animations**: Expert motion and animation guidance (AnimatedVisibility, animate*AsState).
+   - **styles**: Integration of the Jetpack Compose Styles API for unified component theming.
+   - **compose-slot-api-pattern**: Design of reusable, dynamic UI components using slot-based design patterns.
+   - **compose-state-deferred-reads**: Performance optimization by deferring frame-rate state reads to later phases.
+   - **migrate-xml-views-to-jetpack-compose**: Structured workflow for migrating legacy XML layouts to modern Jetpack Compose.
 
    **E. Performance & Policy**:
-   - **perfetto-trace-analysis**: Root cause analysis for latency, memory, or jank.
-   - **perfetto-sql**: Performance analysis via Perfetto SQL queries.
-   - **play-policy-insights**: Automated auditor for Google Play Policy compliance.
+   - **perfetto-trace-analysis**: Root cause analysis for latency, memory, or UI jank using system traces.
+   - **perfetto-sql**: Performance analysis via natural language to Perfetto SQL queries translation.
+   - **play-policy-insights**: Automated auditor for Google Play Policy compliance (Permissions, Data Safety).
 
    **F. Specialized Platforms & Tools**:
-   - **wear-compose-m3**: Material 3 standards for Wear OS development.
-   - **kotlin-multiplatform-expect-actual**: Design of interface boundaries for KMP projects.
-   - **appfunctions**: Exposing app workflows to the Android System for AI discovery.
-   - **engage-sdk-integration**: Play Engage SDK implementation and debugging.
+   - **wear-compose-m3**: Material 3 standards and expert guidance for Wear OS development.
+   - **kotlin-multiplatform-expect-actual**: Design of interface boundaries and expect/actual patterns for KMP projects.
+   - **appfunctions**: Exposing app workflows to the Android System for discovery by AI agents.
+   - **engage-sdk-integration**: Google Play Engage SDK implementation, mapping, and debugging.
 
    **G. Modernization & Identity**:
-   - **verified-email**: OTP-less email verification via Credential Manager.
-   - **agp-9-upgrade**: Safe migration protocol for Android Gradle Plugin 9.0+.
-   - **play-billing-library-version-upgrade**: Migration guide for the latest Google Play Billing versions.
-   - **kotlin-types-value-class**: Optimized type safety using @JvmInline value classes.
+   - **verified-email**: Secure, OTP-less email verification via Android Credential Manager.
+   - **agp-9-upgrade**: Migration protocol for upgrading to Android Gradle Plugin 9.0+.
+   - **play-billing-library-version-upgrade**: Safe migration guide for the latest Google Play Billing Library versions.
+   - **kotlin-types-value-class**: Optimized type safety and performance using @JvmInline value classes.
 
-3. **Plugin Installation**: For each selected plugin, the agent MUST fetch the `SKILL.md` from GitHub (`https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/main/.agents/catalog/[plugin-name]/SKILL.md`) and write it to the local `.agents/skills/[plugin-name]/SKILL.md` file using `write_file`.
+3. **General Plugin Installation**: For each selected standalone plugin, fetch its `SKILL.md` from GitHub (`https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/main/.agents/catalog/[plugin-name]/SKILL.md`) and write it to `.agents/skills/[plugin-name]/SKILL.md`.
 
-### PHASE 3: Project Customization
+### Workflow Plugin Installation
+When a complex workflow plugin is selected:
+1. **Fetch Manifest**: Fetch the JSON manifest from GitHub (`https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/main/.agents/catalog/workflows/[identifier].json`) using `read_url`.
+2. **Resolve Dependencies**: Identify the `skills` list and `excludes` list from the manifest.
+3. **Install Requirements**: For each skill in the `skills` list, fetch its `SKILL.md` from `.agents/catalog/` in the GitHub repo and write it locally to `.agents/skills/[skill-name]/SKILL.md`.
+4. **Enforce Exclusions**: If the manifest contains an `excludes` list (e.g., `workflow-feature`), the agent MUST ensure those skills are NOT active or are explicitly disabled for feature orchestration.
+5. **Active Workflow Setup**: Write the selected identifier to `.agents/workflow.json`.
+
+### PHASE 4: Project Customization
 1. **Materialize Templates**: Create the `rules.md`, `AGENTS.md`, and `skills/README.md` files in the `.agents/` directory using the templates provided below.
 2. **Replacement**: During materialization, replace the following placeholders with values from the Stack Diagnosis:
    - `[PROJECT_NAME]` -> User's Project Name.
@@ -116,8 +141,11 @@ After listing the mandatory skills, the agent MUST ask the user about specific t
 ## Actionable Checklist for New Projects
 - [ ] Acknowledge mandatory foundation deployment.
 - [ ] List all mandatory skills with brief descriptions.
+- [ ] Perform **Workflow Comparison** and Selection.
+- [ ] Persist selection in `workflow.json`.
+- [ ] Install **Workflow Plugins** and resolve `skills/excludes` dependencies.
 - [ ] Perform **Stack Diagnosis** with the user (Name, Arch, DI, DB).
-- [ ] Present and install **Optional Plugins** selected by the user.
+- [ ] Present and install standalone **Optional Plugins** from the catalog.
 - [ ] Materialize `rules.md`, `AGENTS.md`, and `skills/README.md` with dynamic replacements.
 - [ ] Run `git init` and establish the `git-governance` baseline.
 

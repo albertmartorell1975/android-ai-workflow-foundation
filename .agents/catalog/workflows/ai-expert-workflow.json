@@ -1,0 +1,18 @@
+{
+  "name": "DevExpert AI Workflow",
+  "provider": "Antonio Leiva / DevExpert",
+  "source": "AI Expert",
+  "permission": "Granted by Antonio Leiva for use and adaptation outside the course project",
+  "skills": [
+    "build-brief",
+    "harness-starter",
+    "feature-spec",
+    "feature-implementer",
+    "feature-validator",
+    "feature-flow"
+  ],
+  "excludes": [
+    "workflow-feature"
+  ],
+  "entryPoint": "feature-flow"
+}

@@ -28,26 +28,30 @@ Run the same command. Version 1.0 will install the **Core** and **Guardrail** sk
 
 ---
 
-## 📦 Modular Skill Architecture (Starters vs. Substitutes)
-To maximize AI performance and minimize context noise, the foundation is organized into two main physical locations:
+## 📦 Modular Skill Architecture (Multi-Workflow)
+To maximize AI performance and minimize context noise, the foundation is now a **multi-workflow framework**. You can choose your preferred methodology during initialization.
 
 ### 🏟️ 1. The Field: `.agents/skills/` (Starters)
-These skills are **installed automatically** via `npx skills add`. They represent the essential DNA and guardrails of every project.
+These skills are **installed automatically** via `npx skills add`. They represent the engine and the shared Android guardrails.
 - **Core Engine**: `workflow-initializer`, `workflow-feature`, `git-governance`, `compiler`, `to-plan`.
-- **Expert Guardrails**: `hilt`, `testing-setup`, `viewmodel-architecture-governance`, `kotlin-style`, `design-system-governance`, `room-schema-governance`, etc.
+- **Expert Guardrails**: `testing-setup`, `viewmodel-architecture-governance`, `kotlin-style`, `design-system-governance`, etc.
 - **System & Compose Patterns**: `android-cli`, `r8-analyzer`, `navigation-3`, `edge-to-edge`, `compose-stability`, etc.
 
 ### 🪑 2. The Bench: `.agents/catalog/` (Substitutes)
-These are **on-demand plugins** that live in the Foundation's repository but are NOT installed by default. They stay on the bench to keep your project clean until you need them.
-- **Examples**: `firebase-*`, `camerax`, `wear-compose-m3`, `perfetto-*`, `verified-email`, etc.
+On-demand plugins and specialized workflows:
+- **Workflows**: `ai-expert-workflow` (DevExpert).
+- **Architecture**: `hilt`, `room-schema-governance`.
+- **Plugins**: `firebase-*`, `camerax`, `wear-compose-m3`, `perfetto-*`, `verified-email`, etc.
 
 ---
 
-## 🛠 How to Install Optional Plugins
-If your project needs a specialized skill from the catalog, you have two ways to "bring them to the field":
+## 🛠 How to Select a Workflow
+During the `Activate workflow-initializer` process, you will be asked to select an **Active Workflow**:
 
-1. **The Wizard (Recommended)**: Run `Activate workflow-initializer` in Android Studio. During the setup, the agent will present the catalog and install your choices automatically.
-2. **On-Demand Chat**: Simply ask the agent: *"Install the [plugin-name] plugin from the catalog"*. The agent will fetch the latest version from GitHub and set it up for you.
+1. **Foundation Workflow**: The native, lean Android AI Workflow Foundation methodology.
+2. **AI Expert Workflow**: A complete AI expert development workflow.
+
+The selection is persisted in `.agents/workflow.json` and automatically installs all necessary dependencies.
 
 ---
 
