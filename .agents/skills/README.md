@@ -63,9 +63,10 @@ Examples include:
 * **kotlin-functions**: Kotlin function and extension design.
 * **navigation-3**: Jetpack Navigation 3 patterns and integration.
 * **r8-analyzer**: R8/ProGuard analysis and application-size optimization.
-* **using-chrisbanes-skills**: Entry point for broader Kotlin and Compose expert reviews.
 
 The complete active set is defined by the skills physically installed under `.agents/skills/`.
+
+> External origin does not imply optional status. A skill created by an external expert can still be an active Foundation skill when it is installed under `.agents/skills/`.
 
 ---
 
@@ -103,6 +104,7 @@ Examples include:
 * **hilt**: Dependency Injection boundaries and optimizations.
 * **room-schema-governance**: Room database integrity and schema evolution.
 * **to-plan**: Repository-aware implementation planning around external issues or specifications.
+* **using-chrisbanes-skills**: Intelligent router to identify precise expert patterns for Kotlin and Compose based on Chris Banes' best practices.
 * **firebase-basics**: Firebase project and CLI fundamentals.
 * **firebase-auth-basics**: Firebase authentication patterns.
 * **firebase-remote-config-basics**: Remote configuration and feature flags.

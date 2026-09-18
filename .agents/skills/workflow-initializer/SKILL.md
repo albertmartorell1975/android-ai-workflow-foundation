@@ -81,39 +81,42 @@ After determining the workflow, the agent MUST ask the user about specific techn
 
 2. **Optional Plugins Selection**: The agent MUST present the complete list of optional plugins from the Foundation Catalog, categorized as follows, and ask the user which ones to install:
 
-   **A. Core Architecture & Workflow (Highly Recommended)**:
+   **A. Core Architecture**:
    - **hilt**: Expert Dependency Injection boundaries and static graph optimizations.
    - **room-schema-governance**: Database integrity, version management, and schema evolution rules for Room.
-   - **to-plan**: Repository-aware implementation planning around external issues or specifications.
 
-   **B. Firebase Cloud Suite**:
+   **B. Workflow Plugins**:
+   - **to-plan**: Repository-aware implementation planning around external issues or specifications.
+   - **using-chrisbanes-skills**: Intelligent router to identify precise expert patterns for Kotlin and Compose.
+
+   **C. Firebase Cloud Suite**:
    - **firebase-basics**: CLI setup, project creation, and app config management.
    - **firebase-auth-basics**: Expert patterns for secure user authentication (users, providers, tokens).
    - **firebase-remote-config-basics**: Feature flag and remote configuration management with real-time updates.
 
-   **C. Hardware & Media**:
+   **D. Hardware & Media**:
    - **camerax**: Advanced camera development including lifecycle handling and Media3 integration.
    - **display-glasses-with-jetpack-compose-glimmer**: Android XR development guidelines for display glasses using Glimmer UI.
 
-   **D. UI Expert Patterns**:
+   **E. UI Expert Patterns**:
    - **compose-animations**: Expert motion and animation guidance (AnimatedVisibility, animate*AsState).
    - **styles**: Integration of the Jetpack Compose Styles API for unified component theming.
    - **compose-slot-api-pattern**: Design of reusable, dynamic UI components using slot-based design patterns.
    - **compose-state-deferred-reads**: Performance optimization by deferring frame-rate state reads to later phases.
    - **migrate-xml-views-to-jetpack-compose**: Structured workflow for migrating legacy XML layouts to modern Jetpack Compose.
 
-   **E. Performance & Policy**:
+   **F. Performance & Policy**:
    - **perfetto-trace-analysis**: Root cause analysis for latency, memory, or UI jank using system traces.
    - **perfetto-sql**: Performance analysis via natural language to Perfetto SQL queries translation.
    - **play-policy-insights**: Automated auditor for Google Play Policy compliance (Permissions, Data Safety).
 
-   **F. Specialized Platforms & Tools**:
+   **G. Specialized Platforms & Tools**:
    - **wear-compose-m3**: Material 3 standards and expert guidance for Wear OS development.
    - **kotlin-multiplatform-expect-actual**: Design of interface boundaries and expect/actual patterns for KMP projects.
    - **appfunctions**: Exposing app workflows to the Android System for discovery by AI agents.
    - **engage-sdk-integration**: Google Play Engage SDK implementation, mapping, and debugging.
 
-   **G. Modernization & Identity**:
+   **H. Modernization & Identity**:
    - **verified-email**: Secure, OTP-less email verification via Android Credential Manager.
    - **agp-9-upgrade**: Migration protocol for upgrading to Android Gradle Plugin 9.0+.
    - **play-billing-library-version-upgrade**: Safe migration guide for the latest Google Play Billing Library versions.
