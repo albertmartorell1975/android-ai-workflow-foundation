@@ -1,20 +1,17 @@
 ---
-
 name: workflow-feature
 description: Foundation-native feature workflow architect. Analyzes the current project and builds the standardized workflow-feature plan for implementing new features when the Foundation workflow is active.
 metadata:
-author: Albert Martorell Garcia
-version: 1.4.0
-keywords:
-
-* workflow
-* planning
-* clean-architecture
-* task-decomposition
-* feature-implementation
-* naming-conventions
-* pragmatic-testing
-
+  author: Albert Martorell Garcia
+  version: 1.4.0
+  keywords:
+    - workflow
+    - planning
+    - clean-architecture
+    - task-decomposition
+    - feature-implementation
+    - naming-conventions
+    - pragmatic-testing
 ---
 
 # Workflow Feature Specialist
@@ -349,9 +346,7 @@ When the required information has already been established, state that no additi
 
 ### API Design
 
-| Method | Route | Description | Request Body | Response Body |
-|--------|-------|-------------|--------------|---------------|
-|        |       |             |               |              |
+[Describe API endpoints, methods, and JSON schemas here if applicable. If not, state "No API changes required".]
 
 ### Persistence
 

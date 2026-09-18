@@ -48,7 +48,6 @@ When this skill is activated, the agent MUST first acknowledge the core foundati
    - **navigation-3**: Best practices for Jetpack Navigation 3.
    - **r8-analyzer**: Proguard/R8 optimization and app size management.
    - **testing-setup**: Unified strategy for Unit, UI, and Screenshot testing.
-   - **using-chrisbanes-skills**: Broad Kotlin/Compose architectural reviews.
    - **viewmodel-architecture-governance**: Mandatory Passive Initialization and Hybrid UI State patterns.
    - **workflow-feature**: Standardized feature implementation workflow with granular checklists.
    - **workflow-initializer**: Current project setup and customization wizard.

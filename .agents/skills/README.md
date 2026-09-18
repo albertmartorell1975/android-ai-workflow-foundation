@@ -15,13 +15,11 @@ A catalog skill becomes active in a consuming project only when it is explicitly
 
 ## 1. Active Foundation Skills
 
-Skills installed automatically under `.agents/skills/` when the Foundation is added to a project.
+Skills installed automatically under `.agents/skills/` when the Foundation is added to a project. 
+These provide the mandatory core engine and the shared technical standards.
 
-They provide the common engineering environment shared by all projects and workflows.
-
-### 1.1 Core Workflow
-
-The operational backbone responsible for project initialization, workflow orchestration, planning, automation, and governance.
+### 1.1 Core Workflow Engine
+The operational backbone responsible for project lifecycle, automation, and governance.
 
 * **compiler**: Centralized project verification, compilation, and deployment engine.
 * **foundation-evolve**: Synchronizes useful skills and improvements from working projects back to the Foundation.
@@ -30,7 +28,6 @@ The operational backbone responsible for project initialization, workflow orches
 * **workflow-initializer**: Project bootstrapping, stack diagnosis, customization, plugin management, and workflow selection.
 
 ### 1.2 Shared Engineering Guardrails
-
 Technical standards shared by the active Foundation environment regardless of the selected development workflow.
 
 * **dependency-manager**: Governance for `libs.versions.toml` and dependency compatibility.
@@ -39,8 +36,7 @@ Technical standards shared by the active Foundation environment regardless of th
 * **testing-setup**: Unified strategy for unit, UI behavior, and visual regression testing.
 * **viewmodel-architecture-governance**: Architectural rules for ViewModels, UI state, and initialization patterns.
 
-### 1.3 Android & Expert Skills
-
+### 1.3 Android & System Patterns
 Active technical knowledge for Android, Kotlin, Compose, and platform-specific engineering.
 
 Examples include:
@@ -72,42 +68,28 @@ The complete active set is defined by the skills physically installed under `.ag
 
 ## 2. Optional Catalog Skills & Workflows
 
-The catalog contains skills and workflows that are **not installed by default**.
+The catalog contains skills and workflows that are **not installed by default**. 
+They are activated when a project requires a specialized capability.
 
-They can be activated when a project requires a specialized capability or a different development methodology.
-
-### 2.1 Workflow Plugins
-
-Complete alternative development methodologies.
+### 2.1 Methodology Workflows
+Alternative development methodologies.
 
 #### AI Expert Workflow
+A multi-agent development workflow originally created by **Antonio Leiva / Nino Ruano** for the **AI Expert** course.
+When active, it replaces `workflow-feature` as the feature orchestration methodology.
 
-A multi-agent development workflow originally created by **Antonio Leiva / Nino Ruano** for the **AI Expert** course and integrated and adapted for use in other projects with the author's permission.
+### 2.2 Planning & Routing Plugins
+Extensions to the development workflow for specific project management or architectural discovery needs.
 
-It consists of:
+* **to-plan**: Repository-aware implementation planning around external issues or specifications.
+* **using-chrisbanes-skills**: Intelligent router to identify precise expert patterns for Kotlin and Compose based on Chris Banes' best practices.
 
-* **build-brief**: Guided project and feature discovery.
-* **harness-starter**: Creates the minimal project harness from the confirmed discovery.
-* **feature-spec**: Creates implementation-ready feature specifications.
-* **feature-implementer**: Implements the approved specification.
-* **feature-validator**: Independently validates the implementation.
-* **feature-flow**: Orchestrates the workflow and coordinates the specialized agents.
-
-When the AI Expert Workflow is active, it replaces `workflow-feature` as the feature orchestration methodology.
-
-### 2.2 Technology & Expert Plugins
-
-Optional technical capabilities that depend on the specific project or technology stack.
-
-Examples include:
+### 2.3 Technology & Expert Plugins
+Optional technical capabilities that depend on the specific project stack.
 
 * **hilt**: Dependency Injection boundaries and optimizations.
 * **room-schema-governance**: Room database integrity and schema evolution.
-* **to-plan**: Repository-aware implementation planning around external issues or specifications.
-* **using-chrisbanes-skills**: Intelligent router to identify precise expert patterns for Kotlin and Compose based on Chris Banes' best practices.
-* **firebase-basics**: Firebase project and CLI fundamentals.
-* **firebase-auth-basics**: Firebase authentication patterns.
-* **firebase-remote-config-basics**: Remote configuration and feature flags.
+* **firebase-* Suite**: CLI setup, Auth patterns, and Remote Config management.
 * **camerax**: Camera and Media3 integration patterns.
 * **wear-compose-m3**: Material 3 patterns for Wear OS.
 * **perfetto-trace-analysis**: Performance and trace analysis.
@@ -118,49 +100,24 @@ The complete optional set is available under `.agents/catalog/`.
 
 ---
 
-## Active Skills vs. Catalog
-
-The operational distinction is:
+## Operational Distinction
 
 ```text
-.agents/skills/
-    ↓
-Active Foundation Skills
-    ↓
-Installed by default
-    ↓
-Shared project capabilities
+.agents/skills/   → Active Skills (Installed by default)
+.agents/catalog/  → Optional Plugins (Available on demand)
 ```
-
-```text
-.agents/catalog/
-    ↓
-Optional Skills & Workflows
-    ↓
-Activated on demand
-    ↓
-Project-specific capabilities or alternative methodologies
-```
-
----
-
-## Role vs. Origin
-
-A skill's **role**, **location**, and **origin** are separate concepts.
 
 ---
 
 ## Credits & Provenance
 
-The Foundation incorporates knowledge and methodologies from multiple sources.
-
-* **Foundation Methodology:** Albert Martorell Garcia.
-* **AI Expert Workflow:** **Antonio Leiva** / **Nino Ruano**, originally created for the AI Expert course.
-* **External Expert Patterns:** Includes curated skills from experts such as **Chris Banes**.
-* **Official Documentation:** Integrates knowledge and guidance from Google Android and Firebase documentation.
+The Foundation incorporates knowledge from:
+* **Foundation Methodology**: Albert Martorell Garcia.
+* **AI Expert Workflow**: **Antonio Leiva** / **Nino Ruano**.
+* **Expert Patterns**: **Chris Banes** and others.
+* **Official Docs**: Google Android & Firebase.
 
 Included skills retain their original authorship and source metadata. Please respect the corresponding licenses and attribution requirements.
 
 ---
-
-**Note:** Active skills must follow the *Mandatory Planning Protocol* defined in `AGENTS.md`.
+**Note**: Active skills must follow the *Mandatory Planning Protocol* defined in `AGENTS.md`.
