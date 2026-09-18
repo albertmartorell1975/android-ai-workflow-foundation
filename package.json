@@ -1,6 +1,6 @@
 {
   "name": "@albertmartorell/android-ai-workflow-foundation",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Modular Multi-Workflow Foundation for Android. Supports Foundation and AI Expert methodologies.",
   "scripts": {
     "postinstall": "echo \">>> MOTOR INSTALLED. Run 'Activate workflow-initializer' in Android Studio to select your workflow (Foundation or AI Expert).\""
@@ -33,7 +33,6 @@
       "r8-analyzer": ".agents/skills/r8-analyzer/SKILL.md",
       "skills-index": ".agents/skills/README.md",
       "testing-setup": ".agents/skills/testing-setup/SKILL.md",
-      "to-plan": ".agents/skills/to-plan/SKILL.md",
       "using-chrisbanes-skills": ".agents/skills/using-chrisbanes-skills/SKILL.md",
       "viewmodel-architecture-governance": ".agents/skills/viewmodel-architecture-governance/SKILL.md",
       "workflow-feature": ".agents/skills/workflow-feature/SKILL.md",

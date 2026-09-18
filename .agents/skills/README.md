@@ -26,7 +26,6 @@ The operational backbone responsible for project initialization, workflow orches
 * **compiler**: Centralized project verification, compilation, and deployment engine.
 * **foundation-evolve**: Synchronizes useful skills and improvements from working projects back to the Foundation.
 * **git-governance**: Enforces Git Flow conventions, branching rules, and commit practices.
-* **to-plan**: Repository-aware implementation planning from confirmed requirements.
 * **workflow-feature**: Foundation-native single-agent feature workflow.
 * **workflow-initializer**: Project bootstrapping, stack diagnosis, customization, plugin management, and workflow selection.
 
@@ -68,8 +67,6 @@ Examples include:
 
 The complete active set is defined by the skills physically installed under `.agents/skills/`.
 
-> External origin does not imply optional status. A skill created by an external expert can still be an active Foundation skill when it is installed under `.agents/skills/`.
-
 ---
 
 ## 2. Optional Catalog Skills & Workflows
@@ -105,6 +102,7 @@ Examples include:
 
 * **hilt**: Dependency Injection boundaries and optimizations.
 * **room-schema-governance**: Room database integrity and schema evolution.
+* **to-plan**: Repository-aware implementation planning around external issues or specifications.
 * **firebase-basics**: Firebase project and CLI fundamentals.
 * **firebase-auth-basics**: Firebase authentication patterns.
 * **firebase-remote-config-basics**: Remote configuration and feature flags.
@@ -142,47 +140,11 @@ Activated on demand
 Project-specific capabilities or alternative methodologies
 ```
 
-The same skill does not belong to both locations in the Foundation repository.
-
-For example:
-
-```text
-Foundation repository
-.agents/catalog/hilt/
-        │
-        │ activate / install
-        ▼
-Consuming project
-.agents/skills/hilt/
-```
-
-After activation, the skill becomes part of that project's active skill set, but it remains a catalog skill in the Foundation repository.
-
 ---
 
 ## Role vs. Origin
 
 A skill's **role**, **location**, and **origin** are separate concepts.
-
-For example, a skill can be:
-
-```text
-Location: .agents/skills/
-Role: Android & Expert Skill
-Origin: Chris Banes
-Status: Active
-```
-
-Likewise, another skill can be:
-
-```text
-Location: .agents/catalog/
-Role: Technology Plugin
-Origin: Foundation / external expert
-Status: Optional
-```
-
-Authorship or external provenance does not determine whether a skill is active or optional.
 
 ---
 
@@ -191,7 +153,7 @@ Authorship or external provenance does not determine whether a skill is active o
 The Foundation incorporates knowledge and methodologies from multiple sources.
 
 * **Foundation Methodology:** Albert Martorell Garcia.
-* **AI Expert Workflow:** **Antonio Leiva** y **Nino Ruano**, originally created for the AI Expert course.
+* **AI Expert Workflow:** **Antonio Leiva** / **Nino Ruano**, originally created for the AI Expert course.
 * **External Expert Patterns:** Includes curated skills from experts such as **Chris Banes**.
 * **Official Documentation:** Integrates knowledge and guidance from Google Android and Firebase documentation.
 

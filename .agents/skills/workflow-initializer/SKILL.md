@@ -3,7 +3,7 @@ name: workflow-initializer
 description: Initializes a new Android project with the AI-assisted development workflow seed. It sets up the governance files and guides the initial customization of agents and skills.
 metadata:
   author: Albert Martorell Garcia
-  version: 3.2.0
+  version: 3.3.0
   keywords:
   - setup
   - initialization
@@ -48,7 +48,6 @@ When this skill is activated, the agent MUST first acknowledge the core foundati
    - **navigation-3**: Best practices for Jetpack Navigation 3.
    - **r8-analyzer**: Proguard/R8 optimization and app size management.
    - **testing-setup**: Unified strategy for Unit, UI, and Screenshot testing.
-   - **to-plan**: Repository-aware implementation planning from confirmed specs.
    - **using-chrisbanes-skills**: Broad Kotlin/Compose architectural reviews.
    - **viewmodel-architecture-governance**: Mandatory Passive Initialization and Hybrid UI State patterns.
    - **workflow-feature**: Standardized feature implementation workflow with granular checklists.
@@ -72,7 +71,7 @@ After foundation deployment and before Stack Diagnosis, the agent MUST determine
    - If a non-foundation workflow is selected, trigger the **Workflow Plugin Installation** logic.
 
 ### PHASE 3: Stack Discovery & Optional Plugins
-After determining the workflow, the agent MUST ask the user about specific technical choices and offer optional plugins from the bench (catalog).
+After determining the workflow, the agent MUST ask the user about specific technical choices and offer optional plugins from the catalog.
 
 1. **Stack Diagnosis**:
    - **Project Name**: What is the name of this project?
@@ -82,9 +81,10 @@ After determining the workflow, the agent MUST ask the user about specific techn
 
 2. **Optional Plugins Selection**: The agent MUST present the complete list of optional plugins from the Foundation Catalog, categorized as follows, and ask the user which ones to install:
 
-   **A. Core Architecture (Highly Recommended)**:
+   **A. Core Architecture & Workflow (Highly Recommended)**:
    - **hilt**: Expert Dependency Injection boundaries and static graph optimizations.
-   - **room-schema-governance**: Database integrity, version management, and migration rules for Room.
+   - **room-schema-governance**: Database integrity, version management, and schema evolution rules for Room.
+   - **to-plan**: Repository-aware implementation planning around external issues or specifications.
 
    **B. Firebase Cloud Suite**:
    - **firebase-basics**: CLI setup, project creation, and app config management.
