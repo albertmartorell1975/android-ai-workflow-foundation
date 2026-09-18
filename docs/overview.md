@@ -4,9 +4,9 @@ The **Android AI Workflow Foundation v3.0.0** is a modular framework designed to
 
 The Foundation separates three concerns:
 
-1. **Project initialization and configuration**
-2. **Feature development methodology**
-3. **Shared engineering guardrails and technical expertise**
+1. Project initialization and configuration
+2. Feature development methodology
+3. Shared engineering guardrails and technical expertise
 
 This allows a project to choose how AI agents collaborate without changing the underlying engineering standards.
 
@@ -29,15 +29,12 @@ graph TD
 
     subgraph AE[AI Expert Workflow — Multi-Agent]
         direction TB
-        BB[build-brief]
-        HS[harness-starter]
-        FF[feature-flow]
-        PS[Planner / feature-spec]
-        IM[Implementer]
-        VA[Validator]
-
-        BB --> HS --> FF
-        FF --> PS --> IM --> VA
+        BB[build-brief] --> HS[harness-starter]
+        HS --> FL[Project Harness + feature_list.json]
+        FL --> FF[feature-flow]
+        FF --> PS[Planner / feature-spec]
+        PS --> IM[Implementer]
+        IM --> VA[Validator]
     end
 
     subgraph Shared[Shared Foundation Skills]
@@ -64,28 +61,28 @@ graph TD
 
 Everything starts with the Foundation Core.
 
-`workflow-initializer` is responsible for **bootstrapping and customizing the project**. It prepares the project-specific configuration, performs stack diagnosis, manages optional plugins, and lets the project select its development workflow.
+`workflow-initializer` is responsible for bootstrapping and customizing the project. It prepares the project-specific configuration, performs stack diagnosis, manages optional plugins, and lets the project select its development workflow.
 
 Typical responsibilities include:
 
-* **Stack Diagnosis**: Understanding the project's architecture, technologies, and existing conventions.
-* **Project Customization**: Generating or updating project-specific instructions and configuration.
-* **Workflow Selection**: Choosing the development methodology used by the project.
-* **Plugin Management**: Activating optional skills from the Foundation catalog.
+* **Stack Diagnosis:** Understanding the project's architecture, technologies, and existing conventions.
+* **Project Customization:** Generating or updating project-specific instructions and configuration.
+* **Workflow Selection:** Choosing the development methodology used by the project.
+* **Plugin Management:** Activating optional skills from the Foundation catalog.
 
 `workflow-initializer` is common to both workflows. It prepares the environment before feature development begins.
 
 ---
 
-## 2. Pluggable Development Methodology
+# 2. Pluggable Development Methodology
 
 This layer defines **how feature work is organized and delegated**.
 
 The Foundation currently provides two methodologies.
 
-### A. Foundation Workflow
+## A. Foundation Workflow
 
-**Single-agent, centralized workflow.**
+### Single-agent, centralized workflow
 
 `workflow-feature` acts as the Foundation's native Workflow Architect.
 
@@ -103,28 +100,35 @@ The result is a persistent `WORKFLOW_FEATURE.md` roadmap that provides the imple
 
 This approach minimizes coordination and handoff overhead and works well when a single agent can effectively handle the complete feature lifecycle.
 
-### B. AI Expert Workflow
+---
 
-**Multi-agent, specialized workflow.**
+## B. AI Expert Workflow
 
-The AI Expert Workflow separates responsibilities between specialized agents and uses `feature-flow` as the orchestration mechanism.
+### Project-centric, spec-driven, multi-agent workflow
 
-The workflow includes:
+The AI Expert Workflow adds an explicit project setup and feature lifecycle on top of the shared Foundation.
 
-1. **build-brief** — clarifies the product or feature requirements and establishes the initial shared understanding.
-2. **harness-starter** — prepares the minimal project harness and development context.
-3. **feature-spec** — produces an implementation-ready specification.
-4. **feature-implementer** — implements the approved specification.
-5. **feature-validator** — independently validates the implementation against the specification and project rules.
-6. **feature-flow** — orchestrates the feature lifecycle and coordinates the specialized agents.
+Its initial stages establish the project context:
 
-**Main characteristic:** planning, implementation, and validation are deliberately separated between specialized agent roles.
+1. **build-brief** — clarifies the product, domain, users, workflows, constraints, MVP scope, and risks.
+2. **harness-starter** — turns the confirmed discovery into the minimal project harness and an initial feature backlog.
+3. **feature-flow** — orchestrates the lifecycle of individual features.
 
-This introduces additional coordination and handoff overhead, but provides stronger separation of responsibilities and independent validation.
+For each feature, specialized agents handle separate responsibilities:
+
+1. **feature-spec** — produces an implementation-ready specification.
+2. **feature-implementer** — implements the approved specification.
+3. **feature-validator** — independently validates the result against the specification and project rules.
+
+**Main characteristic:** project setup, feature planning, implementation, and validation are explicitly separated between specialized roles.
+
+The workflow is **iterative and feature-driven**. It does not require every feature to be fully specified before implementation starts. Features can be specified and developed one at a time as the project evolves.
+
+This introduces additional coordination and handoff overhead, but provides stronger separation of responsibilities, persistent project state, explicit specifications, and independent validation.
 
 ---
 
-## 3. Shared Expert Guardrails
+# 3. Shared Expert Guardrails
 
 Both workflows operate on top of the same Foundation Core.
 
@@ -162,7 +166,7 @@ The selected workflow determines **how the work is organized**; the shared Found
 
 The key distinction between the two methodologies is the allocation of responsibility.
 
-### Foundation Workflow
+## Foundation Workflow
 
 ```text
 Human
@@ -178,7 +182,7 @@ Single AI Agent
 Human Review
 ```
 
-### AI Expert Workflow
+## AI Expert Workflow
 
 ```text
 Human
@@ -193,7 +197,7 @@ Workflow Orchestrator
 Human Review
 ```
 
-In both models, **the human remains the highest-level supervisor and decision maker**.
+In both models, the human remains the highest-level supervisor and decision maker.
 
 The AI Expert Workflow adds another layer of automated orchestration between the human and the individual agents.
 
@@ -205,7 +209,7 @@ The choice should not be based strictly on whether the project is new or existin
 
 Both methodologies can be used in either situation.
 
-A practical rule is:
+A practical distinction is:
 
 ### Use the Foundation Workflow when
 
@@ -216,11 +220,12 @@ A practical rule is:
 
 ### Use the AI Expert Workflow when
 
-* The task benefits from separating planning, implementation, and validation.
+* The project benefits from explicit project discovery and persistent feature tracking.
+* The work benefits from separating planning, implementation, and validation.
 * Independent validation is valuable.
 * Explicit specifications and handoffs are useful.
-* The AI development process itself is part of the objective.
 * Several specialized agents can provide meaningful value over a single continuous agent.
+* The AI development process itself is part of the objective.
 
 The distinction is therefore not:
 
@@ -228,7 +233,7 @@ The distinction is therefore not:
 
 but:
 
-> **Single-agent execution vs. multi-agent specialization.**
+> **Single-agent execution vs. multi-agent specialization and structured project lifecycle.**
 
 ---
 
@@ -278,7 +283,7 @@ This prevents mixing two different feature-development methodologies within the 
 
 The Foundation is therefore not a single development workflow.
 
-It is a **shared engineering foundation that allows different AI-assisted development methodologies to operate under the same technical standards**.
+It is a shared engineering foundation that allows different AI-assisted development methodologies to operate under the same technical standards.
 
 ```text
              ANDROID AI WORKFLOW FOUNDATION
@@ -286,7 +291,8 @@ It is a **shared engineering foundation that allows different AI-assisted develo
               ┌────────────┴────────────┐
               │                         │
       Foundation Workflow       AI Expert Workflow
-        Single Agent               Multi-Agent
+        Single Agent             Multi-Agent
+      Feature-centric          Project-centric
               │                         │
               └────────────┬────────────┘
                            │
