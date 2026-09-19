@@ -169,7 +169,10 @@ A task is considered completed only after satisfying this **Definition of Done**
 
 ## VI. ENGINEERING PRINCIPLES (PHILOSOPHY)
 
-- **SOLID / DRY / KISS / YAGNI**: Mandatory application of industry standards.
+- **SOLID**: [Clean Coder Blog (Uncle Bob)](https://cleancoder.com) - Mandatory design guidelines for maintainable code.
+- **DRY (Don't Repeat Yourself)**: [The Pragmatic Programmer](https://pragprog.com) - Avoid duplication of knowledge and intent.
+- **KISS (Keep It Simple, Stupid)**: [KISS Principle](https://en.wikipedia.org/wiki/KISS_principle) - Prefer simple, readable solutions.
+- **YAGNI (You Ain't Gonna Need It)**: [Martin Fowler's Bliki](https://martinfowler.com/bliki/Yagni.html) - Do not implement functionality until actually needed.
 - **Official References**: Consult [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) and [Android Architecture Guidelines](https://developer.android.com/topic/architecture).
 - **Language**: All code comments and technical notes MUST be in **English**.
 - **Kotlin Standards**: All Kotlin code MUST strictly adhere to the [Official Kotlin Coding Conventions](https://kotlinlang.org/docs/coding-conventions.html).
