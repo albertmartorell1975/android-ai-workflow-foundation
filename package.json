@@ -29,6 +29,7 @@
       "kotlin-flow-state-event-modeling": ".agents/skills/kotlin-flow-state-event-modeling/SKILL.md",
       "kotlin-functions": ".agents/skills/kotlin-functions/SKILL.md",
       "kotlin-style": ".agents/skills/kotlin-style/SKILL.md",
+      "module-architecture-governance": ".agents/skills/module-architecture-governance/SKILL.md",
       "navigation-3": ".agents/skills/navigation-3/SKILL.md",
       "r8-analyzer": ".agents/skills/r8-analyzer/SKILL.md",
       "skills-index": ".agents/skills/README.md",
