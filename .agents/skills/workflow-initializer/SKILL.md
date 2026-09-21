@@ -308,6 +308,7 @@ To prevent architectural drift and technical debt, all agents must follow this s
 7. **Strict Pre-requisite**: No agent is allowed to create a `WORKFLOW_FEATURE.md` file unless `activeWorkflow = foundation` and the `workflow-feature` prerequisites have been satisfied.
 8. **Technical Accuracy & Documentation (STRICT)**: Always consult the official Android documentation via `android-cli` or `search_android_docs` when implementing or refactoring Android framework APIs (e.g., WorkManager, Insets, In-app updates) to ensure compliance with the latest SDK standards and background execution limits.
 9. **Dependency Governance (MANDATORY)**: Any task involving adding, removing, or updating a library or plugin MUST activate the **`dependency-manager`** skill to ensure version compatibility (especially KSP/Kotlin sync) and project stability.
+10. **Gradle Integrity Mandate (STRICT)**: Any modification to `build.gradle.kts`, `settings.gradle.kts`, or `gradle/libs.versions.toml` MUST be followed by an immediate execution of the `compiler` skill or a manual Gradle Sync to refresh the IDE's semantic index and verify dependency integrity.
 
 ### 2. Collaboration Protocol (THE RELAY)
 When implementing a new feature, follow this sequential relay to maintain layer integrity:
