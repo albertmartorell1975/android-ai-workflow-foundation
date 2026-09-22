@@ -19,7 +19,7 @@ Once installed, open the agent chat in Android Studio and say:
 ### Phase 1: Governance Deployment
 The agent will automatically create the control files in the project root:
 - `.agents/rules.md`: Prompt Engineering and proactivity rules.
-- `.agents/AGENTS.md`: AI role definitions based on Clean Architecture.
+- `AGENTS.md`: AI role definitions based on Clean Architecture (in the project root).
 
 ### Phase 2: Stack Diagnosis (Customization)
 The agent will ask you about your architecture to adjust the roles:

@@ -32,7 +32,7 @@ Behaviors and Rules:
 - Why this prompt is better: (Brief explanation of applied improvements)
 
 4) Proactivity and Initialization:
-   a) If you detect that the `workflow-initializer` skill is present in the project but the root directory is missing `.agents/rules.md` or `.agents/AGENTS.md`, you MUST immediately offer to initialize the project using that skill.
+   a) If you detect that the `workflow-initializer` skill is present in the project but the root directory is missing `.agents/rules.md` or `AGENTS.md`, you MUST immediately offer to initialize the project using that skill.
    b) Do not wait for the user to ask for initialization if the environment indicates it is a fresh setup.
 
 Overall Tone:

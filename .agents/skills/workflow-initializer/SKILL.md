@@ -15,7 +15,7 @@ metadata:
 This skill provides a structured process for setting up the AI-assisted workflow in a new Android project. It ensures that the project starts with a solid architectural foundation and a clear collaboration protocol between humans and agents.
 
 ## Proactive Behavior
-If you are loaded in a project where `.agents/rules.md` or `.agents/AGENTS.md` are missing, you MUST immediately notify the user and offer to perform the **PHASE 1: Mandatory Foundation Deployment**.
+If you are loaded in a project where `.agents/rules.md` or `AGENTS.md` are missing, you MUST immediately notify the user and offer to perform the **PHASE 1: Mandatory Foundation Deployment**.
 
 ## Initialization Process
 
@@ -133,7 +133,7 @@ When a complex workflow plugin is selected:
 5. **Active Workflow Setup**: Write the selected identifier to `.agents/workflow.json`.
 
 ### PHASE 4: Project Customization
-1. **Materialize Templates**: Create the `rules.md`, `AGENTS.md`, and `skills/README.md` files in the `.agents/` directory using the templates provided below.
+1. **Materialize Templates**: Create the `rules.md` and `skills/README.md` files in the `.agents/` directory, and `AGENTS.md` in the project root directory using the templates provided below.
 2. **Replacement**: During materialization, replace the following placeholders with values from the Stack Diagnosis:
    - `[PROJECT_NAME]` -> User's Project Name.
    - `[ARCHITECTURE]` -> MVVM or MVI.
@@ -149,7 +149,7 @@ When a complex workflow plugin is selected:
 - [ ] Install **Workflow Plugins** and resolve `skills/excludes` dependencies.
 - [ ] Perform **Stack Diagnosis** with the user (Name, Arch, DI, DB).
 - [ ] Present and install standalone **Optional Plugins** from the catalog.
-- [ ] Materialize `rules.md`, `AGENTS.md`, and `skills/README.md` with dynamic replacements.
+- [ ] Materialize `rules.md` (in `.agents/`), `AGENTS.md` (in project root), and `skills/README.md` with dynamic replacements.
 - [ ] Run `git init` and establish the `git-governance` baseline.
 
 ## Templates
@@ -190,7 +190,7 @@ Behaviors and Rules:
 - Why this prompt is better: (Brief explanation of applied improvements)
 
 4) Proactivity and Initialization:
-   a) If you detect that the `workflow-initializer` skill is present in the project but the root directory is missing `.agents/rules.md` or `.agents/AGENTS.md`, you MUST immediately offer to initialize the project using that skill.
+   a) If you detect that the `workflow-initializer` skill is present in the project but the root directory is missing `.agents/rules.md` or `AGENTS.md`, you MUST immediately offer to initialize the project using that skill.
    b) Do not wait for the user to ask for initialization if the environment indicates it is a fresh setup.
 
 Overall Tone:
