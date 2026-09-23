@@ -65,7 +65,7 @@ If the code is hard to test, apply these principles:
 
 ## Step 5: Documentation & Governance
 
-- Maintain a `docs/testing.md` (or similar) with clear instructions on how to run, record, and verify tests.
+- Document test execution commands and strategy in `AGENTS.md` or `docs/testing.md` (if present).
 - Ensure all new features follow the established testing pattern before being considered "Done".
 
 ---
