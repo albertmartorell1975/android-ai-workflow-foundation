@@ -1,104 +1,60 @@
-# Instructions for Agents
+# Instructions for Agents - Android AI Workflow Foundation
+
+This document defines the operating rules, repository structure, maintenance protocols, and Definition of Done for AI coding agents developing and maintaining the **Android AI Workflow Foundation** framework repository itself.
 
 ## Project Overview
 
-This repository contains the **Android AI Workflow Foundation**, a modular multi-workflow development framework for Android projects. It provides a shared foundation of engineering standards, technical expertise, and governance while supporting both native single-agent (Foundation) and multi-agent (AI Expert) workflows.
+The **Android AI Workflow Foundation** is a modular multi-workflow framework for Android development. This repository hosts the core workflow engine (`workflow-initializer`, `compiler`, `git-governance`, `foundation-evolve`), shared technical guardrails, optional catalog skills, and framework documentation.
 
 ## Read First
 
-* `README.md` — framework overview, architecture, installation, workflow differences, and usage guide.
-* `docs/overview.md` — architectural design, modular layers, and workflow routing model.
-* `docs/workflow comparison.md` — detailed comparison between Foundation Workflow and AI Expert Workflow.
-* `.agents/skills/README.md` — expert skills index (active foundation skills vs. optional catalog skills).
+Before modifying skills, catalog plugins, templates, or documentation, consult:
 
-Read additional documentation only when relevant:
+* `README.md` — Framework architecture, installation, workflow models, and skill management.
+* `docs/overview.md` — Architectural design, modular layers, and workflow routing model.
+* `docs/workflow comparison.md` — Detailed comparison between Foundation Workflow and AI Expert Workflow.
+* `.agents/skills/README.md` — Canonical index of Active Foundation Skills and Optional Catalog Skills.
+* `.agents/workflow.json` — Selected active workflow for developing this repository (`foundation` / `ai-expert-workflow`).
 
-* `.agents/skills/` — active foundation skills and technical guardrails.
-* `.agents/catalog/` — optional catalog skills and workflow plugins.
+## Repository Structure & Modules
 
-## Workflow Governance
+- `.agents/skills/` — Active Foundation Skills (installed by default in consuming projects).
+- `.agents/catalog/` — Optional Catalog Skills and Workflow Plugins (available on demand).
+- `.agents/catalog/workflows/` — JSON manifests for complex workflow plugins (e.g. `ai-expert-workflow.json`).
+- `docs/` — Framework design, architecture overview, and methodology comparison documentation.
+- `package.json` — NPM package manifest and registry mapping for core skills (`agent-skills.skills`).
 
-`.agents/workflow.json` is the authoritative source for the selected workflow.
+## Startup Workflow & Branching
 
-Supported workflows:
+1. **Working Branch**: Always confirm active branch using `git branch --show-current`. Development MUST take place on `develop` or a `feature/*` branch.
+2. **Context Inspection**: Read `README.md` and `.agents/skills/README.md` to verify skill categories before creating or moving skills.
+3. **Repository Check**: Verify `git status` to ensure a clean working tree before starting changes.
 
-* `foundation` → Native Android Workflow → `workflow-feature`
-* `ai-expert-workflow` → AI Expert Workflow → `feature-flow`
+## Working Rules & Skill Maintenance Protocols
 
-Only the selected workflow may orchestrate feature development. Do not invoke or mix the alternative workflow.
+* **Git Policy**: Never execute `git push` or `git merge` without explicit user authorization. Follow Conventional Commits (`feat(skills): ...`, `docs(governance): ...`, `fix(compiler): ...`).
+* **Language & Comments**: All documentation, KDoc comments, commit messages, and skill instructions **MUST be written in English**.
+* **Skill Modification Protocol**: Whenever adding, modifying, or deleting a skill:
+  1. Update the skill's `SKILL.md` (and optional `references/` or `agents/openai.yaml` subfolders).
+  2. Update the Foundation's Skills Index at `.agents/skills/README.md`.
+  3. If it is a **Core Skill** (installed by default), register it in `package.json` under `agent-skills.skills`.
+  4. If it affects project templates, synchronize the template section inside `workflow-initializer/SKILL.md`.
+* **KISS & Truthfulness**: Prefer simple, modular solutions. Never invent non-existent APIs or unverified framework rules.
 
-`WORKFLOW_FEATURE.md` may only be created when `activeWorkflow = foundation` and the `workflow-feature` prerequisites are satisfied.
+## Definition of Done (DoD)
 
-## Project Initialization
+A maintenance or feature task on the Foundation repository is complete only when:
 
-**ONLY when `activeWorkflow = ai-expert-workflow`:**
+1. Target skill, manifest, or documentation changes are implemented following Foundation standards.
+2. All JSON/YAML files (`package.json`, `workflow.json`, `*.yaml`, `*.json`) pass syntax validation.
+3. `.agents/skills/README.md` and `workflow-initializer/SKILL.md` templates are synchronized if skills were modified.
+4. All file references and Markdown links across `docs/` and `README.md` are valid and resolvable.
+5. Working tree is clean and prepared for user review via `@git-governance`.
 
-* `build-brief` and `harness-starter` are project-initialization skills.
-* Use them when initializing or rebuilding the AI Expert project harness.
-* They are not required before every feature.
+## End of Session Protocol
 
-## Startup Workflow
+Before concluding a session on the Foundation repository:
 
-Before writing code:
-
-1. Confirm the working directory with `pwd`.
-2. Read `.agents/workflow.json` and identify `activeWorkflow`.
-3. Follow the startup and prerequisite rules of the selected workflow.
-
-### Foundation Workflow
-
-When `activeWorkflow = foundation`:
-
-* Follow the startup and prerequisite steps defined by `workflow-feature`.
-* Do not apply AI Expert startup steps.
-
-### AI Expert Workflow
-
-When `activeWorkflow = ai-expert-workflow`:
-
-1. Read `PROGRESS.md` for the current verified state and next step.
-2. Read `feature_list.json` and select the first ready unfinished feature in list order.
-3. Run `./init.sh`.
-4. If baseline verification fails, fix the baseline before starting new feature work.
-
-## Working Rules
-
-* Work on one feature or task at a time.
-* Keep changes within the selected feature scope unless a narrow supporting fix is required.
-* Follow the git automation rules of the active workflow.
-* Never push changes without explicit user authorization.
-* Do not perform git operations outside the active workflow's defined process.
-* Follow applicable project skills and their detailed rules; do not duplicate them here.
-* Apply **KISS**: prefer the simplest solution that satisfies the requirement.
-* Do not invent requirements, domain data, or unsupported team insights. State clearly when information is unknown or unverifiable.
-* Keep durable project state in repository files rather than relying on chat history.
-
-## Required Artifacts
-
-The required artifacts depend on the selected workflow.
-
-For the AI Expert Workflow:
-
-* `feature_list.json` — feature state.
-* `PROGRESS.md` — verified state and session progress.
-* `init.sh` — standard startup and verification path.
-
-The Foundation Workflow may use different artifacts defined by `workflow-feature`.
-
-## Definition of Done
-
-A feature is complete only when:
-
-* The target behaviour is implemented.
-* Required verification has actually run.
-* The selected workflow's acceptance criteria are satisfied.
-* Required project state and documentation are updated.
-* The repository can be safely continued using the selected workflow.
-
-## End Of Session
-
-Before ending a session:
-
-1. Update the required project state for the selected workflow.
-2. Record unresolved risks or blockers.
-3. Leave the repository ready for the next agent session.
+1. Verify `git status` across `.agents/skills/`, `.agents/catalog/`, and `docs/`.
+2. Ensure no stray or temporary files remain untracked.
+3. Record unresolved questions or open tasks in the session handoff summary.
