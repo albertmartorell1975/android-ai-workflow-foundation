@@ -45,6 +45,7 @@ When this skill is activated, the agent MUST first acknowledge the core foundati
    - **kotlin-flow-state-event-modeling**: Professional StateFlow and SharedFlow management.
    - **kotlin-functions**: Choosing the right function type for every task.
    - **kotlin-style**: Strict adherence to Official Kotlin Coding Conventions.
+   - **module-architecture-governance**: Automation and standards for multi-module creation, Java/Kotlin alignment, and Clean Architecture enforcement.
    - **navigation-3**: Best practices for Jetpack Navigation 3.
    - **r8-analyzer**: Proguard/R8 optimization and app size management.
    - **testing-setup**: Unified strategy for Unit, UI, and Screenshot testing.
@@ -301,6 +302,7 @@ Technical standards shared by the active Foundation environment regardless of th
 * **dependency-manager**: Governance for `libs.versions.toml` and dependency compatibility.
 * **design-system-governance**: Design System standards covering Material 3, accessibility, RTL, adaptive UI, and reusability.
 * **kotlin-style**: Kotlin coding conventions, project-specific style rules, and Magic Literal prevention.
+* **module-architecture-governance**: Automation and standards for multi-module creation, Java/Kotlin alignment, and Clean Architecture enforcement.
 * **testing-setup**: Unified strategy for unit, UI behavior, and visual regression testing.
 * **viewmodel-architecture-governance**: Architectural rules for ViewModels, UI state, and initialization patterns.
 
