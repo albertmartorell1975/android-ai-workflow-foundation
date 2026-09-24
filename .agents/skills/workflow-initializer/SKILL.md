@@ -15,7 +15,7 @@ metadata:
 This skill provides a structured process for setting up the AI-assisted workflow in a new Android project. It ensures that the project starts with a solid architectural foundation and a clear collaboration protocol between humans and agents.
 
 ## Proactive Behavior
-If you are loaded in a project where `.agents/rules.md` or `AGENTS.md` are missing, you MUST immediately notify the user and offer to perform the **PHASE 1: Mandatory Foundation Deployment**.
+If you are loaded in a project where `AGENTS.md` is missing, you MUST immediately notify the user and offer to perform the **PHASE 1: Mandatory Foundation Deployment**.
 
 ## Initialization Process
 
@@ -45,7 +45,6 @@ When this skill is activated, the agent MUST first acknowledge the core foundati
    - **kotlin-flow-state-event-modeling**: Professional StateFlow and SharedFlow management.
    - **kotlin-functions**: Choosing the right function type for every task.
    - **kotlin-style**: Strict adherence to Official Kotlin Coding Conventions.
-   - **module-architecture-governance**: Automation and standards for multi-module creation, Java/Kotlin alignment, and Clean Architecture enforcement.
    - **navigation-3**: Best practices for Jetpack Navigation 3.
    - **r8-analyzer**: Proguard/R8 optimization and app size management.
    - **testing-setup**: Unified strategy for Unit, UI, and Screenshot testing.
@@ -133,7 +132,7 @@ When a complex workflow plugin is selected:
 5. **Active Workflow Setup**: Write the selected identifier to `.agents/workflow.json`.
 
 ### PHASE 4: Project Customization
-1. **Materialize Templates**: Create the `rules.md` and `skills/README.md` files in the `.agents/` directory, and `AGENTS.md` in the project root directory using the templates provided below.
+1. **Materialize Templates**: Create `skills/README.md` files in the `.agents/` directory, and `AGENTS.md` in the project root directory using the templates provided below.
 2. **Replacement**: During materialization, replace the following placeholders with values from the Stack Diagnosis:
    - `[PROJECT_NAME]` -> User's Project Name.
    - `[ARCHITECTURE]` -> MVVM or MVI.
@@ -149,76 +148,31 @@ When a complex workflow plugin is selected:
 - [ ] Install **Workflow Plugins** and resolve `skills/excludes` dependencies.
 - [ ] Perform **Stack Diagnosis** with the user (Name, Arch, DI, DB).
 - [ ] Present and install standalone **Optional Plugins** from the catalog.
-- [ ] Materialize `rules.md` (in `.agents/`), `AGENTS.md` (in project root), and `skills/README.md` with dynamic replacements.
+- [ ] Materialize `AGENTS.md` (in project root), and `skills/README.md` with dynamic replacements.
 - [ ] Run `git init` and establish the `git-governance` baseline.
 
 ## Templates
-
-### Template: rules.md
-```markdown
----
-title: Prompt Engineering Expert Rules
-description: Standard framework for refining user ideas into structured, high-quality technical prompts.
-author: Albert Martorell Garcia
-version: 1.1.0
-tags: [prompt-engineering, governance, ai-best-practices]
-status: active
----
-Purpose and Goals:
-
-* Act as a 'Prompt Engineering Expert' whose primary goal is to refine vague user ideas into highly specific, clear, and actionable prompts.
-* Ensure all final outputs are ready-to-use and follow the best practices of modern prompt engineering.
-* Provide a structured analysis of why the generated prompt is superior to the initial idea.
-
-Behaviors and Rules:
-
-1) Idea Diagnosis and Clarification:
-   a) When a user provides an idea, identify the main objective of the request.
-   b) Detect any ambiguous phrases or missing information that would lead to a generic or low-quality response.
-   c) If critical information is missing, or any part of the request is ambiguous or lacks technical detail, the agent MUST stop and ask the user as many targeted questions as it needs, to fill the gaps instead of making assumptions. Do not proceed with the optimized prompt until the user provides sufficient context or confirms to proceed with assumptions.
-
-2) Prompt Generation:
-   a) Once sufficient information is available, construct an 'Optimized Prompt'.
-   b) The final prompt must explicitly define the following components: Role, Task, Context, Audience, Output Format, Constraints, and Quality Criteria.
-   c) Briefly explain the specific improvements and engineering logic applied to the original idea.
-
-3) Response Format:
-   Your response must follow this structure:
-- Idea diagnosis: (Brief analysis of the objective and ambiguities)
-- Necessary questions: Ask as many questions as you can to fill the gaps.
-- Optimized prompt: (The full structured prompt)
-- Why this prompt is better: (Brief explanation of applied improvements)
-
-4) Proactivity and Initialization:
-   a) If you detect that the `workflow-initializer` skill is present in the project but the root directory is missing `.agents/rules.md` or `AGENTS.md`, you MUST immediately offer to initialize the project using that skill.
-   b) Do not wait for the user to ask for initialization if the environment indicates it is a fresh setup.
-
-Overall Tone:
-* Professional, analytical, and highly organized.
-* Objective and technical, focusing on clarity and utility.
-* Helpful and advisory, guiding the user toward better LLM interactions.
-```
 
 ### Template: AGENTS.md
 ```markdown
 # Instructions for Agents
 
-## Project Overview
+Project Overview
 
-This repository contains [PROJECT_NAME] - [PROJECT_DESCRIPTION].
+[Describe the project purpose, target platform, domain, and main goals.]
 
-## Read First
-
-* `CONTEXT.md` — project purpose, domain language, AI interaction principles, and verification rules.
-* `docs/build-brief.md` — MVP problem, goals, scope, and core user flow.
-* `docs/domain-model.md` — domain concepts, relationships, states, and scenarios.
-* `docs/risks-and-open-questions.md` — risks, assumptions, and open questions.
+Read First
+[mandatory project context document]
+[mandatory project scope or brief]
+[mandatory domain or technical document]
 
 Read additional documentation only when relevant:
 
-* `docs/technical-discovery.md` — stack, integrations, AI, data, or technical decisions.
-* `DESIGN.md` — UI, styles, or visual components.
-* `.agents/skills/` — governance or implementation skills relevant to the task.
+[technical discovery / architecture document]
+[design document]
+[AI / prompt document]
+[dataset or domain data]
+.agents/skills/ — when a task is covered by a relevant governance or implementation skill.
 
 ## Workflow Governance
 
@@ -265,6 +219,7 @@ When `activeWorkflow = ai-expert-workflow`:
 3. Run `./init.sh`.
 4. If baseline verification fails, fix the baseline before starting new feature work.
 
+
 ## Working Rules
 
 * Work on one feature at a time.
@@ -306,6 +261,7 @@ Before ending a session:
 1. Update the required project state for the selected workflow.
 2. Record unresolved risks or blockers.
 3. Leave the repository ready for the next agent session.
+
 ```
 
 ### Template: skills/README.md
@@ -347,7 +303,6 @@ Technical standards shared by the active Foundation environment regardless of th
 * **kotlin-style**: Kotlin coding conventions, project-specific style rules, and Magic Literal prevention.
 * **testing-setup**: Unified strategy for unit, UI behavior, and visual regression testing.
 * **viewmodel-architecture-governance**: Architectural rules for ViewModels, UI state, and initialization patterns.
-* **module-architecture-governance**: Automation and standards for multi-module creation, Java/Kotlin alignment, and Clean Architecture enforcement.
 
 ### 1.3 Android & System Patterns
 Active technical knowledge for Android, Kotlin, Compose, and platform-specific engineering.
@@ -361,7 +316,7 @@ Examples include:
 * **compose-modifier-and-layout-style**: Compose layout APIs, modifier chains, and custom layout decisions.
 * **compose-recomposition-performance**: Analysis of recomposition and UI performance issues.
 * **compose-side-effects**: Safe handling of Compose side effects.
-* **compose-stability-diagnostics**: Compose parameter stability and skippability analysis.
+* **compose-stability-diagnostics**: Performance diagnostics for parameter stability.
 * **compose-state-authoring**: Patterns for creating and managing Compose state.
 * **compose-state-hoisting**: State ownership and coordination patterns.
 * **compose-ui-testing-patterns**: Compose UI, screenshot, and semantics testing patterns.
@@ -369,9 +324,9 @@ Examples include:
 * **kotlin-control-flow**: Kotlin branching and control-flow patterns.
 * **kotlin-coroutines-structured-concurrency**: Structured coroutine design and lifecycle safety.
 * **kotlin-flow-state-event-modeling**: State, event, and Flow modelling patterns.
-* **kotlin-functions**: Kotlin function and extension design.
+* **kotlin-functions**: Choosing the right function type for every task.
 * **navigation-3**: Jetpack Navigation 3 patterns and integration.
-* **r8-analyzer**: R8/ProGuard analysis and application-size optimization.
+* **r8-analyzer**: Proguard/R8 optimization and app size management.
 
 ---
 
@@ -423,7 +378,3 @@ The Foundation incorporates knowledge from:
 * **AI Expert Workflow**: **Antonio Leiva** / **Nino Ruano**.
 * **Expert Patterns**: **Chris Banes** and others.
 * **Official Docs**: Google Android & Firebase.
-
----
-**Note**: Active skills must follow the *Mandatory Planning Protocol* defined in `AGENTS.md`.
-```

@@ -14,7 +14,7 @@ Before modifying skills, catalog plugins, templates, or documentation, consult:
 * `docs/overview.md` — Architectural design, modular layers, and workflow routing model.
 * `docs/workflow comparison.md` — Detailed comparison between Foundation Workflow and AI Expert Workflow.
 * `.agents/skills/README.md` — Canonical index of Active Foundation Skills and Optional Catalog Skills.
-* `.agents/workflow.json` — Selected active workflow for developing this repository (`foundation` / `ai-expert-workflow`).
+* `.agents/workflow.json` — Current workflow configuration for repository maintenance.
 
 ## Repository Structure & Modules
 
@@ -49,12 +49,12 @@ A maintenance or feature task on the Foundation repository is complete only when
 2. All JSON/YAML files (`package.json`, `workflow.json`, `*.yaml`, `*.json`) pass syntax validation.
 3. `.agents/skills/README.md` and `workflow-initializer/SKILL.md` templates are synchronized if skills were modified.
 4. All file references and Markdown links across `docs/` and `README.md` are valid and resolvable.
-5. Working tree is clean and prepared for user review via `@git-governance`.
+5. No unintended changes remain, and the working tree is ready for user review via `@git-governance`.
 
 ## End of Session Protocol
 
 Before concluding a session on the Foundation repository:
 
-1. Verify `git status` across `.agents/skills/`, `.agents/catalog/`, and `docs/`.
+1. Verify the repository working tree with `git status`.
 2. Ensure no stray or temporary files remain untracked.
 3. Record unresolved questions or open tasks in the session handoff summary.
