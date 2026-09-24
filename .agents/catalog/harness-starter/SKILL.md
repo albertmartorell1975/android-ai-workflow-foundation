@@ -8,10 +8,34 @@ description: Create or update the minimal startup harness for a software reposit
 Originally created by Antonio Leiva / Nino Ruano for the AI Expert course.
 Integrated and adapted for Android AI Workflow Foundation with permission.
 
-
 # Harness Starter
 
 Use this skill to create the smallest useful repo harness after discovery is complete. The output should let an agent answer: what is this project, how do I start it, what is the next feature, and how do I verify work.
+
+## Mandatory Workflow Routing
+
+Before performing any harness action, read:
+
+`.agents/workflow.json`
+
+This skill is authorized to run only when:
+
+`activeWorkflow = ai-expert-workflow`
+
+If another workflow is active, stop and report that `harness-starter` belongs to the AI Expert Workflow.
+
+## AGENTS.md Preservation
+
+When creating or updating `AGENTS.md`:
+
+* Read .agents/workflow.json and preserve the active workflow as the authoritative routing decision.
+* Preserve existing project-specific Workflow Governance when present.
+* If AGENTS.md is missing or incomplete, add the workflow governance required for the active workflow.
+* Keep workflow-specific startup rules consistent with the active workflow.
+* Do not replace workflow-specific instructions with the generic harness template.
+* Do not introduce Foundation Workflow startup instructions into an AI Expert project.
+
+`AGENTS.md` is a project-specific document. The template provides structure, not authoritative workflow policy.
 
 ## Hard Rules
 
@@ -19,12 +43,12 @@ Use this skill to create the smallest useful repo harness after discovery is com
 - Do not initialize frameworks, install dependencies, or modify application source.
 - Do not reopen product discovery unless the discovery docs are missing or contradictory enough to block the harness.
 - Create or update only the minimal startup harness:
-  - `../../../AGENTS.md`
+  - `AGENTS.md`
   - `init.sh`
-  - `../../../PROGRESS.md`
+  - `PROGRESS.md`
   - `feature_list.json`
-- Do not create `../../../ARCHITECTURE.md`, clean-state checklists, evaluator rubrics, quality documents, implementation plans, issue backlogs, or extra docs unless the user explicitly asks after this skill finishes.
-- Keep `../../../AGENTS.md` short and routing-oriented. It is a landing page, not an encyclopedia.
+- Do not create `ARCHITECTURE.md`, clean-state checklists, evaluator rubrics, quality documents, implementation plans, issue backlogs, or extra docs unless the user explicitly asks after this skill finishes.
+- Keep `AGENTS.md` short and routing-oriented. It is a landing page, not an encyclopedia.
 - Preserve the repository's document language and style. If unclear, infer from existing discovery docs; ask only if there is no evidence.
 - If any target file already exists, read it first and update conservatively. Do not overwrite useful human-authored content.
 
@@ -32,15 +56,15 @@ Use this skill to create the smallest useful repo harness after discovery is com
 
 Read available discovery docs before generating artifacts:
 
-1. `../../../CONTEXT.md`
-2. `../../../docs/build-brief.md` or `../../../docs/product-brief.md`
-3. `../../../docs/domain-model.md`
-4. `../../../docs/risks-and-open-questions.md`
+1. `CONTEXT.md`
+2. `docs/build-brief.md` or `docs/product-brief.md`
+3. `docs/domain-model.md`
+4. `docs/risks-and-open-questions.md`
 5. Optional if present:
-   - `../../../docs/user-and-access-model.md`
-   - `../../../docs/technical-discovery.md`
-   - `../../../docs/mvp-scope.md`
-   - `../../../docs/adr/*.md`
+   - `docs/user-and-access-model.md`
+   - `docs/technical-discovery.md`
+   - `docs/mvp-scope.md`
+   - `docs/adr/*.md`
 
 If none of these exist, stop and tell the user to run `$build-brief` first.
 
@@ -54,9 +78,9 @@ Check whether each target file already exists. For existing files, preserve inte
 
 Create/update the four target files using `references/artifact-templates.md`:
 
-- `../../../AGENTS.md`: project landing page and operating rules.
+- `AGENTS.md`: project landing page and operating rules.
 - `init.sh`: standard startup/verification path, even if initially provisional.
-- `../../../PROGRESS.md`: current verified state and lightweight session log.
+- `PROGRESS.md`: current verified state and lightweight session log.
 - `feature_list.json`: machine-readable feature state with verification and evidence fields.
 
 ### 3. Keep Scope Tight
@@ -92,15 +116,16 @@ Do not invent working commands that do not exist.
 
 Before finishing, verify:
 
-- `../../../AGENTS.md` answers: what is the project, how to start, how to verify.
+- `AGENTS.md` answers: what is the project, how to start, how to verify.
 - `feature_list.json` is valid JSON.
 - Every feature has `id`, `area`, `title`, `user_visible_behavior`, `depends_on`, `status`, `verification`, `evidence`, and `notes`.
 - Every `depends_on` entry references an existing feature `id`, does not reference itself, and does not create a dependency cycle.
 - No feature is an epic/milestone such as "auth and enrollment API", "adaptive dashboard", "review flow", "content import", or "certificate generation and public verification" unless it has first been split into smaller verifiable slices.
 - For non-trivial MVPs, the feature count is not suspiciously low. If there are fewer than 10 features, run a second slicing pass before finishing.
-- `../../../PROGRESS.md` names the standard startup and verification paths, even if provisional.
+- `PROGRESS.md` names the standard startup and verification paths, even if provisional.
 - `init.sh` is executable or tell the user to run `chmod +x init.sh` if tooling prevented changing mode.
 - No extra files were created.
+
 
 ## Teaching Note
 
