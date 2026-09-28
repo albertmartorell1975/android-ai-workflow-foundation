@@ -3,7 +3,7 @@ name: workflow-initializer
 description: Initializes a new Android project with the AI-assisted development workflow seed. It sets up the governance files and guides the initial customization of agents and skills.
 metadata:
   author: Albert Martorell Garcia
-  version: 3.3.0
+  version: 1.0.0
   keywords:
   - setup
   - initialization

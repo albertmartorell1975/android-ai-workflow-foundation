@@ -1,4 +1,4 @@
-# 🚀 Android AI Workflow Foundation v3.0.0
+# 🚀 Android AI Workflow Foundation v1.0.0
 
 Exploring how AI agents can become part of a disciplined, human-supervised software engineering process.
 

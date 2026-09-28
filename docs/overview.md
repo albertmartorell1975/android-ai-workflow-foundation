@@ -1,6 +1,6 @@
 # Architecture Overview
 
-The **Android AI Workflow Foundation v3.0.0** is a modular framework designed to support different AI-assisted development methodologies on top of a shared engineering foundation.
+The **Android AI Workflow Foundation v1.0.0** is a modular framework designed to support different AI-assisted development methodologies on top of a shared engineering foundation.
 
 The Foundation separates three concerns:
 
