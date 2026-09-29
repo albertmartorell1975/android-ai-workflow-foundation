@@ -26,6 +26,7 @@ Regardless of the selected workflow, the project uses the same Foundation layer 
 * Testing and verification.
 * Git governance.
 * Security and technical guardrails.
+* Design system governance and graphic asset handling (UI reference mockups & optimized WebP conversion).
 * Project-specific instructions and context.
 
 The selected workflow determines **how the work is organized and delegated**.

@@ -142,6 +142,7 @@ Examples include:
 * Testing and verification.
 * Git governance.
 * Security and privacy rules.
+* Design system governance and graphic asset handling (UI reference mockups & optimized WebP conversion).
 * Project-specific expert skills.
 
 The guardrails are **not a separate final validation stage**. They are shared constraints and technical knowledge consulted throughout the workflow.

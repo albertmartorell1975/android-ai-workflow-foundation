@@ -29,6 +29,9 @@ This skill ensures that any AI agent or developer modifying the UI adheres to th
 ## 3. Visual Excellence & Motion
 - **Typography**: Use variable font axes (weight) for interaction feedback via **Roboto Flex**.
 - **Motion**: Use **Spring Physics** (`MMMotion.SpringExpressive`) for consistent, tactile transitions.
+- **UI Design Assets & Resource Conversion**:
+    - **Screen Reference Layouts**: Full-screen mockups and layout blueprints must be stored in `docs/ui/<feature-id>/screens/` (or root `docs/ui/screens/`) as visual reference layout guides only (PNG/HTML). They must NOT be converted to drawables.
+    - **Graphic Assets**: Raw graphic assets, icons, and logos must be stored in `docs/ui/<feature-id>/resources/` (or root `docs/ui/resources/`) (PNG/JPEG) and converted to optimized `.webp` format in `app/src/main/res/drawable/ic_<name>.webp`.
 
 ## 4. Verification & Testing Protocol
 - **JDK 21**: Mandatory for projects targeting SDK 36+ (Robolectric/Roborazzi simulation).

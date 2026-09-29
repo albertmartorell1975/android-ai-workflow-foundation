@@ -179,7 +179,7 @@ Examples:
 * `foundation-evolve`
 * `dependency-manager`
 * `testing-setup`
-* `design-system-governance`
+* `design-system-governance` (includes UI design folder organization and automated graphic asset PNG/JPEG to WebP conversion governance)
 * `kotlin-style`
 * `viewmodel-architecture-governance`
 * Android, Kotlin, Compose, security, and platform expertise
