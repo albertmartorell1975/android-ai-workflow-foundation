@@ -113,10 +113,11 @@ Creating the commit is the main orchestrator's final step after the validator re
 2. Persist acceptance by updating `feature_list.json` for the selected feature to status `accepted` and appending concise validator evidence. If a validation artifact is useful, create or update `docs/validations/<feature-id>.md`; otherwise `feature_list.json` plus `PROGRESS.md` evidence is sufficient.
 3. Identify the files changed for the accepted feature, including required harness/docs/evidence updates.
 4. Stage only those files. Do not stage unrelated user or other-agent changes.
-5. Create one Conventional Commit, using a message that names the feature. Prefer:
-   - `feat: complete <feature-id>` for user-visible product/platform features,
-   - `docs: complete <feature-id>` for documentation-only features,
-   - `chore: complete <feature-id>` for workflow/tooling-only features.
+5. Create atomic, layer-specific Conventional Commits following **`git-governance`** skill rules (do not mix changes affecting different Clean Architecture layers in the same commit; follow the flow `Domain -> Data -> UseCases -> UI`). Use the format `<type>(<module>): [ID] <subject>`. For example:
+   - `feat(domain): [<feature-id>] define domain entity`
+   - `feat(data): [<feature-id>] implement repository data source`
+   - `feat(usecases): [<feature-id>] add interactor use case`
+   - `feat(ui): [<feature-id>] create UI composable and viewmodel`
 6. If the accepted feature's changes cannot be isolated from unrelated work, stop and report the commit blocker instead of making a mixed commit.
 7. Do not push the commit unless the user explicitly requested a push.
 8. After the commit succeeds, select the next available feature and report the next required role. Do not start the next feature unless asked.
@@ -142,6 +143,7 @@ When no meaningful manual test exists, say so and explain the closest verificati
 After a subagent returns:
 
 - verify the expected artifact exists or the expected verdict is present,
+- ensure the validator's `accept` verdict is backed by successful execution of the **`compiler`** skill verification suite,
 - check that the subagent stayed in role,
 - check for obvious missing state updates,
 - summarize the next action.
