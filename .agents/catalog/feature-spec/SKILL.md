@@ -19,7 +19,7 @@ Use this skill to turn one harness feature into an implementation-ready contract
 - Do not implement code.
 - Do not modify application source files.
 - Do not generate specs for every feature unless the user explicitly asks after this skill finishes.
-- Create or update only `../../../docs/specs/<feature-id>.md` by default.
+- Create or update only `docs/specs/<feature-id>.md` by default.
 - If the feature id is not provided, select the first feature in `feature_list.json` order whose status is neither `passing` nor `accepted` and whose `depends_on` prerequisites are satisfied.
 - If a feature is too broad to plan cleanly, stop and recommend splitting it in `feature_list.json` instead of producing a vague spec. Rough signal: it needs more than one data model plus one user flow, or the spec would clearly exceed the 100-250 line target.
 - Treat the spec as a contract between agents: planner -> implementer -> validator.
@@ -27,20 +27,20 @@ Use this skill to turn one harness feature into an implementation-ready contract
 
 ## Inputs To Read First
 
-1. `../../../AGENTS.md`
-2. `../../../PROGRESS.md`
+1. `AGENTS.md`
+2. `PROGRESS.md`
 3. `feature_list.json`
-4. Existing feature spec if present: `../../../docs/specs/<feature-id>.md`
+4. Existing feature spec if present: `docs/specs/<feature-id>.md`
 5. Product/discovery docs as needed:
-   - `../../../CONTEXT.md`
-   - `../../../docs/product-brief.md`
-   - `../../../docs/domain-model.md`
-   - `../../../docs/user-and-access-model.md`
-   - `../../../docs/technical-discovery.md`
-   - `../../../docs/mvp-scope.md`
-   - `../../../DESIGN.md` when the selected feature has UI or visual behavior
-   - `../../../docs/risks-and-open-questions.md`
-   - `../../../docs/adr/*.md`
+   - `CONTEXT.md`
+   - `docs/product-brief.md`
+   - `docs/domain-model.md`
+   - `docs/user-and-access-model.md`
+   - `docs/technical-discovery.md`
+   - `docs/mvp-scope.md`
+   - `DESIGN.md` when the selected feature has UI or visual behavior
+   - `docs/risks-and-open-questions.md`
+   - `docs/adr/*.md`
 6. Existing application files relevant to the selected feature. Inspect enough of the repo to identify expected file changes, patterns, commands, and risks.
 
 If `feature_list.json` is missing, stop and tell the user to run the startup harness skill first.
@@ -72,7 +72,7 @@ Record inspected files in the spec. Do not pretend to have inspected files that 
 
 ### 3. Write The Feature Implementation Spec
 
-Create or update `../../../docs/specs/<feature-id>.md` using `references/spec-template.md`. For a sense of the right level of detail, look at an existing accepted spec such as `../../../docs/specs/bootstrap-nextjs-shell.md`.
+Create or update `docs/specs/<feature-id>.md` using `references/spec-template.md`. For a sense of the right level of detail, look at an existing accepted spec such as `docs/specs/bootstrap-nextjs-shell.md`.
 
 The spec must include:
 
@@ -104,7 +104,7 @@ Before finishing, check:
 - Verification includes commands or manual checks available in the repo's current state.
 - If a persistent E2E command exists and the feature changes user-visible behavior, authentication, authorization, routing, or API flows, the verification plan should include adding/updating focused E2E coverage or explicitly justify why unit/integration coverage is enough.
 - For shell scripts such as `init.sh`, the spec states whether the script must execute checks, print guidance, start services, or provide modes. The default harness rule is: `init.sh` executes non-blocking startup/verification checks and must not start long-running dev servers.
-- Durable documentation impact is explicit: `../../../ARCHITECTURE.md`, `../../../CONSTRAINTS.md`, `../../../AGENTS.md`, and other durable docs are each marked create/update/not needed with a reason.
+- Durable documentation impact is explicit: `ARCHITECTURE.md`, `CONSTRAINTS.md`, `AGENTS.md`, and other durable docs are each marked create/update/not needed with a reason.
 - Non-goals prevent scope creep.
 - Unknowns are explicit and do not hide blocking ambiguity.
 

@@ -47,6 +47,7 @@ When creating or updating `AGENTS.md`:
   - `init.sh`
   - `PROGRESS.md`
   - `feature_list.json`
+  - Dedicated UI folders under `docs/ui/<feature-id>/screens/` and `docs/ui/<feature-id>/resources/` for EVERY feature derived in `feature_list.json` (if a folder already exists, do NOT overwrite or recreate it).
 - Do not create `ARCHITECTURE.md`, clean-state checklists, evaluator rubrics, quality documents, implementation plans, issue backlogs, or extra docs unless the user explicitly asks after this skill finishes.
 - Keep `AGENTS.md` short and routing-oriented. It is a landing page, not an encyclopedia.
 - Preserve the repository's document language and style. If unclear, infer from existing discovery docs; ask only if there is no evidence.
@@ -82,6 +83,12 @@ Create/update the four target files using `references/artifact-templates.md`:
 - `init.sh`: standard startup/verification path, even if initially provisional.
 - `PROGRESS.md`: current verified state and lightweight session log.
 - `feature_list.json`: machine-readable feature state with verification and evidence fields.
+
+For EVERY feature derived in `feature_list.json`, ensure its dedicated folder structure exists under `docs/ui/`:
+- `docs/ui/<feature-id>/screens/` — for feature screen mockups and layout blueprints (PNG/HTML).
+- `docs/ui/<feature-id>/resources/` — for feature raw graphic assets (PNG/JPEG).
+
+*Folder Existence Rule:* If a feature UI folder already exists, do NOT recreate or overwrite it; leave existing assets untouched.
 
 ### 3. Keep Scope Tight
 

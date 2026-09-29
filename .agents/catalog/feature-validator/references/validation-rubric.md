@@ -7,7 +7,7 @@ Status convention:
 - `passing` in `feature_list.json` means the implementer self-verified the feature and recorded evidence.
 - `passing` does not mean independent acceptance.
 - `accept`, `revise`, and `block` are validator verdicts.
-- Unless the project explicitly extends the feature state machine, record validator acceptance in `../../../../PROGRESS.md` or a validation artifact rather than adding a new feature status.
+- Unless the project explicitly extends the feature state machine, record validator acceptance in `PROGRESS.md` or a validation artifact rather than adding a new feature status.
 
 | Category | Question | Pass Signal | Fail Signal |
 | --- | --- | --- | --- |
@@ -15,11 +15,11 @@ Status convention:
 | Verification | Did required checks actually run with evidence? | Exact commands/results are recorded and rerunnable where possible. | No evidence, failed checks hidden, or only verbal confidence. |
 | E2E coverage | For observable user/API flows, did persistent E2E coverage exist and get updated when available? | `pnpm test:e2e` or repo-equivalent coverage exercises the changed flow, or the spec justifies why it is not needed. | Only manual smoke evidence remains after an E2E harness exists and the changed flow is E2E-testable. |
 | Scope discipline | Did implementation stay inside the selected feature? | No unrelated feature work or broad refactors. | Adjacent features implemented opportunistically. |
-| Architecture | Does code respect documented boundaries and patterns? | Dependencies and layers match `../../../../ARCHITECTURE.md`/repo patterns. | New ad hoc architecture, boundary violations, tangled coupling. |
+| Architecture | Does code respect documented boundaries and patterns? | Dependencies and layers match `ARCHITECTURE.md`/repo patterns. | New ad hoc architecture, boundary violations, tangled coupling. |
 | Security/access | Does the diff avoid obvious security/privacy regressions? | Auth, secrets, input, data exposure, and external calls are handled appropriately for this slice. | Secrets committed, unsafe auth bypass, unchecked input, private data exposure. |
 | Maintainability | Can a fresh agent understand and extend this? | Clear structure, small files, tests/docs where useful. | Obscure logic, oversized files, duplicated rules, unclear ownership. |
-| Durable docs | Did durable knowledge land in the right artifact? | `../../../../AGENTS.md`, `../../../../ARCHITECTURE.md`, `../../../../CONSTRAINTS.md`, specs, progress are updated only when warranted. | Important rules remain only in chat/code, or docs are stale/duplicative. |
-| Handoff readiness | Can the next session continue safely? | `../../../../PROGRESS.md` and `feature_list.json` reflect actual state and next step. | State files lie, omit blockers, or require oral context. |
+| Durable docs | Did durable knowledge land in the right artifact? | `AGENTS.md`, `ARCHITECTURE.md`, `CONSTRAINTS.md`, specs, progress are updated only when warranted. | Important rules remain only in chat/code, or docs are stale/duplicative. |
+| Handoff readiness | Can the next session continue safely? | `PROGRESS.md` and `feature_list.json` reflect actual state and next step. | State files lie, omit blockers, or require oral context. |
 
 ## `init.sh` Validation Rule
 

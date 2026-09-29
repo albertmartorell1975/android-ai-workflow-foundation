@@ -6,11 +6,11 @@ Code changes and durable knowledge changes travel together.
 
 Update docs only when the change creates or changes knowledge future agents need:
 
-- `../../../../AGENTS.md`: update only if the agent workflow, startup path, verification path, or repo-wide operating rules change. Keep it short and router-like.
-- `../../../../ARCHITECTURE.md`: create/update when domains, layers, runtime surfaces, dependency direction, adapters/providers, or architectural boundaries are established or changed.
-- `../../../../CONSTRAINTS.md`: create/update when a durable MUST/MUST NOT rule appears that future agents must obey.
-- `../../../../docs/specs/<feature-id>.md`: update if implementation discovers that the spec was wrong, incomplete, or materially changed by necessary findings.
-- `../../../../PROGRESS.md`: update every implementation session.
+- `AGENTS.md`: update only if the agent workflow, startup path, verification path, or repo-wide operating rules change. Keep it short and router-like.
+- `ARCHITECTURE.md`: create/update when domains, layers, runtime surfaces, dependency direction, adapters/providers, or architectural boundaries are established or changed.
+- `CONSTRAINTS.md`: create/update when a durable MUST/MUST NOT rule appears that future agents must obey.
+- `docs/specs/<feature-id>.md`: update if implementation discovers that the spec was wrong, incomplete, or materially changed by necessary findings.
+- `PROGRESS.md`: update every implementation session.
 - `feature_list.json`: update selected feature status and evidence every implementation session.
 
 Do not create architecture or constraints docs just to look complete. Create them when they reduce future rediscovery or prevent future mistakes.
@@ -26,7 +26,7 @@ Feature status convention:
 - `accepted`: independent validation returned `accept` and the main orchestrator persisted that result. Implementers must not set this status.
 - `blocked`: implementation cannot continue with the current spec/context.
 
-Do not use `passing` to mean final approval. Final approval is a validator verdict persisted by the main orchestrator as `accepted` in `feature_list.json`, with concise evidence in `feature_list.json` and/or `../../../../PROGRESS.md`.
+Do not use `passing` to mean final approval. Final approval is a validator verdict persisted by the main orchestrator as `accepted` in `feature_list.json`, with concise evidence in `feature_list.json` and/or `PROGRESS.md`.
 
 ## `init.sh` Rule
 
@@ -39,13 +39,10 @@ Default behavior:
 - avoid starting blocking commands such as `pnpm dev`,
 - optionally print manual follow-up commands after checks pass.
 
-For a Next.js baseline, a good default is:
+For an Android baseline, a good default is:
 
 ```bash
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
+./gradlew testDebugUnitTest --quiet
 ```
 
 Only allow an informational-only `init.sh` during an explicitly pre-bootstrap phase.
@@ -65,3 +62,4 @@ Record exact commands and results. If a check is impossible in the current repo 
 - No opportunistic adjacent features.
 - No false `passing` status.
 - If the feature grows beyond the spec, stop and update the spec or ask for a split.
+- **Graphic Assets Rule:** When implementing UI features, convert raw PNG/JPEG graphic assets located in `docs/ui/<feature-id>/resources/` (or `docs/ui/resources/`) into optimized `.webp` format and place them in `app/src/main/res/drawable/ic_<name>.webp`. Do NOT convert full screen mockups/screenshots (`docs/ui/<feature-id>/screens/...`), which serve as visual reference layout guides only.

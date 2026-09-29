@@ -28,15 +28,15 @@ You are the validator/evaluator, not the planner and not the implementer.
 
 ## Inputs To Read First
 
-1. `../../../AGENTS.md`
-2. `../../../PROGRESS.md`
+1. `AGENTS.md`
+2. `PROGRESS.md`
 3. `feature_list.json`
-4. Selected feature spec: `../../../docs/specs/<feature-id>.md`
+4. Selected feature spec: `docs/specs/<feature-id>.md`
 5. Current git status and diff
 6. Durable docs if present:
-   - `../../../ARCHITECTURE.md`
-   - `../../../CONSTRAINTS.md`
-   - `../../../DESIGN.md` when the spec or implementation has UI or visual behavior
+   - `ARCHITECTURE.md`
+   - `CONSTRAINTS.md`
+   - `DESIGN.md` when the spec or implementation has UI or visual behavior
    - related docs under `docs/`
 7. Files changed by the implementation.
 
@@ -52,7 +52,7 @@ Identify:
 - spec path,
 - implementation diff,
 - claimed status in `feature_list.json`,
-- evidence recorded in `feature_list.json` and `../../../PROGRESS.md`.
+- evidence recorded in `feature_list.json` and `PROGRESS.md`.
 
 Status convention:
 
@@ -110,11 +110,11 @@ Validate the spec's `Durable Documentation Impact` section:
 
 - required docs were created/updated,
 - unnecessary docs were not created,
-- `../../../AGENTS.md` stayed short and router-like,
-- `../../../ARCHITECTURE.md` captures durable boundaries without becoming a file inventory,
-- `../../../CONSTRAINTS.md` uses operational MUST/MUST NOT rules rather than vague preferences,
+- `AGENTS.md` stayed short and router-like,
+- `ARCHITECTURE.md` captures durable boundaries without becoming a file inventory,
+- `CONSTRAINTS.md` uses operational MUST/MUST NOT rules rather than vague preferences,
 - docs do not contradict the implemented behavior.
-- UI or visual changes follow `../../../DESIGN.md` when the feature involves product screens, public verification pages, or generated design assets.
+- UI or visual changes follow `DESIGN.md` when the feature involves product screens, public verification pages, or generated design assets.
 
 ### 6. Produce Verdict
 

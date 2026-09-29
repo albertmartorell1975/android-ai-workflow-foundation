@@ -16,15 +16,15 @@ Use this skill to turn an unclear project, significant feature, or product chang
 ## Hard Rules
 
 - Do not implement code.
-- Do not create `../../../AGENTS.md`, `features.yaml`, `../../../PROGRESS.md`, issue backlogs, task plans, or implementation plans until the user explicitly asks after discovery is complete.
+- Do not create `AGENTS.md`, `features.yaml`, `PROGRESS.md`, issue backlogs, task plans, or implementation plans until the user explicitly asks after discovery is complete.
 - Ask one question at a time. Include a recommended answer when useful.
 - Prefer structured question tools when available: if the current agent environment exposes a multiple-choice/user-input tool, use it for bounded discovery questions; otherwise present the question and options as plain text.
 - If a repository or existing docs exist, inspect them before asking questions that the files can answer.
 - Create or update only the controlled discovery documents listed below.
 - Keep documents concise and maintainable. Avoid context rot, duplicated statements, and stale open questions.
 - Before creating or updating discovery documents, always ask which language to use for project documents. Do not assume from the conversation language.
-- For products/features with a visual interface, discover existing design assets and create or update `../../../DESIGN.md` after the MVP or new-feature direction is clear.
-- If the user asks to create design direction and no source-of-truth design exists, use the `imagegen` skill for a small number of UI concept images, then save the accepted project-bound images under `docs/design/concepts/` and reference them from `../../../DESIGN.md`.
+- For products/features with a visual interface, discover existing design assets and create or update `DESIGN.md` after the MVP or new-feature direction is clear.
+- If the user asks to create design direction and no source-of-truth design exists, use the `imagegen` skill for a small number of UI concept images, then save the accepted project-bound images under `docs/design/concepts/` and reference them from `DESIGN.md`.
 - Treat this as a teaching workflow: explain why each artifact exists when introducing it. If the user mentions training, a workshop, a course, or students, read `references/teaching-notes.md` before starting (see Teaching Mode below).
 
 ## Controlled Outputs
@@ -33,19 +33,19 @@ Do not create every possible file by default. Start with the smallest useful doc
 
 Default compact set:
 
-- `../../../CONTEXT.md` — glossary and domain language only.
-- `../../../docs/build-brief.md` — problem, users, goals, non-goals, MVP slice, validation, and success criteria.
-- `../../../docs/domain-model.md` — domain entities, relationships, states, lifecycle rules.
-- `../../../docs/risks-and-open-questions.md` — unresolved decisions, assumptions, risks, research tasks.
+- `CONTEXT.md` — glossary and domain language only.
+- `docs/build-brief.md` — problem, users, goals, non-goals, MVP slice, validation, and success criteria.
+- `docs/domain-model.md` — domain entities, relationships, states, lifecycle rules.
+- `docs/risks-and-open-questions.md` — unresolved decisions, assumptions, risks, research tasks.
 
 Optional split-out documents, only when they would reduce confusion rather than add ceremony:
 
-- `../../../docs/user-and-access-model.md` — use when roles, permissions, ownership, revocation, or access rules are central to the project.
-- `../../../docs/technical-discovery.md` — use when stack, integrations, data, deployment, or operational constraints require focused treatment.
-- `../../../docs/mvp-scope.md` — use when the MVP boundaries are large enough that they would make `../../../docs/build-brief.md` hard to read.
-- `../../../DESIGN.md` — use when the MVP or feature has a visual interface. If the user already has app designs, screenshots, Figma/Pencil files, brand guidelines, or references, capture how they should be used. If not, create an initial design direction with tokens and rationale.
+- `docs/user-and-access-model.md` — use when roles, permissions, ownership, revocation, or access rules are central to the project.
+- `docs/technical-discovery.md` — use when stack, integrations, data, deployment, or operational constraints require focused treatment.
+- `docs/mvp-scope.md` — use when the MVP boundaries are large enough that they would make `docs/build-brief.md` hard to read.
+- `DESIGN.md` — use when the MVP or feature has a visual interface. If the user already has app designs, screenshots, Figma/Pencil files, brand guidelines, or references, capture how they should be used. If not, create an initial design direction with tokens and rationale.
 - `docs/design/concepts/*.png` — optional generated UI concept images when the user explicitly wants image-generated design direction and no authoritative design assets exist. These are visual references, not implementation artifacts.
-- `../../../docs/adr/*.md` — use only for hard-to-reverse decisions with real trade-offs.
+- `docs/adr/*.md` — use only for hard-to-reverse decisions with real trade-offs.
 
 Read `references/output-documents.md` before writing or updating these files.
 
@@ -88,9 +88,9 @@ Use domain-modeling discipline:
 - Detect vague or overloaded terms.
 - Propose precise canonical terms.
 - Ask for confirmation.
-- Add resolved terms to `../../../CONTEXT.md` only after they are stable.
+- Add resolved terms to `CONTEXT.md` only after they are stable.
 
-`../../../CONTEXT.md` is a glossary, not a PRD, scratchpad, or decision log.
+`CONTEXT.md` is a glossary, not a PRD, scratchpad, or decision log.
 
 ### 3. Discover Users and Access
 
@@ -156,17 +156,17 @@ First discover whether the user already has design inputs:
 
 If design assets exist, record where they are and whether they are source of truth, inspiration, outdated, or partial.
 
-If design assets do not exist, decide whether the user wants generated visual concepts before locking `../../../DESIGN.md`. If yes, use the `imagegen` skill in its default built-in mode for 1-3 concept mockups that show the product feel across the most important surfaces. Good defaults are:
+If design assets do not exist, decide whether the user wants generated visual concepts before locking `DESIGN.md`. If yes, use the `imagegen` skill in its default built-in mode for 1-3 concept mockups that show the product feel across the most important surfaces. Good defaults are:
 
 - one primary user-facing screen for the MVP's first workflow,
 - one secondary operational or edge-state screen when the MVP has internal users,
 - one compact mobile or responsive variant when mobile behavior is materially important.
 
-Treat generated UI images as direction-setting references. Do not assume generated text, exact spacing, or component details are authoritative. Save only accepted or useful project-bound concepts under `docs/design/concepts/`, record the prompt and role in `../../../DESIGN.md`, and mark each concept as source of truth, inspiration, rejected, or needs iteration.
+Treat generated UI images as direction-setting references. Do not assume generated text, exact spacing, or component details are authoritative. Save only accepted or useful project-bound concepts under `docs/design/concepts/`, record the prompt and role in `DESIGN.md`, and mark each concept as source of truth, inspiration, rejected, or needs iteration.
 
-Create a first `../../../DESIGN.md` for agents. Use it to give future coding agents persistent visual direction: design tokens plus human-readable rationale. Do not over-design every screen; define enough visual identity, layout principles, core screens, components, and accessibility expectations to prevent agents from improvising inconsistent UI.
+Create a first `DESIGN.md` for agents. Use it to give future coding agents persistent visual direction: design tokens plus human-readable rationale. Do not over-design every screen; define enough visual identity, layout principles, core screens, components, and accessibility expectations to prevent agents from improvising inconsistent UI. Always create the directory structure `docs/ui/screens/` for full-screen layout reference mockups (PNG/HTML, which are NEVER converted to drawables) and `docs/ui/resources/` for app graphic assets (logos, avatars, icons, which MUST be converted to optimized `.webp` format in `app/src/main/res/drawable/ic_<name>.webp`), and document the Android Resource Conversion Policy in `DESIGN.md`.
 
-`../../../DESIGN.md` should be useful for an MVP or a significant new feature. For a non-visual project, explicitly mark visual design as not applicable in the relevant brief and do not create `../../../DESIGN.md`.
+`DESIGN.md` should be useful for an MVP or a significant new feature. For a non-visual project, explicitly mark visual design as not applicable in the relevant brief and do not create `DESIGN.md`.
 
 ### 8. Record Decisions Sparingly
 
@@ -187,7 +187,7 @@ Run this step when discovery is about to close, or when the user explicitly asks
 - Mark remaining questions as `Blocking next phase`, `Implementation-time`, or `Later`.
 - Do not leave critical sections as only `Not yet defined`; write a minimal initial position or explain why it is safely deferred.
 - Check that access revocation/expiry, verification/testing, observability, operational ownership, and MVP validation have at least a minimal stance.
-- For visual products/features, check that design assets were either referenced or `../../../DESIGN.md` was created with enough direction for future UI implementation. If `imagegen` was used, verify that project-bound concept images are saved under `docs/design/concepts/`, referenced from `../../../DESIGN.md`, and clearly marked as directional rather than exact UI source.
+- For visual products/features, check that design assets were either referenced or `DESIGN.md` was created with enough direction for future UI implementation. If `imagegen` was used, verify that project-bound concept images are saved under `docs/design/concepts/`, referenced from `DESIGN.md`, and clearly marked as directional rather than exact UI source.
 - Keep each document concise enough to be reread by an agent; if a document grows large, summarize decisions and move details to later planning docs only when the user asks.
 
 ### 10. Stop Condition
@@ -205,7 +205,7 @@ Stop discovery when there is enough information to answer:
 - What is explicitly out of scope?
 - What remains unknown?
 
-Then ask the user whether to proceed to the next phase, such as deriving `../../../AGENTS.md`, feature slices, or an implementation plan. Do not proceed automatically.
+Then ask the user whether to proceed to the next phase, such as deriving `AGENTS.md`, feature slices, or an implementation plan. Do not proceed automatically.
 
 ## Teaching Mode
 

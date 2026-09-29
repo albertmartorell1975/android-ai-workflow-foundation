@@ -128,11 +128,11 @@ As a Skill, `workflow-feature` provides:
    Every generated `WORKFLOW_*.md` checklist MUST include:
 
     * At the START of every phase:
-      `- [ ] **MANDATORY**: Consult \`AGENTS.md` for role-specific constraints`
+      `- [ ] **MANDATORY**: Consult \`AGENTS.md\` for role-specific constraints`
     * At the END of every phase:
 
-        * `- [ ] **MANDATORY**: Execute \`compiler` skill verification suite.`
-        * `- [ ] **MANDATORY**: Request Commit & Push (Manual or via \`git-governance` skill) before advancing.`
+        * `- [ ] **MANDATORY**: Execute \`compiler\` skill verification suite.`
+        * `- [ ] **MANDATORY**: Request Commit & Push (Manual or via \`git-governance\` skill) before advancing.`
 
 ---
 
@@ -172,7 +172,6 @@ The output must be consistent with:
 
 * the current repository structure,
 * `.agents/AGENTS.md`,
-* `.agents/rules.md`,
 * established architectural patterns,
 * project naming conventions,
 * pragmatic testing strategy,
@@ -185,9 +184,8 @@ The output must be consistent with:
 Before generating the final workflow, the agent MUST verify that:
 
 1. The workflow configuration has already been validated and `activeWorkflow` is `foundation`.
-2. The **Idea Diagnosis** from `.agents/rules.md` has been presented.
-3. The **Necessary Questions** have been answered or assumptions have been explicitly accepted.
-4. This skill acts as the implementation executor of the **Optimized Prompt** generated in the previous step.
+2. The **Necessary Questions** have been answered or assumptions have been explicitly accepted.
+3. This skill acts as the implementation executor of the **Optimized Prompt** generated in the previous step.
 
 The agent MUST NOT skip the pre-diagnosis phase merely because the requested feature appears technically simple.
 
@@ -204,6 +202,9 @@ Identify whether UI changes are needed.
 When applicable, describe:
 
 * UI/UX requirements,
+* dedicated feature design folders under `docs/ui/<feature-id>/screens/` and `docs/ui/<feature-id>/resources/` (ensure these folders exist; if they already exist, do NOT recreate or overwrite existing files),
+* graphic asset conversion: raw PNG/JPEG graphic assets located in `docs/ui/<feature-id>/resources/` MUST be converted into optimized `.webp` format in `app/src/main/res/drawable/ic_<name>.webp`,
+* exclusion rule: full-screen mockups (`docs/ui/<feature-id>/screens/<screen>/screen.png`) serve as visual reference layout guides ONLY and MUST NOT be converted into drawable resources,
 * loading, error, empty, and success states,
 * navigation implications,
 * accessibility considerations,
@@ -359,6 +360,7 @@ When the required information has already been established, state that no additi
 - [ ] **Data:** ...
 - [ ] **UseCase:** ...
 - [ ] **UI:** ...
+- [ ] **UI Design Assets & Folders:** Ensure `docs/ui/<feature-id>/screens/` and `docs/ui/<feature-id>/resources/` exist (do NOT recreate if existing). Convert raw graphic assets in `docs/ui/<feature-id>/resources/` (PNG/JPEG) to `app/src/main/res/drawable/ic_<name>.webp` (screen mockups in `screens/` excluded).
 - [ ] **Testing & Integration:** ...
 - [ ] **Documentation Sync (MANDATORY):** Run `git status .agents/skills/` and update `.agents/skills/README.md` if there are any changes in the expert skills directory.
 - [ ] **Compiler Verification (MANDATORY):** Execute the `compiler` skill verification suite.

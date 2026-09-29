@@ -1,6 +1,6 @@
 # Feature Implementation Spec Template
 
-Use this structure for `../../../../docs/specs/<feature-id>.md`.
+Use this structure for `docs/specs/<feature-id>.md`.
 
 ```md
 # Feature Implementation Spec: <feature title>
@@ -74,24 +74,25 @@ If paths are provisional because the app is not bootstrapped yet, say so explici
 ## Visual Design Impact
 
 - UI involved: yes/no
-- Design source: `../../../../DESIGN.md` / existing design asset / not applicable
+- Design source: `DESIGN.md` / existing design asset / not applicable
 - Screens or states affected: <list>
+- Graphic assets conversion: <list PNG/JPEG graphic assets from docs/ui/<feature-id>/resources/ (or docs/ui/resources/) to be converted to app/src/main/res/drawable/ic_<name>.webp or N/A (note: screen mockups in docs/ui/<feature-id>/screens/ are visual reference layout guides only and excluded)>
 - New design artifact required: yes/no — <reason>
 
-If UI is involved, follow `../../../../DESIGN.md` and identify any feature-specific visual states the implementer must handle. If `../../../../DESIGN.md` is missing but needed, mark it as a planning gap rather than letting the implementer invent a visual style.
+If UI is involved, follow `DESIGN.md` and identify any feature-specific visual states and graphic asset conversions (`.png` ➔ `.webp` in `res/drawable/`) the implementer must handle. If `DESIGN.md` is missing but needed, mark it as a planning gap rather than letting the implementer invent a visual style.
 
 ## Durable Documentation Impact
 
-- `../../../../ARCHITECTURE.md`: create/update/not needed — <reason>
-- `../../../../CONSTRAINTS.md`: create/update/not needed — <reason>
-- `../../../../AGENTS.md`: update/not needed — <reason>
+- `ARCHITECTURE.md`: create/update/not needed — <reason>
+- `CONSTRAINTS.md`: create/update/not needed — <reason>
+- `AGENTS.md`: update/not needed — <reason>
 - Other docs: <path or none> — <reason>
 
 Use these rules:
 
-- Update `../../../../AGENTS.md` only when the agent workflow, startup path, or repo-wide operating rules change.
-- Create or update `../../../../ARCHITECTURE.md` when this feature establishes or changes domains, layers, runtime surfaces, dependency direction, adapters/providers, or other architectural boundaries.
-- Create or update `../../../../CONSTRAINTS.md` when this feature introduces a durable MUST/MUST NOT rule that future agents must obey.
+- Update `AGENTS.md` only when the agent workflow, startup path, or repo-wide operating rules change.
+- Create or update `ARCHITECTURE.md` when this feature establishes or changes domains, layers, runtime surfaces, dependency direction, adapters/providers, or other architectural boundaries.
+- Create or update `CONSTRAINTS.md` when this feature introduces a durable MUST/MUST NOT rule that future agents must obey.
 - Avoid duplicating product behavior already captured in discovery docs unless the implemented behavior changes the source of truth.
 
 ## Implementation Plan
@@ -120,7 +121,7 @@ For `init.sh`, be explicit:
 
 ## Evidence To Capture
 
-- <Command output, screenshot, test name, log line, or manual result to record in `feature_list.json` or `../../../../PROGRESS.md`.>
+- <Command output, screenshot, test name, log line, or manual result to record in `feature_list.json` or `PROGRESS.md`.>
 
 ## Validator Checklist
 
@@ -128,6 +129,6 @@ For `init.sh`, be explicit:
 - [ ] Acceptance scenarios pass.
 - [ ] Verification evidence is present.
 - [ ] Persistent E2E coverage was added/updated when the feature has an observable user/API flow and an E2E harness exists, or the spec explains why it is not needed.
-- [ ] `feature_list.json` and `../../../../PROGRESS.md` were updated correctly.
+- [ ] `feature_list.json` and `PROGRESS.md` were updated correctly.
 - [ ] No unrelated product behavior or extra feature work was added.
 ```

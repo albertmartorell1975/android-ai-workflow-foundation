@@ -27,18 +27,18 @@ You are the implementer/generator, not the planner and not the final validator.
 
 ## Inputs To Read First
 
-1. `../../../AGENTS.md`
-2. `../../../PROGRESS.md`
+1. `AGENTS.md`
+2. `PROGRESS.md`
 3. `feature_list.json`
-4. Selected feature spec: `../../../docs/specs/<feature-id>.md`
+4. Selected feature spec: `docs/specs/<feature-id>.md`
 5. Durable docs if present and relevant:
-   - `../../../ARCHITECTURE.md`
-   - `../../../CONSTRAINTS.md`
-   - `../../../DESIGN.md` when the spec has UI or visual behavior
+   - `ARCHITECTURE.md`
+   - `CONSTRAINTS.md`
+   - `DESIGN.md` when the spec has UI or visual behavior
    - relevant docs under `docs/`
 6. Existing application files named in the spec's repository research and expected file changes.
 
-If no feature id is provided, choose the feature that is currently `in_progress`; otherwise choose the first feature in `feature_list.json` order whose status is neither `passing` nor `accepted`, whose `depends_on` prerequisites are satisfied, and that already has `../../../docs/specs/<feature-id>.md`.
+If no feature id is provided, choose the feature that is currently `in_progress`; otherwise choose the first feature in `feature_list.json` order whose status is neither `passing` nor `accepted`, whose `depends_on` prerequisites are satisfied, and that already has `docs/specs/<feature-id>.md`.
 
 A dependency is satisfied when the referenced feature id exists and has status `accepted`. For legacy feature lists, a dependency with status `passing` may be treated as satisfied only when durable evidence shows independent validator acceptance. If `depends_on` is absent in an older feature list, treat it as `[]` for backward compatibility.
 
@@ -103,18 +103,18 @@ After verification:
 
 - update `feature_list.json` for the selected feature only,
 - record exact evidence for checks that passed,
-- update `../../../PROGRESS.md` with what changed, what ran, what failed, and the next best step,
+- update `PROGRESS.md` with what changed, what ran, what failed, and the next best step,
 - update the session handoff note if it exists or if the session leaves meaningful incomplete state,
 - update durable docs required by the spec or discovered during implementation.
 
-CONSTRAINTS.md rule: read `../../../CONSTRAINTS.md` before implementing (see Inputs To Read First). When implementation or verification reveals a durable operational constraint (a MUST/MUST NOT rule future features have to respect), append it to `../../../CONSTRAINTS.md` with a short reason. Do not add speculative rules or restate what the spec, `../../../AGENTS.md`, or `../../../ARCHITECTURE.md` already cover; follow the durable documentation rules in `references/implementation-rules.md`.
+CONSTRAINTS.md rule: read `CONSTRAINTS.md` before implementing (see Inputs To Read First). When implementation or verification reveals a durable operational constraint (a MUST/MUST NOT rule future features have to respect), append it to `CONSTRAINTS.md` with a short reason. Do not add speculative rules or restate what the spec, `AGENTS.md`, or `ARCHITECTURE.md` already cover; follow the durable documentation rules in `references/implementation-rules.md`.
 
 Status rule:
 
 - `passing` means required verification passed and evidence is recorded.
 - `passing` does not mean independently accepted. It means the implementer believes the feature is ready for `feature-validator`.
 - `accepted` means an independent validator returned `accept` and the main orchestrator persisted that acceptance.
-- `blocked` means implementation cannot continue and the reason is durable in `../../../PROGRESS.md` and/or the feature entry.
+- `blocked` means implementation cannot continue and the reason is durable in `PROGRESS.md` and/or the feature entry.
 - If implementation is partial or unverified, leave `in_progress` or `blocked`, not `passing`.
 
 ### 6. Leave Validator-Ready State

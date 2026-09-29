@@ -2,7 +2,7 @@
 
 Use these templates as starting points. Adapt content to the repository's discovery docs. Keep the generated files concise.
 
-## `../../../../AGENTS.md`
+## `AGENTS.md`
 
 Purpose: short landing page for agents.
 
@@ -13,24 +13,24 @@ This repository contains [one-sentence project summary].
 
 ## Read First
 
-- `../../../../CONTEXT.md` — domain language.
-- `../../../../docs/build-brief.md` or `../../../../docs/product-brief.md` — product goals and MVP.
-- `../../../../docs/domain-model.md` — core entities, relationships, and states.
-- `../../../../docs/risks-and-open-questions.md` — current risks and unresolved questions.
+- `CONTEXT.md` — domain language.
+- `docs/build-brief.md` or `docs/product-brief.md` — product goals and MVP.
+- `docs/domain-model.md` — core entities, relationships, and states.
+- `docs/risks-and-open-questions.md` — current risks and unresolved questions.
 
 Read optional docs only when relevant:
 
-- `../../../../docs/user-and-access-model.md` — when touching users, roles, permissions, enrollment, access, certificates, or revocation.
-- `../../../../docs/technical-discovery.md` — when touching stack, integrations, deployment, auth, video, email, search, or operations.
-- `../../../../docs/mvp-scope.md` — when selecting or slicing MVP work.
-- `../../../../docs/adr/` — when a decision might contradict existing accepted decisions.
+- `docs/user-and-access-model.md` — when touching users, roles, permissions, enrollment, access, certificates, or revocation.
+- `docs/technical-discovery.md` — when touching stack, integrations, deployment, auth, video, email, search, or operations.
+- `docs/mvp-scope.md` — when selecting or slicing MVP work.
+- `docs/adr/` — when a decision might contradict existing accepted decisions.
 
 ## Startup Workflow
 
 Before writing code:
 
 1. Confirm the working directory with `pwd`.
-2. Read `../../../../PROGRESS.md` for current verified state and next step.
+2. Read `PROGRESS.md` for current verified state and next step.
 3. Read `feature_list.json` and pick the first ready unfinished feature in list order.
 4. Run `./init.sh`.
 5. If baseline verification fails, fix the baseline before adding new feature work.
@@ -46,7 +46,7 @@ Before writing code:
 ## Required Artifacts
 
 - `feature_list.json`: source of truth for feature state.
-- `../../../../PROGRESS.md`: current verified state and lightweight session log.
+- `PROGRESS.md`: current verified state and lightweight session log.
 - `init.sh`: standard startup and verification path.
 
 ## Definition Of Done
@@ -55,7 +55,7 @@ A feature is done only when all are true:
 
 - target behavior is implemented,
 - required verification actually ran,
-- evidence is recorded in `feature_list.json` or `../../../../PROGRESS.md`,
+- evidence is recorded in `feature_list.json` or `PROGRESS.md`,
 - repository remains restartable from the standard startup path,
 - relevant docs are updated if product behavior, domain rules, API, or verification changed.
 
@@ -63,7 +63,7 @@ A feature is done only when all are true:
 
 Before ending a session:
 
-1. Update `../../../../PROGRESS.md`.
+1. Update `PROGRESS.md`.
 2. Update `feature_list.json`.
 3. Record unresolved risks or blockers.
 4. Leave the repo clean enough for the next session to run `./init.sh` immediately.
@@ -109,7 +109,7 @@ if [ "${RUN_START_COMMAND:-0}" = "1" ]; then
 fi
 ```
 
-## `../../../../PROGRESS.md`
+## `PROGRESS.md`
 
 Purpose: current verified state first, lightweight history second.
 
@@ -131,7 +131,7 @@ Purpose: current verified state first, lightweight history second.
 
 - Date: `[date]`
 - Goal: Create the minimal startup harness.
-- Completed: `../../../../AGENTS.md`, `init.sh`, `../../../../PROGRESS.md`, and `feature_list.json` created or updated.
+- Completed: `AGENTS.md`, `init.sh`, `PROGRESS.md`, and `feature_list.json` created or updated.
 - Verification run: `[json validation / chmod / none]`
 - Evidence captured: `[what was checked]`
 - Files or artifacts updated: `[list]`

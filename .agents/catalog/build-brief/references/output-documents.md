@@ -7,14 +7,14 @@ Use these templates only when the corresponding concept has been discussed. Crea
 
 Use this set for most projects/features unless complexity requires a split:
 
-1. `../../../../CONTEXT.md`
-2. `../../../../docs/build-brief.md`
-3. `../../../../docs/domain-model.md`
-4. `../../../../docs/risks-and-open-questions.md`
+1. `CONTEXT.md`
+2. `docs/build-brief.md`
+3. `docs/domain-model.md`
+4. `docs/risks-and-open-questions.md`
 
 Only add optional files when the user, domain, or quality gate shows that one file would become too dense.
 
-## `../../../../docs/build-brief.md`
+## `docs/build-brief.md`
 
 ```md
 # Build Brief
@@ -40,17 +40,17 @@ Only add optional files when the user, domain, or quality gate shows that one fi
 
 ## Optional Split Criteria
 
-Split `../../../../docs/user-and-access-model.md` when permissions are a product risk.
+Split `docs/user-and-access-model.md` when permissions are a product risk.
 
-Split `../../../../docs/technical-discovery.md` when technology, integrations, deployment, or operations shape the solution.
+Split `docs/technical-discovery.md` when technology, integrations, deployment, or operations shape the solution.
 
-Split `../../../../docs/mvp-scope.md` when MVP boundaries are too large for `../../../../docs/build-brief.md`.
+Split `docs/mvp-scope.md` when MVP boundaries are too large for `docs/build-brief.md`.
 
-Create root `../../../../DESIGN.md` when the MVP or new feature has a visual interface. Ask for existing app designs first; if none exist, generate an initial design direction for agents. When the user wants image-generated concepts, use the `imagegen` skill, save accepted project-bound mockups under `docs/design/concepts/`, and reference them from `../../../../DESIGN.md`.
+Create root `DESIGN.md` when the MVP or new feature has a visual interface. Ask for existing app designs first; if none exist, generate an initial design direction for agents. When the user wants image-generated concepts, use the `imagegen` skill, save accepted project-bound mockups under `docs/design/concepts/`, and reference them from `DESIGN.md`.
 
 Create ADRs only for confirmed, hard-to-reverse decisions.
 
-## `../../../../CONTEXT.md`
+## `CONTEXT.md`
 
 Purpose: shared vocabulary for the project. No implementation details, plans, tasks, or decisions.
 
@@ -71,7 +71,7 @@ Definition.
 Use `Preferred Term` instead. Reason: ...
 ```
 
-## `../../../../docs/product-brief.md`
+## `docs/product-brief.md`
 
 ```md
 # Product Brief
@@ -91,7 +91,7 @@ Use `Preferred Term` instead. Reason: ...
 ## Notes
 ```
 
-## `../../../../docs/domain-model.md`
+## `docs/domain-model.md`
 
 ```md
 # Domain Model
@@ -107,7 +107,7 @@ Use `Preferred Term` instead. Reason: ...
 ## Edge Cases
 ```
 
-## `../../../../docs/user-and-access-model.md`
+## `docs/user-and-access-model.md`
 
 ```md
 # User and Access Model
@@ -127,7 +127,7 @@ Use `Preferred Term` instead. Reason: ...
 ## Edge Cases
 ```
 
-## `../../../../docs/technical-discovery.md`
+## `docs/technical-discovery.md`
 
 ```md
 # Technical Discovery
@@ -151,7 +151,7 @@ Use `Preferred Term` instead. Reason: ...
 ## Constraints
 ```
 
-## `../../../../docs/mvp-scope.md`
+## `docs/mvp-scope.md`
 
 ```md
 # MVP Scope
@@ -169,9 +169,9 @@ Use `Preferred Term` instead. Reason: ...
 ## Definition of Success
 ```
 
-## `../../../../DESIGN.md`
+## `DESIGN.md`
 
-Purpose: persistent visual direction for coding agents. Prefer the root filename `../../../../DESIGN.md` so agents and design tooling can discover it easily. Inspired by the DESIGN.md format: machine-readable YAML front matter for design tokens plus Markdown rationale for how to apply them.
+Purpose: persistent visual direction for coding agents. Prefer the root filename `DESIGN.md` so agents and design tooling can discover it easily. Inspired by the DESIGN.md format: machine-readable YAML front matter for design tokens plus Markdown rationale for how to apply them.
 
 Create this only when the project/MVP/feature has a visual interface.
 
@@ -198,7 +198,21 @@ Prompt notes:
 
 - `learner-dashboard-v1.png`: <short prompt summary and important constraints>
 
-Generated images are visual direction only. `../../../../DESIGN.md` tokens, layout rules, and component guidance are authoritative when image details conflict with written guidance.
+Generated images are visual direction only. `DESIGN.md` tokens, layout rules, and component guidance are authoritative when image details conflict with written guidance.
+```
+
+When a project has a visual interface, always initialize the folder structure under `docs/ui/`:
+- `docs/ui/<feature-id>/screens/` — Full-screen layout mockups and blueprints (PNG/HTML) for each feature. Visual reference only; **NEVER converted to WebP drawables**.
+- `docs/ui/<feature-id>/resources/` — Feature graphic assets, icons, logos, illustrations. **Converted to `.webp` in `app/src/main/res/drawable/ic_<name>.webp`**.
+- Global design assets may also reside in root `docs/ui/screens/` and `docs/ui/resources/`.
+
+Include the Android Resource Conversion Policy in `DESIGN.md`:
+
+```md
+## Android Resource Conversion Policy
+
+1. **Target Folder:** Only raw PNG/JPEG graphic assets located in `docs/ui/<feature-id>/resources/` (or `docs/ui/resources/`) MUST be converted into `.webp` format and placed in `app/src/main/res/drawable/ic_<name>.webp`.
+2. **Exclusion:** Full screen mockups (`docs/ui/<feature-id>/screens/<screen>/screen.png` or `docs/ui/screens/<screen>/screen.png`) are visual reference layout guides ONLY and MUST NOT be converted into drawable resources.
 ```
 
 If there are no design assets, create an initial direction:
@@ -278,11 +292,11 @@ Keep this as product/feature direction, not a full implementation plan. Feature 
 
 Use `imagegen` for high-level UI mockups, mood references, product illustrations, or visual concepts when a raster concept image helps agents and stakeholders align. Keep the batch small: 1-3 images is enough for most MVPs.
 
-Do not use generated images as pixel-perfect UI specs. Generated text, exact component placement, and spacing are not authoritative unless the user explicitly accepts them. Capture durable decisions in `../../../../DESIGN.md` tokens and guidance.
+Do not use generated images as pixel-perfect UI specs. Generated text, exact component placement, and spacing are not authoritative unless the user explicitly accepts them. Capture durable decisions in `DESIGN.md` tokens and guidance.
 
 Save project-bound concepts under `docs/design/concepts/` with stable, descriptive filenames. Do not leave referenced design assets only under Codex's default generated-image folder.
 
-## `../../../../docs/risks-and-open-questions.md`
+## `docs/risks-and-open-questions.md`
 
 ```md
 # Risks and Open Questions
@@ -302,7 +316,7 @@ Save project-bound concepts under `docs/design/concepts/` with stable, descripti
 
 ## ADR Template
 
-Create `../../../../docs/adr/0001-short-title.md` only for meaningful, hard-to-reverse decisions.
+Create `docs/adr/0001-short-title.md` only for meaningful, hard-to-reverse decisions.
 
 ```md
 # ADR 0001: Title
