@@ -133,7 +133,7 @@ When a complex workflow plugin is selected:
 5. **Active Workflow Setup**: Write the selected identifier to `.agents/workflow.json`.
 
 ### PHASE 4: Project Customization
-1. **Materialize Templates**: Create `skills/README.md` files in the `.agents/` directory, and `AGENTS.md` in the project root directory using the templates provided below.
+1. **Materialize Templates**: Create `skills/README.md` files in the `.agents/` directory, `.aiexclude` in the project root, and `AGENTS.md` in the project root directory using the templates provided below.
 2. **Replacement**: During materialization, replace the following placeholders with values from the Stack Diagnosis:
    - `[PROJECT_NAME]` -> User's Project Name.
    - `[ARCHITECTURE]` -> MVVM or MVI.
@@ -149,7 +149,7 @@ When a complex workflow plugin is selected:
 - [ ] Install **Workflow Plugins** and resolve `skills/excludes` dependencies.
 - [ ] Perform **Stack Diagnosis** with the user (Name, Arch, DI, DB).
 - [ ] Present and install standalone **Optional Plugins** from the catalog.
-- [ ] Materialize `AGENTS.md` (in project root), and `skills/README.md` with dynamic replacements.
+- [ ] Materialize `AGENTS.md` (in project root), `.aiexclude` (in project root), and `skills/README.md` with dynamic replacements.
 - [ ] Run `git init` and establish the `git-governance` baseline.
 
 ## Templates
@@ -263,6 +263,38 @@ Before ending a session:
 2. Record unresolved risks or blockers.
 3. Leave the repository ready for the next agent session.
 
+```
+
+### Template: .aiexclude
+```text
+# ==========================================
+# Android Studio Gemini AI Exclusion Rules
+# ==========================================
+
+# 1. Sensitive Credentials & Secrets
+local.properties
+/local.properties
+
+# 2. Build Outputs & Generated Files
+/build
+/captures
+.externalNativeBuild
+.cxx
+
+# 3. Gradle & Build Caches
+.gradle
+
+# 4. IDE Configuration & Project Files
+.idea/
+*.iml
+
+# 5. OS Specific Files
+.DS_Store
+
+# ==========================================
+# 6. Custom & Project-Specific Additions
+# ==========================================
+# Add any additional sensitive or generated files below:
 ```
 
 ### Template: skills/README.md
