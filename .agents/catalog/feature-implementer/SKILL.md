@@ -84,7 +84,7 @@ Rules:
 
 ### 4. Self-Verify
 
-Run the spec's verification plan and the repo's standard gate. If a required check cannot run, document exactly why and what is missing.
+Run the spec's verification plan and the repo's standard verification gate (**`compiler` skill verification suite**). If a required check cannot run, document exactly why and what is missing.
 
 If the feature creates or updates `init.sh`, make it an executable non-blocking gate: it should run the standard verification checks for the current repo state and must not start long-running dev servers. A script that only prints the checks is not enough unless the spec explicitly says this repository is still pre-bootstrap.
 

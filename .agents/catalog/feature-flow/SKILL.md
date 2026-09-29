@@ -113,7 +113,7 @@ Creating the commit is the main orchestrator's final step after the validator re
 2. Persist acceptance by updating `feature_list.json` for the selected feature to status `accepted` and appending concise validator evidence. If a validation artifact is useful, create or update `docs/validations/<feature-id>.md`; otherwise `feature_list.json` plus `PROGRESS.md` evidence is sufficient.
 3. Identify the files changed for the accepted feature, including required harness/docs/evidence updates.
 4. Stage only those files. Do not stage unrelated user or other-agent changes.
-5. Create one Conventional Commit, using a message that names the feature. Prefer:
+5. Create one Conventional Commit following **`git-governance`** skill rules, using a message that names the feature. Prefer:
    - `feat: complete <feature-id>` for user-visible product/platform features,
    - `docs: complete <feature-id>` for documentation-only features,
    - `chore: complete <feature-id>` for workflow/tooling-only features.
