@@ -125,11 +125,11 @@ After determining the workflow, the agent MUST ask the user about specific techn
    - **play-billing-library-version-upgrade**: Safe migration guide for the latest Google Play Billing Library versions.
    - **kotlin-types-value-class**: Optimized type safety and performance using @JvmInline value classes.
 
-3. **General Plugin Installation**: For each selected standalone plugin, fetch its `SKILL.md` from GitHub (`https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/main/.agents/catalog/[plugin-name]/SKILL.md`) and write it to `.agents/skills/[plugin-name]/SKILL.md`.
+3. **General Plugin Installation**: For each selected standalone plugin, fetch its `SKILL.md` from GitHub (`https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/develop/.agents/catalog/[plugin-name]/SKILL.md`) and write it to `.agents/skills/[plugin-name]/SKILL.md`.
 
 ### Workflow Plugin Installation
 When a complex workflow plugin is selected:
-1. **Fetch Manifest**: Fetch the JSON manifest from GitHub (`https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/main/.agents/catalog/workflows/[identifier].json`) using `read_url`.
+1. **Fetch Manifest**: Fetch the JSON manifest from GitHub (`https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/develop/.agents/catalog/workflows/[identifier].json`) using `read_url`.
 2. **Resolve Dependencies**: Identify the `skills` list and `excludes` list from the manifest.
 3. **Install Requirements**: For each skill in the `skills` list, fetch its `SKILL.md` from `.agents/catalog/` in the GitHub repo and write it locally to `.agents/skills/[skill-name]/SKILL.md`.
 4. **Enforce Exclusions**: If the manifest contains an `excludes` list (e.g., `workflow-feature`), the agent MUST ensure those skills are NOT active or are explicitly disabled for feature orchestration.
