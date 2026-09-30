@@ -27,64 +27,150 @@ Different AI assistants use different exclusion formats and file paths:
 | **Claude Code** | `.claude/settings.json` (project root) | JSON permission rules (`permissions.deny` array with `Read(...)` strings) |
 
 > [!IMPORTANT]
-> **Default Provider Rule**: If no AI provider is specified, or if an unrecognized provider name is entered, default to **Gemini (`.aiexclude`)**.
+> **Default Provider Rule**: If no AI provider is specified, or if an unrecognized provider name is entered, default to **Gemini (`.aiexclude`)** or prompt the user using `ask_user`.
 
-## Template Source of Truth
+---
 
-The Foundation stores the canonical baseline templates under:
+## Templates Source of Truth (Embedded)
 
+Since `docs/` is not installed in consuming projects, all baseline exclusion templates are embedded directly within this skill file.
+
+### 1. Gemini / Android Studio Template (`.aiexclude`)
 ```text
-docs/templates/ai-context-exclusion/
-├── .aiexclude
-├── .cursorignore
-└── claude-settings.json
-```
+# ==========================================
+# AI Context Exclusion — Gemini / Android Studio
+# ==========================================
+# File: .aiexclude
+# Format: Gitignore-style patterns
 
-## Common Exclusion Baseline
-
-All providers share the same conservative common baseline by default:
-
-```text
+# 1. Local / Developer-specific Configuration
 local.properties
 
+# 2. Build Outputs & Generated Files
 /build/
 /captures/
 /.externalNativeBuild/
 /.cxx/
 
+# 3. Gradle & Build Caches
 .gradle/
 
+# 4. IDE Configuration & Project Files
 .idea/
 *.iml
 
+# 5. OS-specific Files
 .DS_Store
-```
 
-### Optional / Project-Specific Rules
-Do not enable broad sensitive patterns by default. Keep project-specific patterns as commented examples or explicit user choices:
-
-```text
+# ==========================================
+# 6. Project-Specific Additions (Examples)
+# ==========================================
 # Environment / Secrets
 # .env
 # .env.*
 # **/secrets.*
 # **/credentials.*
-
+#
 # Android / Firebase
 # **/google-services.json
 # **/service-account*.json
-
+#
 # Signing / Certificates
 # **/*.jks
 # **/*.keystore
 # **/*.p12
 # **/*.pfx
-
+#
 # Private / Sensitive Data
 # **/private/
 # **/sensitive/
 # **/confidential/
 # **/production-data/
+#
+# Other Sensitive Files
+# **/*api-key*
+# **/*token*
+# **/*password*
+# **/*private-key*
+```
+
+### 2. Cursor Template (`.cursorignore`)
+```text
+# ==========================================
+# AI Context Exclusion — Cursor
+# ==========================================
+# File: .cursorignore
+# Format: Gitignore-style patterns
+
+# 1. Local / Developer-specific Configuration
+local.properties
+
+# 2. Build Outputs & Generated Files
+/build/
+/captures/
+/.externalNativeBuild/
+/.cxx/
+
+# 3. Gradle & Build Caches
+.gradle/
+
+# 4. IDE Configuration & Project Files
+.idea/
+*.iml
+
+# 5. OS-specific Files
+.DS_Store
+
+# ==========================================
+# 6. Project-Specific Additions (Examples)
+# ==========================================
+# Environment / Secrets
+# .env
+# .env.*
+# **/secrets.*
+# **/credentials.*
+#
+# Android / Firebase
+# **/google-services.json
+# **/service-account*.json
+#
+# Signing / Certificates
+# **/*.jks
+# **/*.keystore
+# **/*.p12
+# **/*.pfx
+#
+# Private / Sensitive Data
+# **/private/
+# **/sensitive/
+# **/confidential/
+# **/production-data/
+#
+# Other Sensitive Files
+# **/*api-key*
+# **/*token*
+# **/*password*
+# **/*private-key*
+```
+
+### 3. Claude Code Template (`.claude/settings.json`)
+```json
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "deny": [
+      "Read(./local.properties)",
+      "Read(./build/**)",
+      "Read(./captures/**)",
+      "Read(./.externalNativeBuild/**)",
+      "Read(./.cxx/**)",
+      "Read(./.gradle/**)",
+      "Read(./.idea/**)",
+      "Read(./*.iml)",
+      "Read(./.DS_Store)"
+    ]
+  }
+}
 ```
 
 ---
@@ -98,10 +184,10 @@ When invoked during project kickoff (e.g. delegated from `workflow-initializer`)
      * `Gemini / Android Studio (.aiexclude)`
      * `Cursor (.cursorignore)`
      * `Claude Code (.claude/settings.json)`
-   - If `Gemini` is chosen/specified → Select `.aiexclude`.
-   - If `Cursor` is chosen/specified → Select `.cursorignore`.
-   - If `Claude Code` is chosen/specified → Select `.claude/settings.json`.
-2. **Materialize File**: Read the baseline template from `docs/templates/ai-context-exclusion/` for the selected provider and write it to the project root.
+   - If `Gemini` is chosen/specified → Select `.aiexclude` template.
+   - If `Cursor` is chosen/specified → Select `.cursorignore` template.
+   - If `Claude Code` is chosen/specified → Select `.claude/settings.json` template.
+2. **Materialize File**: Write the corresponding embedded template to the project root (`.aiexclude`, `.cursorignore`, or `.claude/settings.json`).
 3. **Single File Constraint**: Create **only** the selected provider's exclusion configuration file. Do not generate all provider files by default.
 
 ---

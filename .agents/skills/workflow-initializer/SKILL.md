@@ -160,7 +160,7 @@ When a complex workflow plugin is selected:
 ## Templates
 
 > [!NOTE]
-> **AI Context Exclusion Templates**: Context exclusion templates (`.aiexclude`, `.cursorignore`, `claude-settings.json`) are owned and managed by the `ai-context-exclusion` skill (stored at `docs/templates/ai-context-exclusion/`). `workflow-initializer` delegates exclusion file creation to `ai-context-exclusion`.
+> **AI Context Exclusion Templates**: Context exclusion templates (`.aiexclude`, `.cursorignore`, `claude-settings.json`) are owned and managed directly within the `ai-context-exclusion` skill file. `workflow-initializer` delegates exclusion file creation to `ai-context-exclusion`.
 
 ### Template: AGENTS.md
 ```markdown
