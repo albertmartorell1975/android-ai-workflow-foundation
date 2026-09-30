@@ -94,9 +94,13 @@ Do not enable broad sensitive patterns by default. Keep project-specific pattern
 When invoked during project kickoff (e.g. delegated from `workflow-initializer`):
 
 1. **Resolve Provider**: Check the provided AI Provider argument.
-   - If `Gemini` or unrecognized/empty → Select `.aiexclude`.
-   - If `Cursor` → Select `.cursorignore`.
-   - If `Claude Code` → Select `.claude/settings.json`.
+   - If no AI provider argument is specified or if it is ambiguous, the agent **MUST** use the `ask_user` tool to prompt the user to select their provider:
+     * `Gemini / Android Studio (.aiexclude)`
+     * `Cursor (.cursorignore)`
+     * `Claude Code (.claude/settings.json)`
+   - If `Gemini` is chosen/specified → Select `.aiexclude`.
+   - If `Cursor` is chosen/specified → Select `.cursorignore`.
+   - If `Claude Code` is chosen/specified → Select `.claude/settings.json`.
 2. **Materialize File**: Read the baseline template from `docs/templates/ai-context-exclusion/` for the selected provider and write it to the project root.
 3. **Single File Constraint**: Create **only** the selected provider's exclusion configuration file. Do not generate all provider files by default.
 
@@ -148,7 +152,7 @@ When a developer switches AI providers (e.g., Gemini → Cursor → Claude Code 
 ---
 
 ## Actionable Checklist for Context Exclusion
-- [ ] Verify active AI provider (Gemini, Cursor, or Claude Code; default to Gemini if empty/unrecognized).
+- [ ] If no AI provider is specified or ambiguous, prompt the user interactively using the `ask_user` tool (`Gemini`, `Cursor`, or `Claude Code`).
 - [ ] Ensure only the selected provider's configuration file is created or updated.
 - [ ] Verify common baseline rules are enforced.
 - [ ] When switching providers, perform semantic translation between formats.
