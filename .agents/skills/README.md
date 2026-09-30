@@ -24,6 +24,7 @@ The operational backbone responsible for project lifecycle, automation, and gove
 * **compiler**: Centralized project verification, compilation, and deployment engine.
 * **foundation-evolve**: Synchronizes useful skills and improvements from working projects back to the Foundation.
 * **git-governance**: Enforces Git Flow conventions, branching rules, and commit practices.
+* **skill-creator**: Create new skills, modify and improve existing skills, run evals, and optimize skill descriptions.
 * **workflow-feature**: Foundation-native single-agent feature workflow.
 * **workflow-initializer**: Project bootstrapping, stack diagnosis, customization, plugin management, and workflow selection.
 

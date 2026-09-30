@@ -177,6 +177,7 @@ Examples:
 * `compiler`
 * `git-governance`
 * `foundation-evolve`
+* `skill-creator`
 * `dependency-manager`
 * `testing-setup`
 * `design-system-governance` (includes UI design folder organization and automated graphic asset PNG/JPEG to WebP conversion governance)

@@ -32,6 +32,7 @@
       "module-architecture-governance": ".agents/skills/module-architecture-governance/SKILL.md",
       "navigation-3": ".agents/skills/navigation-3/SKILL.md",
       "r8-analyzer": ".agents/skills/r8-analyzer/SKILL.md",
+      "skill-creator": ".agents/skills/skill-creator/SKILL.md",
       "skills-index": ".agents/skills/README.md",
       "testing-setup": ".agents/skills/testing-setup/SKILL.md",
       "viewmodel-architecture-governance": ".agents/skills/viewmodel-architecture-governance/SKILL.md",

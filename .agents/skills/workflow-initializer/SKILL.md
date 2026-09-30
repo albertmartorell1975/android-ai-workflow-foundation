@@ -48,6 +48,7 @@ When this skill is activated, the agent MUST first acknowledge the core foundati
    - **module-architecture-governance**: Automation and standards for multi-module creation, Java/Kotlin alignment, and Clean Architecture enforcement.
    - **navigation-3**: Best practices for Jetpack Navigation 3.
    - **r8-analyzer**: Proguard/R8 optimization and app size management.
+   - **skill-creator**: Creation, evaluation, iteration, and optimization of skills.
    - **testing-setup**: Unified strategy for Unit, UI, and Screenshot testing.
    - **viewmodel-architecture-governance**: Mandatory Passive Initialization and Hybrid UI State patterns.
    - **workflow-feature**: Standardized feature implementation workflow with granular checklists.
@@ -268,33 +269,73 @@ Before ending a session:
 ### Template: .aiexclude
 ```text
 # ==========================================
-# Android Studio Gemini AI Exclusion Rules
+# AI Context Exclusion — Common Baseline
+# ==========================================
+#
+# Provider-specific adapters:
+#   Gemini / Android Studio  -> .aiexclude
+#   Cursor                   -> .cursorignore
+#   Claude Code              -> .claudeignore
+#
+# Only exclude files that are expected to be
+# present or relevant across most Android projects.
+# Project-specific files are listed as examples below.
 # ==========================================
 
-# 1. Sensitive Credentials & Secrets
+# 1. Local / Developer-specific Configuration
 local.properties
-/local.properties
 
 # 2. Build Outputs & Generated Files
-/build
-/captures
-.externalNativeBuild
-.cxx
+/build/
+/captures/
+/.externalNativeBuild/
+/.cxx/
 
 # 3. Gradle & Build Caches
-.gradle
+.gradle/
 
 # 4. IDE Configuration & Project Files
 .idea/
 *.iml
 
-# 5. OS Specific Files
+# 5. OS-specific Files
 .DS_Store
 
 # ==========================================
-# 6. Custom & Project-Specific Additions
+
+# 6. Project-Specific Additions
+
 # ==========================================
-# Add any additional sensitive or generated files below:
+
+# Add additional exclusions when applicable.
+# Examples:
+# Environment / Secrets
+# .env
+# .env.*
+# **/secrets.*
+# **/credentials.*
+#
+# Android / Firebase
+# **/google-services.json
+# **/service-account*.json
+#
+# Signing / Certificates
+# **/*.jks
+# **/*.keystore
+# **/*.p12
+# **/*.pfx
+#
+# Private / Sensitive Data
+# **/private/
+# **/sensitive/
+# **/confidential/
+# **/production-data/
+#
+# Other Sensitive Files
+# **/*api-key*
+# **/*token*
+# **/*password*
+# **/*private-key*
 ```
 
 ### Template: skills/README.md
@@ -325,6 +366,7 @@ The operational backbone responsible for project lifecycle, automation, and gove
 * **compiler**: Centralized project verification, compilation, and deployment engine.
 * **foundation-evolve**: Synchronizes useful skills and improvements from working projects back to the Foundation.
 * **git-governance**: Enforces Git Flow conventions, branching rules, and commit practices.
+* **skill-creator**: Create new skills, modify and improve existing skills, run evals, and optimize skill descriptions.
 * **workflow-feature**: Foundation-native single-agent feature workflow.
 * **workflow-initializer**: Project bootstrapping, stack diagnosis, customization, plugin management, and workflow selection.
 
