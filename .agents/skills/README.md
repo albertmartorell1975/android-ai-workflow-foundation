@@ -31,6 +31,7 @@ The operational backbone responsible for project lifecycle, automation, and gove
 ### 1.2 Shared Engineering Guardrails
 Technical standards shared by the active Foundation environment regardless of the selected development workflow.
 
+* **ai-context-exclusion**: Provider-agnostic AI context exclusion governance across Gemini, Cursor, and Claude Code.
 * **dependency-manager**: Governance for `libs.versions.toml` and dependency compatibility.
 * **design-system-governance**: Design System standards covering Material 3, accessibility, RTL, adaptive UI, and reusability.
 * **kotlin-style**: Kotlin coding conventions, project-specific style rules, and Magic Literal prevention.

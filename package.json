@@ -8,6 +8,7 @@
   "agent-skills": {
     "skills": {
       "adaptive": ".agents/skills/adaptive/SKILL.md",
+      "ai-context-exclusion": ".agents/skills/ai-context-exclusion/SKILL.md",
       "android-cli": ".agents/skills/android-cli/SKILL.md",
       "android-intent-security": ".agents/skills/android-intent-security/SKILL.md",
       "compiler": ".agents/skills/compiler/SKILL.md",

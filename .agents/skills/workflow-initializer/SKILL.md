@@ -24,6 +24,7 @@ When this skill is activated, the agent MUST first acknowledge the core foundati
 
 1. **List Mandatory Skills**: The agent MUST display the following list of core skills and shared guardrails that are now active in the project, providing a brief explanation for each:
    - **adaptive**: Adaptive layouts for all device form factors (phones, tablets, foldables).
+   - **ai-context-exclusion**: Provider-agnostic AI context exclusion governance across Gemini, Cursor, and Claude Code.
    - **android-cli**: Expert usage of Android SDK command-line tools.
    - **android-intent-security**: Secure component communication and Intent redirection prevention.
    - **compiler**: Centralized project verification, compilation, and deployment engine.
@@ -76,6 +77,7 @@ After determining the workflow, the agent MUST ask the user about specific techn
 
 1. **Stack Diagnosis**:
    - **Project Name**: What is the name of this project?
+   - **AI Provider**: Which AI assistant / IDE provider do you use? (Gemini [Default] / Cursor / Claude Code)
    - **Architecture**: MVI, MVVM, or other?
    - **Dependency Injection**: Hilt (Recommended), Koin, or none?
    - **Persistence**: Room (Recommended), SQLDelight, or none?
@@ -134,13 +136,14 @@ When a complex workflow plugin is selected:
 5. **Active Workflow Setup**: Write the selected identifier to `.agents/workflow.json`.
 
 ### PHASE 4: Project Customization
-1. **Materialize Templates**: Create `skills/README.md` files in the `.agents/` directory, `.aiexclude` in the project root, and `AGENTS.md` in the project root directory using the templates provided below.
-2. **Replacement**: During materialization, replace the following placeholders with values from the Stack Diagnosis:
+1. **Materialize Governance Templates**: Create `skills/README.md` in the `.agents/` directory and `AGENTS.md` in the project root directory using the templates provided below.
+2. **AI Context Exclusion Setup**: Delegate context exclusion creation directly to the `ai-context-exclusion` skill, passing the selected AI Provider (or defaulting to `Gemini` if omitted or unrecognized) to materialize the required file (`.aiexclude`, `.cursorignore`, or `.claude/settings.json`).
+3. **Replacement**: During materialization, replace the following placeholders with values from the Stack Diagnosis:
    - `[PROJECT_NAME]` -> User's Project Name.
    - `[ARCHITECTURE]` -> MVVM or MVI.
    - `[DI_TOOL]` -> Hilt or Koin.
    - `[PERSISTENCE]` -> Room or SQLDelight.
-3. **Git Baseline**: If not already initialized, perform `git init` and set up the `develop` and `main` branches according to `git-governance`.
+4. **Git Baseline**: If not already initialized, perform `git init` and set up the `develop` and `main` branches according to `git-governance`.
 
 ## Actionable Checklist for New Projects
 - [ ] Acknowledge mandatory foundation deployment.
@@ -148,12 +151,16 @@ When a complex workflow plugin is selected:
 - [ ] Perform **Workflow Comparison** and Selection.
 - [ ] Persist selection in `workflow.json`.
 - [ ] Install **Workflow Plugins** and resolve `skills/excludes` dependencies.
-- [ ] Perform **Stack Diagnosis** with the user (Name, Arch, DI, DB).
+- [ ] Perform **Stack Diagnosis** with the user (Name, AI Provider, Arch, DI, DB).
 - [ ] Present and install standalone **Optional Plugins** from the catalog.
-- [ ] Materialize `AGENTS.md` (in project root), `.aiexclude` (in project root), and `skills/README.md` with dynamic replacements.
+- [ ] Materialize `AGENTS.md` (in project root) and `skills/README.md` with dynamic replacements.
+- [ ] Delegate AI context exclusion creation (`.aiexclude`, `.cursorignore`, or `.claude/settings.json`) to `ai-context-exclusion` skill (using `Gemini` as fallback if empty/unrecognized).
 - [ ] Run `git init` and establish the `git-governance` baseline.
 
 ## Templates
+
+> [!NOTE]
+> **AI Context Exclusion Templates**: Context exclusion templates (`.aiexclude`, `.cursorignore`, `claude-settings.json`) are owned and managed by the `ai-context-exclusion` skill (stored at `docs/templates/ai-context-exclusion/`). `workflow-initializer` delegates exclusion file creation to `ai-context-exclusion`.
 
 ### Template: AGENTS.md
 ```markdown
@@ -266,78 +273,6 @@ Before ending a session:
 
 ```
 
-### Template: .aiexclude
-```text
-# ==========================================
-# AI Context Exclusion — Common Baseline
-# ==========================================
-#
-# Provider-specific adapters:
-#   Gemini / Android Studio  -> .aiexclude
-#   Cursor                   -> .cursorignore
-#   Claude Code              -> .claudeignore
-#
-# Only exclude files that are expected to be
-# present or relevant across most Android projects.
-# Project-specific files are listed as examples below.
-# ==========================================
-
-# 1. Local / Developer-specific Configuration
-local.properties
-
-# 2. Build Outputs & Generated Files
-/build/
-/captures/
-/.externalNativeBuild/
-/.cxx/
-
-# 3. Gradle & Build Caches
-.gradle/
-
-# 4. IDE Configuration & Project Files
-.idea/
-*.iml
-
-# 5. OS-specific Files
-.DS_Store
-
-# ==========================================
-
-# 6. Project-Specific Additions
-
-# ==========================================
-
-# Add additional exclusions when applicable.
-# Examples:
-# Environment / Secrets
-# .env
-# .env.*
-# **/secrets.*
-# **/credentials.*
-#
-# Android / Firebase
-# **/google-services.json
-# **/service-account*.json
-#
-# Signing / Certificates
-# **/*.jks
-# **/*.keystore
-# **/*.p12
-# **/*.pfx
-#
-# Private / Sensitive Data
-# **/private/
-# **/sensitive/
-# **/confidential/
-# **/production-data/
-#
-# Other Sensitive Files
-# **/*api-key*
-# **/*token*
-# **/*password*
-# **/*private-key*
-```
-
 ### Template: skills/README.md
 ```markdown
 # Expert Skills Index
@@ -373,6 +308,7 @@ The operational backbone responsible for project lifecycle, automation, and gove
 ### 1.2 Shared Engineering Guardrails
 Technical standards shared by the active Foundation environment regardless of the selected development workflow.
 
+* **ai-context-exclusion**: Provider-agnostic AI context exclusion governance across Gemini, Cursor, and Claude Code.
 * **dependency-manager**: Governance for `libs.versions.toml` and dependency compatibility.
 * **design-system-governance**: Design System standards covering Material 3, accessibility, RTL, adaptive UI, and reusability.
 * **kotlin-style**: Kotlin coding conventions, project-specific style rules, and Magic Literal prevention.
