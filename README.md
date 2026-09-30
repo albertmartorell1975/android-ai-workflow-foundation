@@ -119,8 +119,8 @@ The initializer guides the project setup:
 
    If the AI Expert Workflow is selected, its required workflow skills are installed from the catalog.
 
-3. **Stack Diagnosis**
-   Configure project-specific information such as architecture, persistence, dependency injection, and existing technical conventions.
+3. **Stack Diagnosis & AI Provider**
+   Configure project-specific information such as architecture, persistence, dependency injection, and select your AI assistant / IDE provider (**Gemini**, **Cursor**, or **Claude Code**) to materialize the corresponding context exclusion configuration (`.aiexclude`, `.cursorignore`, or `.claude/settings.json`).
 
 4. **Optional Catalog Skills**
    Select additional technical or planning skills from `.agents/catalog/` when required.
@@ -174,6 +174,7 @@ These provide capabilities shared by both workflows.
 Examples:
 
 * `workflow-initializer`
+* `ai-context-exclusion`
 * `compiler`
 * `git-governance`
 * `foundation-evolve`
