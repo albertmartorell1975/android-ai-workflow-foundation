@@ -3,7 +3,7 @@ name: git-governance
 description: Defines a strict Git Flow branching model and commit conventions for AI agents. Based on the Vincent Driessen branching model.
 metadata:
   author: Albert Martorell Garcia
-  version: 1.0.0
+  version: 1.1.0
   keywords:
   - git-flow
   - branching-model
@@ -50,9 +50,10 @@ Agents must identify the correct parent branch based on the task type and the cu
 4. **Staging Verification**:
    - Before completing any task or stage, the agent **MUST execute `git status`** to verify that no new or modified files remain unstaged.
 
-5. **Push, Merge & Commit Restriction**:
-   - **PROHIBITED**: Agents are NOT allowed to `git commit`, `git push`, or `git merge` autonomously.
-   - **Review Protocol**: The agent must prepare the changes, notify the user, and **wait for the user to perform the commit manually** through the IDE or terminal. This ensures the user can review every file modification before it is recorded in the history.
+5. **Execution Boundary & Explicit Consent**:
+   - **Default Mode (Manual)**: By default, the agent diagnoses branches, stages files (`git add`), and generates Conventional Commit messages. The agent MUST present the proposed `git commit` command and wait for the user to execute it manually.
+   - **Override Mode (Autonomous)**: The agent IS AUTHORIZED to execute `git commit`, `git push`, or `git merge` autonomously via shell commands **ONLY IF** the user explicitly commands it (e.g., "commit and push this", "apply git-governance to push", or "you can commit").
+   - Without explicit user authorization in the current prompt, autonomous commits and pushes remain strictly PROHIBITED.
 
 ## Workflow Patterns
 
@@ -71,15 +72,16 @@ Before any code change:
 
 ### PHASE 2: LOCAL EXECUTION
 1. Create and switch to the new branch.
-2. Perform atomic commits as the implementation progresses through the layers (Domain -> Data -> UseCase -> UI).
-3. Ensure every commit message is technical and descriptive.
+2. As the implementation progresses through the layers (Domain -> Data -> UseCase -> UI), stage the files (`git add`) for each logical step.
+3. Propose atomic, Conventional Commit messages for each stage to the user. Do not execute the commits yourself unless explicit consent was granted.
 
 ---
 
 ### PHASE 3: REVIEW READY
 Once the task is finished:
-1. Provide a summary of all local commits made.
-2. Inform the user that the branch is ready for review, push, and merge.
+1. Verify all modified files are staged (`git status`).
+2. Provide a summary of the staged changes and the proposed commit commands.
+3. **Action based on Consent**: If the user explicitly requested autonomous execution, execute the commit and push operations. Otherwise, wait for the user to manually execute them.
 
 ## Documentation & References
 - [Branching Conventions](references/conventions.md)
