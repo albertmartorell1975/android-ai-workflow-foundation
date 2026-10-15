@@ -36,6 +36,7 @@ Technical standards shared by the active Foundation environment regardless of th
 * **design-system-governance**: Design System standards covering Material 3, accessibility, RTL, adaptive UI, and reusability.
 * **kotlin-style**: Kotlin coding conventions, project-specific style rules, and Magic Literal prevention.
 * **module-architecture-governance**: Automation and standards for multi-module creation, Java/Kotlin alignment, and Clean Architecture enforcement.
+* **repository-pattern-governance**: Data layer, repository pattern, SSOT, and typed domain error governance.
 * **testing-setup**: Unified strategy for unit, UI behavior, and visual regression testing.
 * **viewmodel-architecture-governance**: Architectural rules for ViewModels, UI state, and initialization patterns.
 

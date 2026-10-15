@@ -14,7 +14,7 @@ this skill establishes an unbreakable protocol to ensure the compatibility and m
 ## Golden Rules (MANDATORY)
 
 1. **Anti-Hallucination Policy**: PROHIBITED from inventing or hallucinating version numbers. If the version is not found via `version_lookup`, the agent must ask the user or consult official documentation.
-2. **Kebab-case Enforcement**: All library aliases and versions in the TOML file MUST use kebab-case (e.g., `androidx-room-runtime`).
+2. **Kebab-case Enforcement**: All aliases, versions, plugins, and bundles declared in `libs.versions.toml` MUST use kebab-case (e.g., `androidx-room-runtime`, `kotlin-android`).
 3. **BOM & Plugin Alignment**: For Firebase and Jetpack Compose, use the BOM declaration where applicable. For the Compose Compiler, ensure it aligns with the `org.jetbrains.kotlin.plugin.compose` plugin corresponding to the current Kotlin version.
 4. **AGP & Infrastructure Compatibility (STRICT)**: Before proposing any update or adding a new library, the agent MUST perform a **Side-Effect Analysis**:
     - **AGP Verification**: Check if the library requires a higher Android Gradle Plugin version. If so, discard the update.
@@ -26,25 +26,28 @@ this skill establishes an unbreakable protocol to ensure the compatibility and m
 6. **Zero Redundancy Policy (STRICT)**: PROHIBITED from declaring the same dependency multiple times in `build.gradle.kts` files across different configurations (e.g., `implementation` and `testImplementation`). 
     - **BOM Inheritance**: If a `BOM` (like Compose or Firebase) is declared in `implementation`, do NOT redeclare it in `testImplementation` or `androidTestImplementation`. It is automatically inherited.
     - **No Manual Duplicates**: If a dependency is part of a `bundle`, do not declare it individually. If it's managed by a `BOM`, do not specify a manual version.
-7. **No Hardcoded Strings**: PROHIBITED from using direct string literals for dependencies (e.g., `implementation("com.lib:version")`) in `build.gradle.kts`. All dependencies MUST be defined in `libs.versions.toml` and referenced via the `libs` object.
+7. **No Hardcoded Strings**: PROHIBITED from using direct string literals for dependencies or plugins (e.g., `implementation("com.lib:version")` or `id("com.plugin") version "1.0"`) in `build.gradle.kts`. All dependencies and plugins MUST be defined in `libs.versions.toml` and referenced via the `libs` object.
 8. **Layer-Aware Dependencies**: Ensure that dependencies are added to the correct module (e.g., Domain should not have Android-specific dependencies).
+9. **Stable Versions Policy**: PROHIBITED from updating or proposing unstable pre-release versions (Alpha, Beta, RC, Dev, Snapshot) unless explicitly requested by the user.
+10. **Atomic Update & Mandatory Sync (STRICT)**: Every dependency or plugin change must be performed as an atomic operation. Whenever `libs.versions.toml` or `build.gradle.kts` is modified, you MUST immediately perform a Gradle Sync and a module build verification before proceeding with any other modifications or tasks.
+11. **Logical Grouping and Organization**: Maintain clean organization in `libs.versions.toml` by grouping related dependencies/plugins together or following alphabetical order within sections (`[versions]`, `[libraries]`, `[plugins]`, `[bundles]`).
 
 ## Update Protocols
 
 ### 1. Strict Atomic Updates
-- **No Mixing**: Prohibited from adding new libraries and updating existing versions in the same operation.
-- **One by One**: Core changes (Kotlin, KSP, Hilt, Compose) must be handled in separate commits.
-- Every change requires a cycle of:
-  1. Single targeted change in TOML.
-  2. `gradle_sync`.
-  3. `gradle_build` of the impacted module.
-  4. Unit test verification.
+- **No Mixing**: Prohibited from adding new libraries/plugins and updating existing versions in the same operation.
+- **One by One**: Core changes (Kotlin, KSP, Hilt, AGP, Compose) must be handled in separate atomic steps.
+- **Atomic Cycle**: Follow Rule 10 for every change:
+  1. Single targeted edit in `libs.versions.toml` or `build.gradle.kts`.
+  2. Immediate Gradle Sync.
+  3. Module build verification (`gradle_build`).
 
-### 2. KSP Management
+### 2. KSP & Plugin Management
 - The KSP version must exactly match the Kotlin version (e.g., Kotlin `2.0.21` -> KSP `2.0.21-1.0.26`). Do not assume compatibility without verification.
+- Plugin updates must follow the same side-effect and infrastructure analysis as library dependencies.
 
 ### 3. Fail-and-Revert Policy (STRICT)
-- In case of a `gradle_sync` or `gradle_build` failure following a `libs.versions.toml` change:
+- In case of a Gradle Sync or build failure following a dependency/plugin change:
     - **PROHIBITED**: Trying alternative versions or making iterative "guesses".
-    - **MANDATORY**: Perform an immediate **Rollback** of the `libs.versions.toml` file to its last working state.
+    - **MANDATORY**: Perform an immediate **Rollback** of `libs.versions.toml` or `build.gradle.kts` to its last working state.
     - **Resolution**: Provide the user with the exact error log and wait for explicit technical instructions.

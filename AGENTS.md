@@ -33,7 +33,10 @@ Before modifying skills, catalog plugins, templates, or documentation, consult:
 ## Working Rules & Skill Maintenance Protocols
 
 * **Git Policy**: Never execute `git push` or `git merge` without explicit user authorization. Follow Conventional Commits (`feat(skills): ...`, `docs(governance): ...`, `fix(compiler): ...`).
+* **File Modification Guardrail**: ALWAYS use native IDE tools (`replace_file_content` or `write_file`) for code/markdown modifications. NEVER use shell commands like `sed`, `awk`, or `cat >` to edit files to prevent IDE desync and data loss.
 * **Language & Comments**: All documentation, KDoc comments, commit messages, and skill instructions **MUST be written in English**.
+* **Skill Isolation (The Single Responsibility Principle for Agents)**: Each skill must be self-contained. A skill governing the UI layer (e.g., ViewModels) must not contain rules for the Data layer (e.g., Repositories). If a concept is dense, use the `references/` subfolder (Optionally extracted via `.md` files) to keep the main `SKILL.md` orchestrational and lightweight.
+* **Template Integrity**: When modifying `SKILL.md` files that generate templates (like `workflow-initializer`), ensure that nested markdown is properly escaped and bounded by valid code blocks (e.g., ` ```markdown `). Do not break the runtime execution flow of the initializer.
 * **Skill Modification Protocol**: Whenever adding, modifying, or deleting a skill:
   1. Update the skill's `SKILL.md` (and optional `references/` or `agents/openai.yaml` subfolders).
   2. Update the Foundation's Skills Index at `.agents/skills/README.md`.
