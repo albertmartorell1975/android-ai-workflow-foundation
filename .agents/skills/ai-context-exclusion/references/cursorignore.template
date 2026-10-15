@@ -1,0 +1,55 @@
+# ==========================================
+# AI Context Exclusion — Cursor
+# ==========================================
+# File: .cursorignore
+# Format: Gitignore-style patterns
+
+# 1. Local / Developer-specific Configuration
+local.properties
+
+# 2. Build Outputs & Generated Files
+/build/
+/captures/
+/.externalNativeBuild/
+/.cxx/
+
+# 3. Gradle & Build Caches
+.gradle/
+
+# 4. IDE Configuration & Project Files
+.idea/
+*.iml
+
+# 5. OS-specific Files
+.DS_Store
+
+# ==========================================
+# 6. Project-Specific Additions (Examples)
+# ==========================================
+# Environment / Secrets
+# .env
+# .env.*
+# **/secrets.*
+# **/credentials.*
+#
+# Android / Firebase
+# **/google-services.json
+# **/service-account*.json
+#
+# Signing / Certificates
+# **/*.jks
+# **/*.keystore
+# **/*.p12
+# **/*.pfx
+#
+# Private / Sensitive Data
+# **/private/
+# **/sensitive/
+# **/confidential/
+# **/production-data/
+#
+# Other Sensitive Files
+# **/*api-key*
+# **/*token*
+# **/*password*
+# **/*private-key*
