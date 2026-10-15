@@ -32,58 +32,51 @@ If a developer modifies a Room DAO inside `:characters:data`:
 
 To ensure massive scalability and prevent Circular Dependencies, the dependency flow must strictly be a directed acyclic graph (DAG) pointing downwards.
 
+> 🔍 **[View Live Dependency Graph](https://mermaid.live/edit#base64:eyJjb2RlIjogImdyYXBoIFREXG4gICAgQXBwW1wiOmFwcFwiXVxuXG4gICAgc3ViZ3JhcGggXCJGZWF0dXJlOiBDaGFyYWN0ZXJzXCJcbiAgICAgICAgQ2hhclByZXNbXCI6Y2hhcmFjdGVyczpwcmVzZW50YXRpb25cIl1cbiAgICAgICAgQ2hhclVzZVtcIjpjaGFyYWN0ZXJzOnVzZWNhc2VzXCJdXG4gICAgICAgIENoYXJEYXRhW1wiOmNoYXJhY3RlcnM6ZGF0YVwiXVxuICAgICAgICBDaGFyRG9tW1wiOmNoYXJhY3RlcnM6ZG9tYWluXCJdXG4gICAgZW5kXG5cbiAgICBzdWJncmFwaCBcIkZlYXR1cmU6IEJhc2tldFwiXG4gICAgICAgIEJhc2tldFByZXNbXCI6YmFza2V0OnByZXNlbnRhdGlvblwiXVxuICAgICAgICBCYXNrZXRVc2VbXCI6YmFza2V0OnVzZWNhc2VzXCJdXG4gICAgICAgIEJhc2tldERhdGFbXCI6YmFza2V0OmRhdGFcIl1cbiAgICAgICAgQmFza2V0RG9tW1wiOmJhc2tldDpkb21haW5cIl1cbiAgICBlbmRcblxuICAgIHN1YmdyYXBoIFwiQ29yZSBMYXllclwiXG4gICAgICAgIENvcmVEU1tcIjpjb3JlOmRlc2lnbnN5c3RlbVwiXVxuICAgICAgICBDb3JlTmV0W1wiOmNvcmU6bmV0d29ya1wiXVxuICAgICAgICBDb3JlREJbXCI6Y29yZTpkYXRhYmFzZVwiXVxuICAgIGVuZFxuXG4gICAgQXBwIC0tPiBDaGFyUHJlc1xuICAgIEFwcCAtLT4gQ2hhckRhdGFcbiAgICBBcHAgLS0-IEJhc2tldFByZXNcbiAgICBBcHAgLS0-IEJhc2tldERhdGFcblxuICAgIENoYXJQcmVzIC0tPiBDaGFyVXNlXG4gICAgQ2hhclByZXMgLS0-IENoYXJEb21cbiAgICBDaGFyVXNlIC0tPiBDaGFyRG9tXG4gICAgQ2hhclByZXMgLS0-IENvcmVEU1xuICAgIENoYXJEYXRhIC0tPiBDaGFyRG9tXG4gICAgQ2hhclRhdGEgLS0-IENvcmVOZXRcbiAgICBDaGFyRGF0YSAtLT4gQ29yZSREQlxuXG4gICAgQmFza2V0UHJlcyAtLT4gQmFza2V0VXNlXG4gICAgQmFza2V0UHJlcyAtLT4gQmFza2V0RG9tXG4gICAgQmFza2V0VXNlIC0tPiBCYXNrZXREb21cbiAgICBCYXNrZXRQcmVzIC0tPiBDb3JlRFNcbiAgICBCYXNrZXREYXRhIC0tPiBCYXNrZXREb21cbiAgICBCYXNrZXREYXRhIC0tPiBDb3JlTmV0XG4gICAgQmFza2V0RGF0YSAtLT4gQ29yZSREQlxuIiwgIm1lcm1haWQiOiAie1xuICB0aGVtZTogZGVmYXVsdFxufSIsICJhdXRvU3luYyI6IHRydWUsICJ1cGRhdGVEaWFncmFtIjogdHJ1ZX0)** (Click to open in Mermaid Live Editor)
+
 ```mermaid
 graph TD
-    %% App Layer (The Integrator)
-    App([:app])
-    
-    %% Feature: Characters
-    subgraph Feature: Characters
-        CharPres([:characters:presentation])
-        CharUse([:characters:usecases])
-        CharData([:characters:data])
-        CharDom([:characters:domain])
+    App[":app"]
+
+    subgraph "Feature: Characters"
+        CharPres[":characters:presentation"]
+        CharUse[":characters:usecases"]
+        CharData[":characters:data"]
+        CharDom[":characters:domain"]
     end
 
-    %% Feature: Basket
-    subgraph Feature: Basket
-        BasketPres([:basket:presentation])
-        BasketUse([:basket:usecases])
-        BasketData([:basket:data])
-        BasketDom([:basket:domain])
+    subgraph "Feature: Basket"
+        BasketPres[":basket:presentation"]
+        BasketUse[":basket:usecases"]
+        BasketData[":basket:data"]
+        BasketDom[":basket:domain"]
     end
 
-    %% Core Layer (Shared Infrastructure)
-    subgraph Core Layer
-        CoreDS([:core:designsystem])
-        CoreNet([:core:network])
-        CoreDB([:core:database])
+    subgraph "Core Layer"
+        CoreDS[":core:designsystem"]
+        CoreNet[":core:network"]
+        CoreDB[":core:database"]
     end
 
-    %% Connections for :app
     App --> CharPres
     App --> CharData
     App --> BasketPres
     App --> BasketData
 
-    %% Connections for Characters
     CharPres --> CharUse
-    CharPres -.->|Optional Models| CharDom
+    CharPres --> CharDom
     CharUse --> CharDom
-    CharData --> CharDom
-    
-    %% Connections for Basket
-    BasketPres --> BasketUse
-    BasketPres -.->|Optional Models| BasketDom
-    BasketUse --> BasketDom
-    BasketData --> BasketDom
-
-    %% Connections to Core
     CharPres --> CoreDS
-    BasketPres --> CoreDS
+    CharData --> CharDom
     CharData --> CoreNet
-    BasketData --> CoreNet
     CharData --> CoreDB
+
+    BasketPres --> BasketUse
+    BasketPres --> BasketDom
+    BasketUse --> BasketDom
+    BasketPres --> CoreDS
+    BasketData --> BasketDom
+    BasketData --> CoreNet
     BasketData --> CoreDB
 ```
 
