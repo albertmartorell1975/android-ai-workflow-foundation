@@ -1,97 +1,165 @@
-# Feature-Based Modularization Strategy
+# Feature-Based Modularization Strategy (Vertical Slicing)
 
-This document outlines the evolutionary path from the project's current Layer-Based architecture to a highly scalable Feature-Based architecture.
+This document outlines the evolutionary path from the project's current Layer-Based architecture to a highly scalable Feature-Based architecture (Vertical Slicing using Feature-First grouping).
 
 ## Why Transition?
-The initial **Layer-Based** architecture (`:app`, `:data`, `:domain`, `:usecases`) serves as a strict, didactic shield to enforce Clean Architecture principles (e.g., preventing UI code from leaking into Domain).
-However, as the project and team grow, this model scales poorly. Adding a single feature requires modifying all four horizontal modules, leading to:
-1.  **Massive Rebuilds**: Touching `:data` or `:domain` invalidates the build cache for the entire app.
-2.  **Merge Conflicts**: Multiple teams working on different features will constantly collide in the same horizontal modules.
+The initial **Layer-Based** architecture (`:app`, `:data`, `:domain`, `:usecases`) serves as a strict shield to enforce Clean Architecture principles. However, as the project grows, adding a single feature requires modifying all horizontal modules. This leads to two major bottlenecks:
+1. **Massive Cache Invalidations**: Touching a single file in the monolithic `:data` module forces a recompilation of the entire `:app`.
+2. **Merge Conflicts**: Multiple teams or agents working on different domains will constantly collide in the same horizontal modules.
 
-The **Feature-Based** architecture (Vertical Slicing) solves this by encapsulating business domains into independent modules.
+## The Target Architecture (Feature-First Grouping)
 
-## The Target Architecture (Feature-Based)
+In a mature, vertically sliced project, the architecture shifts from Horizontal Layers to **Feature-First Grouping**. 
 
-In a mature, vertically sliced project, the modules are categorized as follows:
+Instead of organizing the project by layers at the root, you organize it by **Features**. Each feature gets its own physical directory (e.g., `/characters`), and inside that directory, you deploy the 4 Clean Architecture layers as independent Gradle sub-modules.
 
-### 1. `:feature:[name]` Modules
-Self-contained modules representing a specific slice of the app (e.g., `:feature:login`, `:feature:characters`, `:feature:basket`).
-*   **Internal Structure**: A feature module contains its own UI (Compose), its own specific UseCases, and its own Presentation logic (ViewModels).
-*   **Dependencies**: Feature modules depend on `:core` modules and `:domain` modules, but **NEVER** depend on other `:feature` modules directly.
+### The 4 Sub-Modules per Feature:
+1. **`:characters:domain` (Pure Kotlin)**: Models and Repository Interfaces.
+2. **`:characters:usecases` (Pure Kotlin)**: Business logic orchestration. Depends on `:characters:domain`.
+3. **`:characters:data` (Android Library)**: Implementations, Room, Retrofit. Depends on `:characters:domain`.
+4. **`:characters:presentation` (Android Library)**: Compose UI and ViewModels. Depends on `:characters:usecases` (and optionally `:characters:domain` for models).
 
-### 2. `:core:[name]` Modules
-Infrastructure and shared utilities used across multiple features (e.g., `:core:network`, `:core:database`, `:core:designsystem`, `:core:testing`).
-*   **Rule**: Core modules must be independent and agnostic of business logic. `:core:network` provides the Retrofit client, but doesn't know about `Character` or `BasketMatch`.
+### Build-Time Superpower (Compilation Avoidance)
+Because of how Gradle dependency graphs work, this structure optimizes build times drastically. 
+If a developer modifies a Room DAO inside `:characters:data`:
+- `:characters:domain` and `:characters:usecases` **DO NOT** recompile (they are upstream dependencies).
+- `:basket:data` and `:basket:domain` **DO NOT** recompile (they are in parallel isolated graphs).
+- Only `:characters:data` and `:app` (the assembler) are recompiled.
 
-### 3. `:domain:[name]` and `:data:[name]` Modules (Optional Granularity)
-For extremely large apps, even the horizontal layers are vertically sliced.
-*   Instead of one monolithic `:data`, you have `:data:characters` and `:data:basket`.
-*   These provide the specific Repositories and DAOs for that domain, utilizing `:core:network` and `:core:database`.
+---
 
-## Advanced Implementation Details (For Agents)
+## The Dependency Graph (Who sees who)
 
-When transitioning a project to Feature Modules, agents MUST implement or consider the following enterprise patterns:
+To ensure massive scalability and prevent Circular Dependencies, the dependency flow must strictly be a directed acyclic graph (DAG) pointing downwards.
 
-### 1. Inter-Feature Communication (Data Sharing)
-If `:feature:basket` needs to know about `Character` models from `:feature:characters`, they CANNOT depend on each other.
-*   **Solution**: Extract the shared models and repository interfaces into a common underlying module, such as `:core:model` or a specific `:domain:characters`. Both feature modules will then depend on this shared lower-level module. Communication flows downwards in a "V" shape, never horizontally.
+```mermaid
+graph TD
+    %% App Layer (The Integrator)
+    App([:app])
+    
+    %% Feature: Characters
+    subgraph Feature: Characters
+        CharPres([:characters:presentation])
+        CharUse([:characters:usecases])
+        CharData([:characters:data])
+        CharDom([:characters:domain])
+    end
 
-### 2. Decoupled Navigation (Compose Navigation)
-Features must remain oblivious to the existence of other features. 
-*   **Solution**: Feature modules should never call `navController.navigate("other_feature_route")` directly. 
-*   Instead, feature modules expose their UI via extension functions on `NavGraphBuilder` and use callback lambdas for navigation events: `fun NavGraphBuilder.loginScreen(onLoginSuccess: () -> Unit)`.
-*   The `:app` module, being the integrator, wires these callbacks together inside the main `NavHost` (e.g., `onLoginSuccess = { navController.navigate("home") }`).
+    %% Feature: Basket
+    subgraph Feature: Basket
+        BasketPres([:basket:presentation])
+        BasketUse([:basket:usecases])
+        BasketData([:basket:data])
+        BasketDom([:basket:domain])
+    end
 
-### 3. Gradle Convention Plugins (Build Logic)
-Creating 20 feature modules means duplicating `android {}`, `compose`, and Java version configurations 20 times.
-*   **Solution**: In a mature Feature-Based architecture, agents should recommend or utilize **Gradle Convention Plugins** (typically placed in a `build-logic` included build). 
-*   A feature module's `build.gradle.kts` should be reduced to applying a single plugin: `alias(libs.plugins.project.feature.compose)`. This plugin internally applies the Android Library plugin, configures the JDK baseline (Java 17/21), sets Compose options, and adds common DI dependencies.
+    %% Core Layer (Shared Infrastructure)
+    subgraph Core Layer
+        CoreDS([:core:designsystem])
+        CoreNet([:core:network])
+        CoreDB([:core:database])
+    end
 
-## Transition Process (How to Migrate)
+    %% Connections for :app
+    App --> CharPres
+    App --> CharData
+    App --> BasketPres
+    App --> BasketData
 
-When instructed to transition a feature to the Feature-Based model, the agent MUST follow these steps:
+    %% Connections for Characters
+    CharPres --> CharUse
+    CharPres -.->|Optional Models| CharDom
+    CharUse --> CharDom
+    CharData --> CharDom
+    
+    %% Connections for Basket
+    BasketPres --> BasketUse
+    BasketPres -.->|Optional Models| BasketDom
+    BasketUse --> BasketDom
+    BasketData --> BasketDom
 
-1.  **Create the Feature Module**: Generate a new Android Library module (e.g., `:feature:characters`).
-2.  **Isolate UI & Presentation**: Move the specific Compose screens and ViewModels for that feature from `:app` into the new `:feature` module.
-3.  **Resolve Dependencies**: 
-    *   The `:feature` module will need to depend on the horizontal `:domain` and `:usecases` (if they haven't been split yet).
-    *   Add `:feature` dependencies to the `:app` module so they can be wired into the main navigation graph.
-4.  **Extract Core Libraries (If applicable)**: Move generic infrastructure (like Hilt network modules, Retrofit builders, Base themes) out of `:app` and into dedicated `:core:network` or `:core:designsystem` modules.
-5.  **Fix Navigation (Crucial)**:
-    *   To prevent circular dependencies, `:feature:A` cannot depend on `:feature:B` just to navigate to it.
-    *   **Solution**: Navigation routes must be decoupled. Use a central Navigation graph in `:app`, or define Navigation Route interfaces/sealed classes in a `:core:navigation` module that all features depend on.
+    %% Connections to Core
+    CharPres --> CoreDS
+    BasketPres --> CoreDS
+    CharData --> CoreNet
+    BasketData --> CoreNet
+    CharData --> CoreDB
+    BasketData --> CoreDB
+```
 
-## Golden Rules for Feature Modules
-1.  **No Feature-to-Feature Dependencies**: A feature module must never include another feature module in its `build.gradle.kts`.
-2.  **App as the Integrator**: The `:app` module becomes incredibly thin. Its only job is to wire Dependency Injection components, initialize the Application class, and assemble the Navigation Graph tying the independent features together.
+**Graph Rules:**
+1. **Arrows go DOWN**: A module can only see the modules the arrow points to.
+2. **No Horizontal Arrows**: Notice there are NO arrows between `:characters:*` and `:basket:*`. Features are completely invisible to each other.
+3. **App knows Everything**: The `:app` module sits at the very top. It sees the presentation layers (to wire Navigation) and the data layers (to wire DI/Repositories).
+4. **Core knows Nothing**: Core modules sit at the very bottom. They do not depend on any feature modules.
 
-## Feature-Based Package Structure Example
+---
 
-When transitioned, the project structure shifts from horizontal layers to vertical slices:
+## Module Roles: `:core` vs `:app` (The Integrator)
+
+A critical mistake in modularization is putting "common" or shared code into the `:app` module. Doing so causes **Circular Dependencies** because `:app` must depend on features to assemble the final app, but features would need to depend on `:app` to access the common code.
+
+### The `:core` Modules (The Shared Foundation)
+Everything shared across multiple features belongs in `:core` modules at the bottom of the dependency graph.
+*   **WHAT TO INCLUDE**: Design systems (`:core:designsystem` for custom buttons, typography, Compose themes), base network configurations (`:core:network` for Retrofit/Ktor clients), or generic UI utilities (formatters).
+*   **WHAT TO AVOID**: Business logic, feature-specific models, or anything tied to a specific domain.
+
+### The `:app` Module (The Motherboard)
+The `:app` module sits at the very top of the dependency graph. It is an incredibly thin **Integrator** module. It does no real work itself; it just plugs the isolated pieces together.
+*   **WHAT TO INCLUDE**: 
+    1. Entry points (`MainActivity`, `Application` class).
+    2. Global Dependency Injection wiring (e.g., `@HiltAndroidApp`, Koin `startKoin`).
+    3. The root `NavHost` (orchestrating routing between completely isolated features).
+    4. Third-party SDK initialization (Firebase, Crashlytics, Analytics).
+*   **WHAT TO AVOID**: Common UI components, shared utilities, shared string resources, or any business logic.
+
+---
+
+## Feature-First Package Structure Example
+
+Notice how the package names match the directory structure perfectly (`com.example.[feature].[layer]`):
 
 ```text
-:core:network
-└── src/main/java/com/martorell/albert/core/network
-    ├── RetrofitClient.kt
-    └── NetworkModule.kt             // Hilt module for generic network
+:core:network                        // Shared infrastructure
+└── src/main/java/com/example/core/network
 
-:feature:characters                  // Self-contained Vertical Slice
-└── src/main/java/com/martorell/albert/feature/characters
-    ├── data/
-    │   ├── CharactersApi.kt         // Specific API for this feature
-    │   └── CharactersRepositoryImpl.kt 
-    ├── domain/
-    │   ├── Character.kt             // Model
-    │   └── CharactersRepository.kt  // Interface
-    ├── presentation/
-    │   ├── CharactersViewModel.kt
-    │   └── CharactersScreen.kt      // Compose UI
-    └── di/
-        └── CharactersModule.kt      // Hilt bindings for this feature
+/characters                          // Feature Directory (Not a module itself)
+├── :characters:domain               // Pure Kotlin
+│   └── src/main/java/com/example/characters/domain
+│       ├── model/Character.kt
+│       └── repository/CharactersRepository.kt
+│
+├── :characters:usecases             // Pure Kotlin
+│   └── src/main/java/com/example/characters/usecases
+│       └── GetCharactersUseCase.kt
+│
+├── :characters:data                 // Android Library
+│   └── src/main/java/com/example/characters/data
+│       ├── network/CharactersApi.kt
+│       └── repository/CharactersRepositoryImpl.kt // Depends on :core:network & :characters:domain
+│
+└── :characters:presentation         // Android Library
+    └── src/main/java/com/example/characters/presentation
+        ├── CharactersViewModel.kt   // Depends on :characters:usecases
+        └── CharactersScreen.kt      
 
-:app
-└── src/main/java/com/martorell/albert/basketcoach
-    ├── navigation/
-    │   └── AppNavHost.kt            // Glues :feature:characters and others together
-    └── MainActivity.kt              // Entry point
+:app                                 // Android App (Integrator)
+└── src/main/java/com/example/app
+    ├── navigation/AppNavHost.kt     // Glues :characters:presentation and others together
+    └── MainActivity.kt
 ```
+
+## Advanced Implementation Patterns
+
+### 1. Inter-Feature Communication
+If `:basket` needs models from `:characters`, they CANNOT depend on each other horizontally.
+*   **Solution**: Extract the shared models into a common underlying `:core:model:characters` or similar module. Communication flows downwards, never sideways.
+
+### 2. Decoupled Navigation
+Features must remain oblivious to the existence of other features.
+*   **Solution**: Expose the UI via extension functions on `NavGraphBuilder` using callback lambdas for navigation events: `fun NavGraphBuilder.charactersScreen(onCharacterClick: (String) -> Unit)`.
+*   The `:app` module acts as the integrator, wiring these callbacks inside the main `NavHost`.
+
+## Golden Rules
+1.  **No Feature-to-Feature Dependencies**: A feature's sub-module (e.g., `:characters:presentation`) must never include another feature's sub-module (e.g., `:basket:presentation`).
+2.  **App as Integrator**: The `:app` module must remain thin, responsible only for Dependency Injection wiring and the Navigation Graph.

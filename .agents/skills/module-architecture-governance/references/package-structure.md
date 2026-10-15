@@ -1,17 +1,19 @@
 # Layer-Based Package Structure
 
-To satisfy Clean Architecture boundaries, contracts and business logic live in `:domain`, their implementations live in `:data`, and UI/DI wiring remain in `:app`.
+To satisfy Clean Architecture boundaries, contracts live in `:domain`, their implementations live in `:data`. Business logic orchestration lives in `:usecases`. UI/DI wiring remain in `:app`.
 
 ```text
 :domain (Pure Kotlin)
 └── src/main/java/com/example/app/domain
     ├── model/                       // Pure Kotlin business models
     │   └── BasketMatch.kt
-    ├── usecase/                     // Orchestrates business logic using repositories
-    │   ├── GetBasketMatchesUseCase.kt
-    │   └── ToggleMatchFavoriteUseCase.kt
     └── repository/                  // The INTERFACES (Contracts)
         └── BasketRepository.kt      
+
+:usecases (Pure Kotlin)
+└── src/main/java/com/example/app/usecases
+    ├── GetBasketMatchesUseCase.kt   // Orchestrates business logic using repositories
+    └── ToggleMatchFavoriteUseCase.kt
 
 :data (Android Library)
 └── src/main/java/com/example/app/data
