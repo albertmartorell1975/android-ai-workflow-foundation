@@ -49,6 +49,7 @@ When this skill is activated, the agent MUST first acknowledge the core foundati
    - **module-architecture-governance**: Automation and standards for multi-module creation, Java/Kotlin alignment, and Clean Architecture enforcement.
    - **navigation-3**: Best practices for Jetpack Navigation 3.
    - **r8-analyzer**: Proguard/R8 optimization and app size management.
+   - **repository-pattern-governance**: Automation and governance for the data layer, repository pattern, SSOT, and typed domain error modeling.
    - **skill-creator**: Creation, evaluation, iteration, and optimization of skills.
    - **testing-setup**: Unified strategy for Unit, UI, and Screenshot testing.
    - **viewmodel-architecture-governance**: Mandatory Passive Initialization and Hybrid UI State patterns.
@@ -229,6 +230,10 @@ When `activeWorkflow = ai-expert-workflow`:
 4. If baseline verification fails, fix the baseline before starting new feature work.
 
 
+## Path-Based Skill Triggers
+
+* **Data & Domain Layer (`**/data/**`, `**/domain/**`)**: When creating or modifying files in these layers, you MUST strictly apply the Clean Architecture, SSOT, and Exception mapping rules defined in `.agents/skills/repository-pattern-governance/SKILL.md`.
+
 ## Working Rules
 
 * Work on one feature at a time.
@@ -313,6 +318,7 @@ Technical standards shared by the active Foundation environment regardless of th
 * **design-system-governance**: Design System standards covering Material 3, accessibility, RTL, adaptive UI, and reusability.
 * **kotlin-style**: Kotlin coding conventions, project-specific style rules, and Magic Literal prevention.
 * **module-architecture-governance**: Automation and standards for multi-module creation, Java/Kotlin alignment, and Clean Architecture enforcement.
+* **repository-pattern-governance**: Data layer, repository pattern, SSOT, and typed domain error governance.
 * **testing-setup**: Unified strategy for unit, UI behavior, and visual regression testing.
 * **viewmodel-architecture-governance**: Architectural rules for ViewModels, UI state, and initialization patterns.
 
