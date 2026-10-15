@@ -13,11 +13,21 @@ In a mature, vertically sliced project, the architecture shifts from Horizontal 
 
 Instead of organizing the project by layers at the root, you organize it by **Features**. Each feature gets its own physical directory (e.g., `/characters`), and inside that directory, you deploy the 4 Clean Architecture layers as independent Gradle sub-modules.
 
-### The 4 Sub-Modules per Feature:
-1. **`:characters:domain` (Pure Kotlin)**: Models and Repository Interfaces.
-2. **`:characters:usecases` (Pure Kotlin)**: Business logic orchestration. Depends on `:characters:domain`.
-3. **`:characters:data` (Android Library)**: Implementations, Room, Retrofit. Depends on `:characters:domain`.
-4. **`:characters:presentation` (Android Library)**: Compose UI and ViewModels. Depends on `:characters:usecases` (and optionally `:characters:domain` for models).
+### Modules vs. Packages: Why 4 Gradle Sub-Modules?
+
+There are two ways to structure a feature, and it is crucial to understand the difference:
+
+* **Option A: 4 Independent Gradle Sub-Modules (OUR MANDATORY STRATEGY)**
+  Dins de la carpeta física `/characters/`, existeixen 4 fitxers `build.gradle.kts` independents:
+  - `:characters:domain` (Pure Kotlin)
+  - `:characters:usecases` (Pure Kotlin)
+  - `:characters:data` (Android Library)
+  - `:characters:presentation` (Android Library)
+  > **Per què l'Opcio A?**: Perquè Gradle tracta cada capa com un projecte aïllat. Si edites el disseny d'un botó a `:characters:presentation`, Gradle **no torna a compilar ni domain ni data**.
+
+* **Option B: 1 Single Gradle Module with Internal Packages (Antipattern for large apps)**
+  Una sola carpeta `/feature-characters` amb 1 sol `build.gradle.kts` i 4 paquets de Kotlin interns (`domain/`, `usecases/`, `data/`, `presentation/`).
+  > **Per què NO l'Opció B?**: Perquè qualsevol canvi a la UI o a dades obliga a Gradle a re-compilar el mòdul sencer, perdent el superpoder de l'evitació de compilació (*Compilation Avoidance*).
 
 ### Build-Time Superpower (Compilation Avoidance)
 Because of how Gradle dependency graphs work, this structure optimizes build times drastically. 
@@ -32,58 +42,45 @@ If a developer modifies a Room DAO inside `:characters:data`:
 
 To ensure massive scalability and prevent Circular Dependencies, the dependency flow must strictly be a directed acyclic graph (DAG) pointing downwards.
 
-> 🔍 **[View Live Dependency Graph](https://mermaid.live/edit#base64:eyJjb2RlIjogImdyYXBoIFREXG4gICAgQXBwW1wiOmFwcFwiXVxuXG4gICAgc3ViZ3JhcGggXCJGZWF0dXJlOiBDaGFyYWN0ZXJzXCJcbiAgICAgICAgQ2hhclByZXNbXCI6Y2hhcmFjdGVyczpwcmVzZW50YXRpb25cIl1cbiAgICAgICAgQ2hhclVzZVtcIjpjaGFyYWN0ZXJzOnVzZWNhc2VzXCJdXG4gICAgICAgIENoYXJEYXRhW1wiOmNoYXJhY3RlcnM6ZGF0YVwiXVxuICAgICAgICBDaGFyRG9tW1wiOmNoYXJhY3RlcnM6ZG9tYWluXCJdXG4gICAgZW5kXG5cbiAgICBzdWJncmFwaCBcIkZlYXR1cmU6IEJhc2tldFwiXG4gICAgICAgIEJhc2tldFByZXNbXCI6YmFza2V0OnByZXNlbnRhdGlvblwiXVxuICAgICAgICBCYXNrZXRVc2VbXCI6YmFza2V0OnVzZWNhc2VzXCJdXG4gICAgICAgIEJhc2tldERhdGFbXCI6YmFza2V0OmRhdGFcIl1cbiAgICAgICAgQmFza2V0RG9tW1wiOmJhc2tldDpkb21haW5cIl1cbiAgICBlbmRcblxuICAgIHN1YmdyYXBoIFwiQ29yZSBMYXllclwiXG4gICAgICAgIENvcmVEU1tcIjpjb3JlOmRlc2lnbnN5c3RlbVwiXVxuICAgICAgICBDb3JlTmV0W1wiOmNvcmU6bmV0d29ya1wiXVxuICAgICAgICBDb3JlREJbXCI6Y29yZTpkYXRhYmFzZVwiXVxuICAgIGVuZFxuXG4gICAgQXBwIC0tPiBDaGFyUHJlc1xuICAgIEFwcCAtLT4gQ2hhckRhdGFcbiAgICBBcHAgLS0-IEJhc2tldFByZXNcbiAgICBBcHAgLS0-IEJhc2tldERhdGFcblxuICAgIENoYXJQcmVzIC0tPiBDaGFyVXNlXG4gICAgQ2hhclByZXMgLS0-IENoYXJEb21cbiAgICBDaGFyVXNlIC0tPiBDaGFyRG9tXG4gICAgQ2hhclByZXMgLS0-IENvcmVEU1xuICAgIENoYXJEYXRhIC0tPiBDaGFyRG9tXG4gICAgQ2hhclRhdGEgLS0-IENvcmVOZXRcbiAgICBDaGFyRGF0YSAtLT4gQ29yZSREQlxuXG4gICAgQmFza2V0UHJlcyAtLT4gQmFza2V0VXNlXG4gICAgQmFza2V0UHJlcyAtLT4gQmFza2V0RG9tXG4gICAgQmFza2V0VXNlIC0tPiBCYXNrZXREb21cbiAgICBCYXNrZXRQcmVzIC0tPiBDb3JlRFNcbiAgICBCYXNrZXREYXRhIC0tPiBCYXNrZXREb21cbiAgICBCYXNrZXREYXRhIC0tPiBDb3JlTmV0XG4gICAgQmFza2V0RGF0YSAtLT4gQ29yZSREQlxuIiwgIm1lcm1haWQiOiAie1xuICB0aGVtZTogZGVmYXVsdFxufSIsICJhdXRvU3luYyI6IHRydWUsICJ1cGRhdGVEaWFncmFtIjogdHJ1ZX0)** (Click to open in Mermaid Live Editor)
+### Visual Architecture Diagram:
 
-```mermaid
-graph TD
-    App[":app"]
-
-    subgraph "Feature: Characters"
-        CharPres[":characters:presentation"]
-        CharUse[":characters:usecases"]
-        CharData[":characters:data"]
-        CharDom[":characters:domain"]
-    end
-
-    subgraph "Feature: Basket"
-        BasketPres[":basket:presentation"]
-        BasketUse[":basket:usecases"]
-        BasketData[":basket:data"]
-        BasketDom[":basket:domain"]
-    end
-
-    subgraph "Core Layer"
-        CoreDS[":core:designsystem"]
-        CoreNet[":core:network"]
-        CoreDB[":core:database"]
-    end
-
-    App --> CharPres
-    App --> CharData
-    App --> BasketPres
-    App --> BasketData
-
-    CharPres --> CharUse
-    CharPres --> CharDom
-    CharUse --> CharDom
-    CharPres --> CoreDS
-    CharData --> CharDom
-    CharData --> CoreNet
-    CharData --> CoreDB
-
-    BasketPres --> BasketUse
-    BasketPres --> BasketDom
-    BasketUse --> BasketDom
-    BasketPres --> CoreDS
-    BasketData --> BasketDom
-    BasketData --> CoreNet
-    BasketData --> CoreDB
+```text
+                        +---------------------------+
+                        |           :app            |
+                        |       (Integrator)        |
+                        +-------------+-------------+
+                                      |
+            +-------------------------+-------------------------+
+            | (Nav & DI)                                        | (Nav & DI)
+            v                                                   v
++-----------------------+                           +-----------------------+
+|  FEATURE: CHARACTERS  |                           |    FEATURE: BASKET    |
+|                       |                           |                       |
+|  :char:presentation   |                           |  :basket:presentation |
+|          |            |                           |          |            |
+|          v            |                           |          v            |
+|   :char:usecases      |                           |   :basket:usecases    |
+|          |            |                           |          |            |
+|          v            |                           |          v            |
+|    :char:domain       |                           |    :basket:domain     |
+|          ^            |                           |          ^            |
+|          |            |                           |          |            |
+|     :char:data        |                           |     :basket:data      |
++-----------+-----------+                           +-----------+-----------+
+            |                                                   |
+            +-------------------------+-------------------------+
+                                      |
+                                      v
+                        +---------------------------+
+                        |        CORE LAYER         |
+                        | (:core:ds, :core:network) |
+                        +---------------------------+
 ```
 
 **Graph Rules:**
 1. **Arrows go DOWN**: A module can only see the modules the arrow points to.
-2. **No Horizontal Arrows**: Notice there are NO arrows between `:characters:*` and `:basket:*`. Features are completely invisible to each other.
-3. **App knows Everything**: The `:app` module sits at the very top. It sees the presentation layers (to wire Navigation) and the data layers (to wire DI/Repositories).
+2. **NO Horizontal Communication**: `:basket:domain` and `:characters:domain` MUST NEVER communicate directly. Features are completely isolated.
+3. **App knows Everything**: The `:app` module sits at the very top. It sees the presentation layers (for Navigation) and the data layers (for DI Repositories wiring).
 4. **Core knows Nothing**: Core modules sit at the very bottom. They do not depend on any feature modules.
 
 ---
@@ -92,19 +89,122 @@ graph TD
 
 A critical mistake in modularization is putting "common" or shared code into the `:app` module. Doing so causes **Circular Dependencies** because `:app` must depend on features to assemble the final app, but features would need to depend on `:app` to access the common code.
 
-### The `:core` Modules (The Shared Foundation)
-Everything shared across multiple features belongs in `:core` modules at the bottom of the dependency graph.
-*   **WHAT TO INCLUDE**: Design systems (`:core:designsystem` for custom buttons, typography, Compose themes), base network configurations (`:core:network` for Retrofit/Ktor clients), or generic UI utilities (formatters).
+### The `:core` Modules (Atomic Toolboxes)
+`:core` is NOT a monolithic module with 4 layers inside. It is a set of **specialized, domain-agnostic modules**. Each feature layer connects strictly to the `:core` toolbox it needs:
+
+```text
+========================================================================================
+ FEATURE LAYER                                MATCHING CORE TOOLBOX
+========================================================================================
+ :characters:presentation  -----------------> :core:designsystem / :core:ui (Theme, Buttons)
+ :characters:domain        -----------------> :core:common / :core:model (Result, DomainError)
+ :characters:data          -----------------> :core:network / :core:database (Retrofit, Room)
+========================================================================================
+```
+
+*   **WHAT TO INCLUDE**: Design systems (`:core:designsystem` for custom buttons, typography, Compose themes), base network configurations (`:core:network` for Retrofit/Ktor clients), base database setup (`:core:database`), or generic pure Kotlin utilities (`:core:common`).
 *   **WHAT TO AVOID**: Business logic, feature-specific models, or anything tied to a specific domain.
 
-### The `:app` Module (The Motherboard)
-The `:app` module sits at the very top of the dependency graph. It is an incredibly thin **Integrator** module. It does no real work itself; it just plugs the isolated pieces together.
-*   **WHAT TO INCLUDE**: 
+### Layer Access Rules to `:core` (Gradle & Imports)
+
+#### 1. `:characters:domain` (Pure Kotlin)
+
+Gradle setup in `build.gradle.kts`:
+```kts
+dependencies {
+    implementation(project(":core:common"))
+}
+```
+
+Kotlin imports:
+```kotlin
+import com.example.core.common.error.DomainError
+import com.example.core.common.result.Result
+```
+* **Forbidden**: No Retrofit (`:core:network`), No Room (`:core:database`), No Compose (`:core:designsystem`).
+
+#### 2. `:characters:usecases` (Pure Kotlin)
+
+Gradle setup in `build.gradle.kts`:
+```kts
+dependencies {
+    implementation(project(":characters:domain"))
+    implementation(project(":core:common"))
+}
+```
+
+Kotlin imports:
+```kotlin
+import com.example.characters.domain.model.Character
+import com.example.characters.domain.repository.CharactersRepository
+```
+* **Forbidden**: No UI, No Network, No Database.
+
+#### 3. `:characters:data` (Android Library)
+
+Gradle setup in `build.gradle.kts`:
+```kts
+dependencies {
+    implementation(project(":characters:domain"))
+    implementation(project(":core:network"))
+    implementation(project(":core:database"))
+}
+```
+
+Kotlin imports:
+```kotlin
+import com.example.characters.domain.repository.CharactersRepository
+import com.example.core.database.AppDatabase
+import com.example.core.network.RetrofitBuilder
+```
+* **Forbidden**: No UI components (`:core:designsystem`).
+
+#### 4. `:characters:presentation` (Android Library - UI & ViewModels)
+
+Gradle setup in `build.gradle.kts`:
+```kts
+dependencies {
+    implementation(project(":characters:usecases"))
+    implementation(project(":core:designsystem"))
+}
+```
+
+Kotlin imports:
+```kotlin
+import com.example.characters.usecases.GetCharactersUseCase
+import com.example.core.designsystem.components.PrimaryButton
+import com.example.core.designsystem.theme.AppTheme
+```
+* **Forbidden**: No Network (`:core:network`), No Database (`:core:database`).
+
+---
+
+### The `:app` Module (How it connects to Features)
+
+The `:app` module sits at the very top of the dependency graph. It connects to features through **two specific layers**:
+
+1. **`:characters:presentation`**: To assemble the root `NavHost` and display the screens.
+2. **`:characters:data`**: To wire Dependency Injection (Hilt/Koin) so that repository implementations (`CharactersRepositoryImpl`) can be bound to domain interfaces (`CharactersRepository`).
+
+```kts
+// app/build.gradle.kts
+dependencies {
+    // 1. UI & Navigation Layer Connection
+    implementation(project(":characters:presentation"))
+    implementation(project(":basket:presentation"))
+
+    // 2. Dependency Injection / Data Layer Wiring
+    implementation(project(":characters:data"))
+    implementation(project(":basket:data"))
+}
+```
+
+* **WHAT TO INCLUDE IN `:app`**:
     1. Entry points (`MainActivity`, `Application` class).
-    2. Global Dependency Injection wiring (e.g., `@HiltAndroidApp`, Koin `startKoin`).
+    2. Global Dependency Injection wiring (`@HiltAndroidApp`, Koin `startKoin`).
     3. The root `NavHost` (orchestrating routing between completely isolated features).
     4. Third-party SDK initialization (Firebase, Crashlytics, Analytics).
-*   **WHAT TO AVOID**: Common UI components, shared utilities, shared string resources, or any business logic.
+* **WHAT TO AVOID IN `:app`**: Common UI components, shared utilities, shared string resources, or any business logic.
 
 ---
 
@@ -154,5 +254,7 @@ Features must remain oblivious to the existence of other features.
 *   The `:app` module acts as the integrator, wiring these callbacks inside the main `NavHost`.
 
 ## Golden Rules
-1.  **No Feature-to-Feature Dependencies**: A feature's sub-module (e.g., `:characters:presentation`) must never include another feature's sub-module (e.g., `:basket:presentation`).
-2.  **App as Integrator**: The `:app` module must remain thin, responsible only for Dependency Injection wiring and the Navigation Graph.
+1. **No Feature-to-Feature Dependencies**: A feature's sub-module (e.g., `:characters:presentation`) must never include another feature's sub-module (e.g., `:basket:presentation`).
+2. **App as Integrator**: The `:app` module must remain thin, responsible only for Dependency Injection wiring and the Navigation Graph.
+3. **App Connects Only to Presentation & Data**: In `app/build.gradle.kts`, `:app` includes `implementation(project(":feature:presentation"))` for Navigation and `implementation(project(":feature:data"))` for DI bindings.
+4. **Strict Layer-to-Core Matching**: Presentation connects to `:core:designsystem`, Data connects to `:core:network`/`:core:database`, Domain connects to `:core:common`. Cross-layer leaks (e.g., Presentation directly depending on `:core:network`) are strictly forbidden.
