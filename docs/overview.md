@@ -12,45 +12,71 @@ This allows a project to choose how AI agents collaborate without changing the u
 
 ## High-Level Architecture
 
-```mermaid
-graph TD
-    Start([Foundation Installation]) --> Init[workflow-initializer]
-    Init --> Custom[Project Customization]
-    Custom --> Select{Workflow Selection}
+```text
+[Foundation Installation]
+           │
+           ▼
+[workflow-initializer]
+           │
+           ▼
+[Project Customization]
+           │
+           ▼
+   {Workflow Selection}
+           │
+     ┌─────┴─────┐
+     │           │
+[Foundation]   [AI Expert]
+     │           │
+     ▼           ▼
 
-    Select -->|foundation| FW[Foundation Workflow]
-    Select -->|ai-expert-workflow| AE[AI Expert Workflow]
+=== FOUNDATION WORKFLOW (Single Agent) ===
 
-    subgraph FW[Foundation Workflow — Single Agent]
-        direction TB
-        WFF[workflow-feature] --> WFP[WORKFLOW_FEATURE.md]
-        WFP --> ImplA[Feature Implementation]
-    end
+  [workflow-feature]
+          │
+          ▼
+ [WORKFLOW_FEATURE.md]
+          │
+          ▼
+[Feature Implementation]
 
-    subgraph AE[AI Expert Workflow — Multi-Agent]
-        direction TB
-        BB[build-brief] --> HS[harness-starter]
-        HS --> FL[Project Harness + feature_list.json]
-        FL --> FF[feature-flow]
-        FF --> PS[Planner / feature-spec]
-        PS --> IM[Implementer]
-        IM --> VA[Validator]
-    end
 
-    subgraph Shared[Shared Foundation Skills]
-        direction LR
-        G1[Kotlin & Android Standards]
-        G2[Architecture Governance]
-        G3[Testing & Verification]
-        G4[Git Governance]
-        G5[Security & Other Expert Skills]
-    end
+=== AI EXPERT WORKFLOW (Multi-Agent) ===
 
-    FW -. consults .-> Shared
-    AE -. consults .-> Shared
+    [build-brief]
+          │
+          ▼
+  [harness-starter]
+          │
+          ▼
+[Harness + feature_list]
+          │
+          ▼
+    [feature-flow]
+          │
+          ▼
+ [Planner / feature-spec]
+          │
+          ▼
+     [Implementer]
+          │
+          ▼
+      [Validator]
 
-    Human[Human Supervision] -. supervises .-> FW
-    Human -. supervises .-> AE
+
+=== SHARED FOUNDATION SKILLS ===
+
+Both workflows consult the shared foundation:
+- Kotlin & Android Standards
+- Architecture Governance
+- Testing & Verification
+- Git Governance
+- Security & Other Expert Skills
+
+
+=== HUMAN SUPERVISION ===
+
+The human supervises both workflows.
 ```
 
 ---
@@ -141,7 +167,7 @@ Examples include:
 * Dependency management.
 * Testing and verification.
 * Git governance.
-* Security and privacy rules.
+* Security, privacy rules, and AI lifecycle safety hooks (`agent-safety-hooks`, `hook-creator`).
 * Design system governance and graphic asset handling (UI reference mockups & optimized WebP conversion).
 * Project-specific expert skills.
 

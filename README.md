@@ -120,7 +120,15 @@ The initializer guides the project setup:
    If the AI Expert Workflow is selected, its required workflow skills are installed from the catalog.
 
 3. **Stack Diagnosis & AI Provider**
-   Configure project-specific information such as architecture, persistence, dependency injection, and select your AI assistant / IDE provider (**Gemini**, **Cursor**, or **Claude Code**) to materialize the corresponding context exclusion configuration (`.aiexclude`, `.cursorignore`, or `.claude/settings.json`).
+   Configure project-specific information such as architecture, persistence, dependency injection, and select your AI assistant / IDE provider (**Gemini**, **Cursor**, or **Claude Code**).
+   
+   During this step, the Foundation automatically materializes:
+   - **Context Exclusion** via `ai-context-exclusion`: (`.aiexclude`, `.cursorignore`, or `.claude/settings.json`) protecting private credentials and build artifacts.
+   - **AI Safety Hooks** via `agent-safety-hooks`: Installs lifecycle hooks that intercept shell execution before it runs (`PreToolUse` / `beforeShellExecution`) to prevent destructive commands such as `rm -rf` from deleting files or project directories:
+     - **Anthropic / Claude Code**: Materializes `.claude/hooks/block-rm-rf.js` and securely merges the `PreToolUse` hook (`Bash(rm *)`) into `.claude/settings.json`.
+     - **Cursor**: Materializes `.cursor/hooks/block-rm-rf.js` and configures `beforeShellExecution` in `.cursor/hooks.json`.
+     - **Gemini / Antigravity**: Materializes `.agents/hooks/block-rm-rf.js` (or `.ps1` on Windows) and configures `PreToolUse` in `.agents/hooks.json`.
+     *(Note: Standard Gemini within Android Studio does not support lifecycle hooks, but agent-level tools such as Antigravity and Claude Code enforce hard-blocks).*
 
 4. **Optional Catalog Skills**
    Select additional technical or planning skills from `.agents/catalog/` when required.
@@ -174,11 +182,13 @@ These provide capabilities shared by both workflows.
 Examples:
 
 * `workflow-initializer`
-* `ai-context-exclusion`
+* `agent-safety-hooks` (runs **automatically** during project initialization to install the `rm -rf` destructive deletion blocker in the active AI provider)
+* `ai-context-exclusion` (runs **automatically** during project initialization to configure `.aiexclude`, `.cursorignore`, or `.claude/settings.json`)
 * `compiler`
 * `git-governance`
 * `foundation-evolve`
-* `skill-creator`
+* `hook-creator` (**on-demand tool** used to design, generate, and configure new custom lifecycle hooks across Claude Code, Gemini, and Cursor at any time)
+* `skill-creator` (tool to author, evaluate, and optimize new skills)
 * `dependency-manager`
 * `testing-setup`
 * `design-system-governance` (includes UI design folder organization and automated graphic asset PNG/JPEG to WebP conversion governance)

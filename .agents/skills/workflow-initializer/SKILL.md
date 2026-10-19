@@ -66,7 +66,9 @@ When a complex workflow plugin is selected:
 
 ### PHASE 4: Project Customization
 1. **Materialize Governance Templates**: Create `AGENTS.md` in the project root directory by reading `.agents/skills/workflow-initializer/references/AGENTS_TEMPLATE.md`. Ensure `.agents/skills/README.md` is present and up to date by downloading it from the GitHub repository URL if necessary.
-2. **AI Context Exclusion Setup**: Delegate context exclusion creation directly to the `ai-context-exclusion` skill, passing the selected AI Provider (or defaulting to `Gemini` if omitted or unrecognized) to materialize the required file (`.aiexclude`, `.cursorignore`, or `.claude/settings.json`).
+2. **AI Context Exclusion & Safety Hooks Setup**:
+   - Delegate context exclusion creation directly to the `ai-context-exclusion` skill, passing the selected AI Provider (or defaulting to `Gemini` if omitted or unrecognized) to materialize the required file (`.aiexclude`, `.cursorignore`, or `.claude/settings.json`).
+   - Delegate safety hooks setup to the `agent-safety-hooks` skill, passing the selected AI Provider to materialize both the hook configuration and script into the provider's official hook locations (`.claude/settings.json` + `.claude/hooks/block-rm-rf.js`, `.agents/hooks.json` + `.agents/hooks/block-rm-rf.js`, or `.cursor/hooks.json` + `.cursor/hooks/block-rm-rf.js`).
 3. **Replacement**: During materialization of `AGENTS.md`, replace the following placeholders with values from the Stack Diagnosis:
    - `[PROJECT_NAME]` -> User's Project Name.
    - `[ARCHITECTURE]` -> MVVM or MVI.
@@ -84,4 +86,5 @@ When a complex workflow plugin is selected:
 - [ ] Present and install standalone **Optional Plugins** from the catalog (using `.agents/skills/README.md`).
 - [ ] Materialize `AGENTS.md` (in project root) from `references/AGENTS_TEMPLATE.md` with dynamic replacements.
 - [ ] Delegate AI context exclusion creation (`.aiexclude`, `.cursorignore`, or `.claude/settings.json`) to `ai-context-exclusion` skill (using `Gemini` as fallback if empty/unrecognized).
+- [ ] Delegate safety hooks creation (`.claude/settings.json` + `.claude/hooks/`, `.agents/hooks.json` + `.agents/hooks/`, or `.cursor/hooks.json` + `.cursor/hooks/`) to `agent-safety-hooks` skill.
 - [ ] Run `git init` and establish the `git-governance` baseline.

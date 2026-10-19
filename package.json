@@ -8,6 +8,7 @@
   "agent-skills": {
     "skills": {
       "adaptive": ".agents/skills/adaptive/SKILL.md",
+      "agent-safety-hooks": ".agents/skills/agent-safety-hooks/SKILL.md",
       "ai-context-exclusion": ".agents/skills/ai-context-exclusion/SKILL.md",
       "android-cli": ".agents/skills/android-cli/SKILL.md",
       "android-intent-security": ".agents/skills/android-intent-security/SKILL.md",
@@ -25,6 +26,7 @@
       "edge-to-edge": ".agents/skills/edge-to-edge/SKILL.md",
       "foundation-evolve": ".agents/skills/foundation-evolve/SKILL.md",
       "git-governance": ".agents/skills/git-governance/SKILL.md",
+      "hook-creator": ".agents/skills/hook-creator/SKILL.md",
       "kotlin-control-flow": ".agents/skills/kotlin-control-flow/SKILL.md",
       "kotlin-coroutines-structured-concurrency": ".agents/skills/kotlin-coroutines-structured-concurrency/SKILL.md",
       "kotlin-flow-state-event-modeling": ".agents/skills/kotlin-flow-state-event-modeling/SKILL.md",
