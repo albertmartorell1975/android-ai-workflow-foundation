@@ -24,6 +24,7 @@ The operational backbone responsible for project lifecycle, automation, and gove
 * **compiler**: Centralized project verification, compilation, and deployment engine.
 * **foundation-evolve**: Synchronizes useful skills and improvements from working projects back to the Foundation.
 * **git-governance**: Enforces Git Flow conventions, branching rules, and commit practices.
+* **hook-creator**: On-demand tool to create, configure, and troubleshoot custom lifecycle hooks across Claude Code, Gemini (Antigravity), and Cursor whenever new automation or policies are needed.
 * **skill-creator**: Create new skills, modify and improve existing skills, run evals, and optimize skill descriptions.
 * **workflow-feature**: Foundation-native single-agent feature workflow.
 * **workflow-initializer**: Project bootstrapping, stack diagnosis, customization, plugin management, and workflow selection.
@@ -31,6 +32,7 @@ The operational backbone responsible for project lifecycle, automation, and gove
 ### 1.2 Shared Engineering Guardrails
 Technical standards shared by the active Foundation environment regardless of the selected development workflow.
 
+* **agent-safety-hooks**: Automated safety guard installed automatically during project setup to block destructive actions (such as `rm -rf`) tailored to your active AI provider (Gemini, Cursor, or Claude Code).
 * **ai-context-exclusion**: Provider-agnostic AI context exclusion governance across Gemini, Cursor, and Claude Code.
 * **dependency-manager**: Governance for `libs.versions.toml` and dependency compatibility.
 * **design-system-governance**: Design System standards covering Material 3, accessibility, RTL, adaptive UI, and reusability.
