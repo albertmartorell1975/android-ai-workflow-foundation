@@ -8,8 +8,8 @@ description: Use when writing or reviewing Jetpack Compose code with bare local 
 Not every `remember { … }` belongs here. This skill covers **local UI state** (`remember { mutableStateOf(…) }`, `mutableStateListOf` / `mutableStateMapOf`) and **`@ReadOnlyComposable`**. Other remembered APIs live in focused skills:
 
 - **`rememberCoroutineScope` / `rememberUpdatedState`** → [`compose-side-effects`](../compose-side-effects/SKILL.md)
-- **`rememberLazyListState` / `rememberScrollState`** used for frame-rate reads → [`compose-state-deferred-reads`](../compose-state-deferred-reads/SKILL.md)
-- **Focus navigation, focus state, `FocusRequester` ownership, behavior** → [`compose-focus-navigation`](../compose-focus-navigation/SKILL.md)
+- **`rememberLazyListState` / `rememberScrollState`** used for frame-rate reads → [`compose-state-deferred-reads`](../../catalog/compose-state-deferred-reads/SKILL.md)
+- **Focus navigation, focus state, `FocusRequester` ownership, behavior** → [`compose-focus-navigation`](../../catalog/compose-focus-navigation/SKILL.md)
 
 ## Core principle
 
@@ -84,7 +84,7 @@ val merged = remember(parent, overlay) {
 }
 ```
 
-If the result is read-only for the current inputs, `remember(keys) { … }` is enough. See [`compose-state-deferred-reads`](../compose-state-deferred-reads/SKILL.md) for cross-row measurement and measure-phase fixes.
+If the result is read-only for the current inputs, `remember(keys) { … }` is enough. See [`compose-state-deferred-reads`](../../catalog/compose-state-deferred-reads/SKILL.md) for cross-row measurement and measure-phase fixes.
 
 ### When this rule does NOT apply
 
@@ -149,7 +149,7 @@ If the body is only reading `Local*.current`, calling other `@ReadOnlyComposable
 
 If a composable needs `LaunchedEffect`, `DisposableEffect`, `SideEffect`, `rememberCoroutineScope`, `rememberUpdatedState`, `snapshotFlow`, snackbar/navigation handling, analytics, or Flow collection, use [`compose-side-effects`](../compose-side-effects/SKILL.md).
 
-Focus splits by question: **navigation, focus state, `FocusRequester` ownership, behavior** → [`compose-focus-navigation`](../compose-focus-navigation/SKILL.md); **when** to call imperative `requestFocus` (effect timing, lifecycle, keys, API choice) → [`compose-side-effects`](../compose-side-effects/SKILL.md).
+Focus splits by question: **navigation, focus state, `FocusRequester` ownership, behavior** → [`compose-focus-navigation`](../../catalog/compose-focus-navigation/SKILL.md); **when** to call imperative `requestFocus` (effect timing, lifecycle, keys, API choice) → [`compose-side-effects`](../compose-side-effects/SKILL.md).
 
 This skill is about authoring Compose state correctly. `rememberUpdatedState` is effect capture state, not a general replacement for `remember { mutableStateOf(...) }`. Side effects have separate lifecycle and keying rules, and keeping them in one focused skill avoids two sources of truth.
 

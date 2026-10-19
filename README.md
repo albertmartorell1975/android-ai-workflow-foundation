@@ -1,105 +1,136 @@
-# 🚀 Android AI Workflow Foundation v1.0.0
+# 🚀 Android AI Workflow Foundation v2.0.0
 
-Exploring how AI agents can become part of a disciplined, human-supervised software engineering process.
+Exploring how specialized AI agents can become part of a disciplined, human-supervised Android software engineering process.
 
-**Android AI Workflow Foundation** is a modular development framework for Android projects. It provides a shared foundation of engineering standards, technical expertise, and governance while allowing projects to choose how AI agents collaborate during feature development.
+**Android AI Workflow Foundation** is a unified multi-agent development framework for Android projects. It combines shared engineering standards, Clean Architecture guardrails, persistent project harness tracking (`feature_list.json`, `PROGRESS.md`), and isolated **`git worktree`** subagents (`workflow-orchestrator`, `workflow-feature`, `workflow-implementer`, `workflow-validator`, and `workflow-documenter`).
 
-The goal is not to automate software development completely. The developer remains responsible for architecture, technical decisions, review, and final validation.
+The goal is not to automate software development blindly. The developer remains the highest-level supervisor, responsible for architecture, technical decisions, review, and final acceptance.
 
 ---
 
-## 🏗 Architecture
+## 🏗 Unified Multi-Agent Architecture
 
-The Foundation separates the **shared Android engineering environment** from the **development workflow** used to orchestrate feature work.
+The Foundation structures software delivery across two clear phases: a **shared discovery & harness phase** (Phase 1) followed by **flexible feature execution modes** (Phase 2) on top of a **single unified multi-agent pipeline**:
 
 ```text
-ANDROID AI FOUNDATION
+ANDROID AI WORKFLOW FOUNDATION (v2.0.0)
         │
-        ├── Shared Foundation
-        │     ├── Engineering Governance
-        │     ├── Android & Kotlin Expertise
-        │     ├── Technical Guardrails
-        │     └── Verification & Tooling
+        ├── Phase 1: Project Discovery & Harness Setup
+        │     ├── New Product / MVP / Epic : build-brief (discovery) → harness-starter
+        │     └── Existing Codebase       : harness-starter (derives AGENTS.md, init.sh, PROGRESS.md, feature_list.json)
         │
-        └── Development Workflow
-              ├── Foundation Workflow
-              │      └── Single-agent
-              │
-              └── AI Expert Workflow
-                     └── Multi-agent
+        ├── Phase 2: Feature Execution Modes
+        │     ├── Mode A: Standalone Feature Mode (Ad-hoc / on-demand single feature run)
+        │     └── Mode B: Backlog Queue Mode     (Sequential or parallel processing of feature_list.json)
+        │
+        ├── Multi-Agent Worktree Pipeline (model: inherit + isolated git worktrees)
+        │     ├── 🟣 Orchestrator (workflow-orchestrator)
+        │     ├── 🔵 Planner      (workflow-feature → docs/features/<id>/spec.md)
+        │     ├── 🟠 Implementer  (workflow-implementer → Code + Tests + @compiler)
+        │     ├── 🟢 Validator    (workflow-validator → docs/features/<id>/validator/validation-report.md)
+        │     └── 🔷 Documenter   (workflow-documenter → English KDoc + Durable Docs)
+        │
+        └── Shared Engineering Guardrails
+              ├── Clean Architecture (Domain / Data / UseCases / UI & Dual Topologies)
+              ├── Kotlin, Coroutines, Flow & Jetpack Compose Standards
+              ├── Compiler Verification, Testing & Intent Security
+              └── Git Governance & AI Lifecycle Safety Hooks
 ```
 
-The same Foundation can therefore support different AI-assisted development methodologies while sharing the same engineering standards, technical expertise, and project governance.
+### Visual Identity Badges & Subagent Roles
 
-The selected workflow determines **how feature development is organized**. The Foundation defines **the technical environment and constraints under which that work takes place**.
+Every agent in the pipeline identifies its work in chat, validation reports, and `PROGRESS.md` with a dedicated visual badge and operates with strict single-responsibility boundaries:
 
-### Workflow Differences
+| Role | Core Skill | Execution Scope | Key Responsibilities |
+| :--- | :--- | :--- | :--- |
+| 🟣 **Orchestrator** | `workflow-orchestrator` | Main Feature Branch (`feature/<feature-id>`) | Selects features (Standalone or from `feature_list.json`), manages `git worktree` lifecycles, coordinates subagents, handles `REVISE` loops, and creates atomic layer-by-layer Conventional Commits via `git-governance`. |
+| 🔵 **Planner** | `workflow-feature` | Main Feature Branch (`feature/<feature-id>`) | Performs pre-diagnosis, asks up to 3 clarifying questions, and writes the unified contract at `docs/features/<feature-id>/spec.md` (`Given/When/Then` scenarios + Android layer breakdown + Clean Architecture checklist). |
+| 🟠 **Implementer** | `workflow-implementer` | Isolated Worktree (`.worktrees/impl-<feature-id>`) | Implements Clean Architecture layers (`Domain -> Data -> UseCase -> UI`), converts `ui/resources/` assets to `.webp`, writes unit/Compose UI tests, runs the `@compiler` suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`), and sets status to `passing`. |
+| 🟢/🔴 **Validator** | `workflow-validator` | Isolated Worktree (`.worktrees/val-<feature-id>`) | Lightweight read-only auditor across **4 validation levels**: (1) Spec contract, (2) Security (`android-intent-security`) & Scope Discipline, (3) `@compiler` evidence & test quality audit (`compose-ui-testing-patterns`), (4) Emulator runtime via `@android-cli` (when active). Writes `docs/features/<feature-id>/validator/validation-report.md` (`accept`, `revise` + Repair Brief, or `block`). |
+| 🔷 **Documenter** | `workflow-documenter` | Isolated Worktree (`.worktrees/doc-<feature-id>`) | Runs only after `accept`. Authors English KDoc on new public classes, updates durable docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`), and checks `[x]` completed items in `spec.md` without altering executable code. |
 
-The workflows use the same Foundation but organize feature development differently.
+---
 
-|                      | Foundation Workflow                    | AI Expert Workflow                                            |
-| -------------------- | -------------------------------------- | ------------------------------------------------------------- |
-| **Model**            | Single-agent                           | Multi-agent                                                   |
-| **Orchestrator**     | `workflow-feature`                     | `feature-flow`                                                |
-| **Planning**         | Main agent coordinates the feature     | `feature-spec` produces an implementation-ready specification |
-| **Implementation**   | Main agent implements and verifies     | `feature-implementer` implements the approved specification   |
-| **Validation**       | Verification through Foundation skills | Independent `feature-validator`                               |
-| **Feedback loop**    | Direct agent-led workflow              | Explicit `implement → validate → revise` loop                 |
-| **Project overhead** | Lower                                  | Higher, due to explicit roles and artifacts                   |
-| **Initialization**   | Standard Foundation setup              | `build-brief` → `harness-starter`                             |
+## 🔄 Two Execution Modes (Phase 2)
 
-### Foundation Workflow
+Once the project harness is established via **`@build-brief`** and **`@harness-starter`** (or directly by `@harness-starter` on an existing app), the developer decides how to execute features:
 
-The Foundation Workflow uses a **single agent** to coordinate feature development while relying on the shared Foundation skills for engineering guidance, verification, and governance.
+### Mode A: Standalone Feature Mode (Ad-hoc / On-Demand)
+When working on an ad-hoc requirement, screen, or single feature:
+1. Invoke `@workflow-orchestrator` (or `@workflow-feature`) with your feature request (e.g., *"Implement the User Profile screen"*).
+2. The orchestrator registers or activates the feature in `feature_list.json` and `PROGRESS.md`.
+3. Runs the 4-stage pipeline (`Planner -> Implementer -> Validator -> Documenter`) in isolated `git worktree` directories.
+4. Upon validation acceptance, documentation, and `@git-governance` commit consolidation, execution **stops**.
 
+### Mode B: Backlog Queue Mode (`feature_list.json`)
+When driving a multi-feature milestone, MVP release, or chained set of features:
+1. Ensure the backlog is populated in `feature_list.json` with dependencies (`depends_on`).
+2. Run **`@workflow-orchestrator`** with: *"Process the backlog"* or *"Run next ready features"*.
+3. The orchestrator executes ready features sequentially—or parallelizes independent features whose `depends_on` prerequisites are `accepted` across separate `git worktree` instances.
+4. Continues until the queue is finished or a blocking issue requires developer intervention.
+
+---
+
+## 🏛 Supported Modular Topologies (`module-architecture-governance`)
+
+The Foundation supports two Clean Architecture module topologies depending on app scale:
+
+### 1. Layer-Based Modular Topology (Small to Medium Apps)
+Organizes code strictly by technical Clean Architecture responsibility:
 ```text
-Feature
-  ↓
-workflow-feature
-  ↓
-Plan → Implement → Verify
+:domain      ──> Pure Kotlin business entities, Repository interfaces & DomainError models
+:usecases    ──> Pure Kotlin single-responsibility interactors (e.g. GetUserProfileUseCase)
+:data        ──> Repository implementations, Room DAOs, DataSources, Network DTO mappers
+:app         ──> Jetpack Compose UI, ViewModels, Navigation, and Dependency Injection graph
 ```
 
-### AI Expert Workflow
+### 2. Feature-First Modular Topology (Scalable & Multi-Team Apps)
+Organizes code into independent vertical slices per feature, backed by shared core modules:
+```text
+:<feature>:domain        ──> Feature-scoped models, repository interfaces & use cases
+:<feature>:usecases      ──> Feature-specific interactors
+:<feature>:data          ──> Feature local/remote data sources & repository implementations
+:<feature>:presentation  ──> Feature Jetpack Compose UI screens & ViewModels
+:core:database           ──> Shared Room database schemas & entities
+:core:network            ──> Shared Retrofit / Ktor network clients & interceptors
+:core:designsystem       ──> Shared Material 3 tokens, colors, typography & reusable components
+:core:common             ──> Result wrappers, coroutine dispatchers & shared domain utilities
+:app                     ──> Thin application shell, global NavHost & root DI container
+```
 
-The AI Expert Workflow uses a **multi-agent process** with explicit responsibilities for specification, implementation, and independent validation.
+---
+
+## 📁 Unified Feature Directory Structure (`docs/features/<feature-id>/`)
+
+Every feature in the repository keeps its contract, UI assets, and validation evidence organized in one canonical folder:
 
 ```text
-Feature
-  ↓
-feature-flow
-  ├── feature-spec
-  ├── feature-implementer
-  └── feature-validator
-          ↓
-     Accept / Revise
+docs/features/<feature-id>/
+├── spec.md                         # Unified contract (Given/When/Then + Android layers + Checklist)
+├── ui/
+│   ├── screens/                    # Full-screen reference mockups (PNG/HTML — NEVER converted to drawables)
+│   └── resources/                  # Raw graphic assets (PNG/JPEG -> converted to res/drawable/ic_*.webp)
+└── validator/
+    └── validation-report.md        # Structured 4-level report (Verdict + Findings + Repair Brief)
 ```
 
 ---
 
 ## 🛠 Installation & Setup
 
-The Foundation uses a two-stage setup: **install the Foundation, then select and activate a development workflow**.
-
 ### Step 1: Install the Foundation
 
-Run the following command from your project's root directory:
+Run the following command from your Android project's root directory:
 
 ```bash
 npx skills add albertmartorell1975/android-ai-workflow-foundation
 ```
 
-This installs the shared Foundation skills into:
-
-```text
-.agents/skills/
-```
-
-These skills provide the common engineering capabilities, Android & Kotlin expertise, technical guardrails, verification, and Foundation governance.
+This installs the active Foundation skills into `.agents/skills/`.
 
 ### Step 2: Activate the Initializer
 
-Open **Android Studio**, open the Agent chat, and type:
+Open your AI IDE (**Android Studio / Gemini**, **Antigravity**, **Claude Code**, or **Cursor**) and type:
 
 ```text
 Activate workflow-initializer
@@ -107,195 +138,67 @@ Activate workflow-initializer
 
 The initializer guides the project setup:
 
-1. **Workflow Selection**
-   Choose between the **Foundation Workflow** (single-agent) and the **AI Expert Workflow** (multi-agent).
-
-2. **Workflow Activation**
-   The selected workflow is recorded in:
-
-   ```text
-   .agents/workflow.json
-   ```
-
-   If the AI Expert Workflow is selected, its required workflow skills are installed from the catalog.
-
-3. **Stack Diagnosis & AI Provider**
-   Configure project-specific information such as architecture, persistence, dependency injection, and select your AI assistant / IDE provider (**Gemini**, **Cursor**, or **Claude Code**).
-   
-   During this step, the Foundation automatically materializes:
-   - **Context Exclusion** via `ai-context-exclusion`: (`.aiexclude`, `.cursorignore`, or `.claude/settings.json`) protecting private credentials and build artifacts.
-   - **AI Safety Hooks** via `agent-safety-hooks`: Installs lifecycle hooks that intercept shell execution before it runs (`PreToolUse` / `beforeShellExecution`) to prevent destructive commands such as `rm -rf` from deleting files or project directories:
-     - **Anthropic / Claude Code**: Materializes `.claude/hooks/block-rm-rf.js` and securely merges the `PreToolUse` hook (`Bash(rm *)`) into `.claude/settings.json`.
-     - **Cursor**: Materializes `.cursor/hooks/block-rm-rf.js` and configures `beforeShellExecution` in `.cursor/hooks.json`.
-     - **Gemini / Antigravity**: Materializes `.agents/hooks/block-rm-rf.js` (or `.ps1` on Windows) and configures `PreToolUse` in `.agents/hooks.json`.
-     *(Note: Standard Gemini within Android Studio does not support lifecycle hooks, but agent-level tools such as Antigravity and Claude Code enforce hard-blocks).*
-
-4. **Optional Catalog Skills**
-   Select additional technical or planning skills from `.agents/catalog/` when required.
-
-### Step 3: AI Expert Project Initialization
-
-Only when `ai-expert-workflow` is selected:
-
-```text
-build-brief
-     ↓
-harness-starter
-     ↓
-AI Expert project ready
-```
-
-* `build-brief` performs project and feature discovery.
-* `harness-starter` creates the project harness from the confirmed discovery.
-
-These skills are **not part of the normal feature cycle** and are not required before every feature.
-
-### Result
-
-After initialization, the project contains a customized Foundation environment:
-
-```text
-.agents/
-├── skills/          # Active Foundation + selected workflow/catalog skills
-├── catalog/         # Available optional skills and workflows
-├── AGENTS.md        # Project-specific agent instructions
-├── rules.md         # Project-specific workflow rules
-└── workflow.json    # Selected development workflow
-```
+1. **Stack Diagnosis & AI Provider Selection**:
+   - **Module Topology**: `Layer-Based` (`:domain`, `:usecases`, `:data`, `:app`) or `Feature-First` (`:<feature>:*` + `:core:*`).
+   - **Architecture**: `MVVM` or `MVI`.
+   - **Dependency Injection**: `Hilt` or `Koin`.
+   - **Persistence**: `Room` or `SQLDelight`.
+   - **Active AI Provider**: `Gemini` (Antigravity), `Claude Code`, or `Cursor`.
+2. **Automated Governance & Subagent Materialization**:
+   - **`AGENTS.md` & `.agents/workflow.json`**: Materializes project-specific instructions and sets `"activeWorkflow": "foundation"`.
+   - **Provider-Specific Subagents (`model: inherit` + `isolation: worktree`)**:
+     * **Claude Code**: Materializes `.claude/agents/workflow-implementer.md`, `workflow-validator.md`, and `workflow-documenter.md` with scoped skills, color badges, and worktree isolation.
+     * **Cursor**: Materializes `.cursor/agents/workflow-*.md`.
+     * **Gemini / Antigravity**: Uses native `invoke_subagent` with `Model: "inherit"` and isolated worktrees.
+   - **Subagent Scoped Skills & Conditional Stacks**:
+     * 🟣 **`workflow-orchestrator`**: `workflow-orchestrator`, `git-governance`.
+     * 🔵 **`workflow-feature`**: `workflow-feature`, `module-architecture-governance`, `testing-setup`.
+     * 🟠 **`workflow-implementer`**: Core Architecture, Kotlin, Flow, Compose, Testing, and `@compiler`. Dynamically loads **conditional stack skills** (`hilt`, `room-schema-governance`, `firebase-*`) when installed in `.agents/skills/`.
+     * 🟢/🔴 **`workflow-validator`**: Lightweight read-only verification (`workflow-validator`, `android-intent-security`, `compose-ui-testing-patterns`, conditional `compiler`, and `android-cli`).
+     * 🔷 **`workflow-documenter`**: Documentation-only (`workflow-documenter`, `kotlin-style`).
+   - **Context Exclusion (`ai-context-exclusion`)**: Materializes `.aiexclude`, `.cursorignore`, or `.claude/settings.json`, automatically ignoring `.worktrees/`, `.gradle/`, and build caches.
+   - **🛡 Automated AI Safety Hooks (`agent-safety-hooks`)**:
+     * Installs provider-native lifecycle interception (`PreToolUse` in Claude Code / Antigravity, `beforeShellExecution` in Cursor) via `block-rm-rf.js` / `.ps1`.
+     * **Zero-Accident Guardrail**: Intercepts and blocks destructive terminal commands (such as `rm -rf`, `rmdir /s /q`, `Remove-Item -Recurse -Force`, `git clean -fdx`, and root-level deletions) before execution, ensuring autonomous subagents running in worktrees cannot damage the project.
+3. **Optional Catalog Skills**:
+   Select optional technology plugins from `.agents/catalog/` (such as `hilt`, `room-schema-governance`, `firebase-*`, `camerax`, `wear-compose-m3`, `perfetto-trace-analysis`, `to-plan`, `using-chrisbanes-skills`).
 
 ---
 
-## 🧩 Managing Skills
+## 🧩 Skill Architecture
 
-The Foundation separates skills by **installation status** and **role**.
+### 1. Active Core Workflow Skills (`.agents/skills/`)
+* `workflow-initializer` — Project bootstrapping, safety hooks, context exclusions, and subagent setup.
+* `build-brief` — Guided product and domain discovery before coding.
+* `harness-starter` — Generates `AGENTS.md`, `init.sh`, `PROGRESS.md`, `CONSTRAINTS.md`, and `feature_list.json`.
+* `workflow-orchestrator` (🟣) — Coordinates the feature backlog, `git worktree` lifecycles, subagents, and `@git-governance` commits.
+* `workflow-feature` (🔵) — Feature Planner and Specification Architect (`docs/features/<id>/spec.md`).
+* `workflow-implementer` (🟠) — Worktree Implementer subagent + `@compiler` self-verification.
+* `workflow-validator` (🟢/🔴) — Worktree 4-level Validator subagent (`docs/features/<id>/validator/validation-report.md`).
+* `workflow-documenter` (🔷) — Worktree KDoc and durable documentation subagent.
+* `compiler`, `git-governance`, `foundation-evolve`.
 
-### 1. Shared Foundation Skills
+### 2. Shared Engineering Guardrails (`.agents/skills/`)
+* **`agent-safety-hooks`** — Automated pre-tool execution safety guard installed by default to block catastrophic commands (`rm -rf`, recursive deletion) across Claude Code, Cursor, and Gemini.
+* **`ai-context-exclusion`** — Provider-agnostic AI context governance (`.aiexclude`, `.cursorignore`, `.claude/settings.json`) ensuring the AI never indexes `.worktrees/`, `.gradle/`, and build caches.
+* **Architecture & Governance** — `dependency-manager`, `design-system-governance`, `kotlin-style`, `module-architecture-governance`, `repository-pattern-governance`, `testing-setup`, `viewmodel-architecture-governance`.
+* **Platform, Compose & Concurrency** — `adaptive`, `android-cli`, `android-intent-security`, `compose-modifier-and-layout-style`, `compose-side-effects`, `compose-state-authoring`, `compose-state-hoisting`, `compose-ui-testing-patterns`, `edge-to-edge`, `kotlin-coroutines-structured-concurrency`, `kotlin-flow-state-event-modeling`, `navigation-3`.
 
-Installed automatically under:
-
-```text
-.agents/skills/
-```
-
-These provide capabilities shared by both workflows.
-
-Examples:
-
-* `workflow-initializer`
-* `agent-safety-hooks` (runs **automatically** during project initialization to install the `rm -rf` destructive deletion blocker in the active AI provider)
-* `ai-context-exclusion` (runs **automatically** during project initialization to configure `.aiexclude`, `.cursorignore`, or `.claude/settings.json`)
-* `compiler`
-* `git-governance`
-* `foundation-evolve`
-* `hook-creator` (**on-demand tool** used to design, generate, and configure new custom lifecycle hooks across Claude Code, Gemini, and Cursor at any time)
-* `skill-creator` (tool to author, evaluate, and optimize new skills)
-* `dependency-manager`
-* `testing-setup`
-* `design-system-governance` (includes UI design folder organization and automated graphic asset PNG/JPEG to WebP conversion governance)
-* `kotlin-style`
-* `viewmodel-architecture-governance`
-* Android, Kotlin, Compose, security, and platform expertise
-
-### 2. Workflow Skills
-
-Workflow-specific skills are installed according to the selected methodology.
-
-#### Foundation Workflow
-
-```text
-workflow-feature
-```
-
-Provides the Foundation's native **single-agent feature workflow**.
-
-#### AI Expert Workflow
-
-```text
-build-brief
-harness-starter
-feature-spec
-feature-implementer
-feature-validator
-feature-flow
-```
-
-Provides the **multi-agent AI Expert workflow**.
-
-When the AI Expert Workflow is active, `feature-flow` is the feature orchestration entry point and `workflow-feature` must not be used for feature orchestration.
-
-### 3. Optional Catalog Skills
-
-Additional skills remain available under:
-
-```text
-.agents/catalog/
-```
-
-They can be activated when the project requires specialized capabilities such as Hilt, Room governance, Firebase, CameraX, Perfetto, or other technical expertise.
+### 3. Optional Catalog Plugins (`.agents/catalog/`)
+* Activated on demand for libraries, profiling, and diagnostics (`hilt`, `room-schema-governance`, `firebase-*`, `camerax`, `wear-compose-m3`, `perfetto-trace-analysis`, `r8-analyzer`, `compose-recomposition-performance`, `compose-stability-diagnostics`, `compose-focus-navigation`, `hook-creator`, `skill-creator`, `to-plan`, `using-chrisbanes-skills`).
 
 ---
 
 ## 🔄 Maintaining & Updating
 
-### Syncing Active Skills
-
-To receive the latest improvements for skills already installed in the project:
-
-```bash
-npx skills update
-```
-
-### Activating Catalog Skills
-
-Catalog skills can be activated during `workflow-initializer` setup or later when the project requires them.
-
-When activated, the skill becomes part of the project's active skill set.
-
-The Foundation repository keeps the canonical catalog entry under:
-
-```text
-.agents/catalog/
-```
-
-The consuming project receives the activated skill under:
-
-```text
-.agents/skills/
-```
-
-### Evolving the Foundation
-
-Use the `foundation-evolve` skill to promote useful skills and improvements discovered in working projects back into the Foundation.
+* **Sync Active Skills**: `npx skills update`
+* **Evolve the Foundation**: Use `@foundation-evolve` to synchronize new or improved skills from a working project back to the Foundation repository.
 
 ---
 
 ## 🙏 Acknowledgments & Credits
 
-This Foundation incorporates knowledge and methodologies from multiple sources:
-
-* **Foundation Methodology:** Albert Martorell Garcia.
-* **AI Expert Workflow:** Originally created by Antonio Leiva / Nino Ruano for the AI Expert course and integrated into this Foundation with permission.
-* **External Expert Patterns:** Includes curated skills from experts such as Chris Banes.
-* **Official Documentation:** Integrates knowledge and guidance from Google Android and Firebase documentation.
-
-Included skills retain their original authorship and source metadata. Please respect the corresponding licenses and attribution requirements.
-
----
-
-## 🎯 Core Principle
-
-> **Same Foundation, different development methodology.**
-
-The Foundation provides the shared engineering environment. The selected workflow determines how AI agents collaborate to build the software.
-
-```text
-ANDROID AI FOUNDATION
-        │
-        ├── Foundation Workflow
-        │      └── Single-agent
-        │
-        └── AI Expert Workflow
-               └── Multi-agent
-```
-
-In both approaches, the developer remains the highest-level supervisor, responsible for architecture, technical decisions, review, and final validation.
+* **Foundation Methodology & Clean Architecture Guardrails:** Albert Martorell Garcia.
+* **Harness & Multi-Agent Spec/Validator Methodology:** Originally created by **Antonio Leiva / Nino Ruano** for the AI Expert course and unified into this Foundation with permission.
+* **External Expert Patterns:** Curated Kotlin and Compose skills by **Chris Banes** and others.
+* **Official Documentation:** Google Android and Firebase documentation.

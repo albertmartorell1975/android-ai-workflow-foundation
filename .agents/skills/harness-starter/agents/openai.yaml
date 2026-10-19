@@ -1,0 +1,4 @@
+interface:
+  display_name: "Harness Starter"
+  short_description: "Create minimal repo harness and feature_list.json"
+  default_prompt: "Use $harness-starter to initialize or update AGENTS.md, init.sh, PROGRESS.md, and feature_list.json."

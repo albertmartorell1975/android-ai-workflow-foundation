@@ -319,7 +319,7 @@ RowSibling(
 )
 ```
 
-Use a composition-time fallback (fixed height) only while `anchorHeightPx` is `0`. See [`compose-state-deferred-reads`](../compose-state-deferred-reads/SKILL.md) for the full cross-row pattern.
+Use a composition-time fallback (fixed height) only while `anchorHeightPx` is `0`. See [`compose-state-deferred-reads`](../../catalog/compose-state-deferred-reads/SKILL.md) for the full cross-row pattern.
 
 ## Quick reference
 
@@ -371,5 +371,5 @@ The declaration-side rules (§1–§3) should not be skipped merely because "thi
 
 ## Related
 
-- [`compose-slot-api-pattern`](../compose-slot-api-pattern/SKILL.md) — the other half of declaring a reusable composable's public API: take `@Composable () -> Unit` slots for variable content. A reusable component takes both a `modifier` parameter *and* slots — caller owns placement *and* what to place.
-- [`compose-state-deferred-reads`](../compose-state-deferred-reads/SKILL.md) — back-writing across phases and deferred measurement reads.
+- [`compose-slot-api-pattern`](../../catalog/compose-slot-api-pattern/SKILL.md) — the other half of declaring a reusable composable's public API: take `@Composable () -> Unit` slots for variable content. A reusable component takes both a `modifier` parameter *and* slots — caller owns placement *and* what to place.
+- [`compose-state-deferred-reads`](../../catalog/compose-state-deferred-reads/SKILL.md) — back-writing across phases and deferred measurement reads.

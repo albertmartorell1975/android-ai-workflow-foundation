@@ -1,112 +1,158 @@
-# Workflow Patterns & Template
+# Workflow Phases & Unified Spec Template
 
 ## ROLE AND GOAL
-Act as an expert Software Engineering Workflow Generator and Prompt Engineer. Your primary goal is to refine initial feature ideas into highly structured, actionable, and technically precise development workflows using modern prompt engineering best practices.
+Act as an expert Android Software Engineering Planner and Specification Architect (🔵 `[PLANNER · workflow-feature]`). Your primary goal is to transform a feature entry from `feature_list.json` or a standalone user feature request into an implementation-ready contract at **`docs/features/<feature-id>/spec.md`**.
 
-The output must be consistent with the current repository structure, `.agents/AGENTS.md`, established architectural patterns, project naming conventions, pragmatic testing strategy, and the active Foundation workflow configuration.
-
----
-
-## PHASE 1: MANDATORY PRE-DIAGNOSIS
-Before generating the final workflow, the agent MUST verify that:
-1. The workflow configuration has already been validated and `activeWorkflow` is `foundation`.
-2. The **Necessary Questions** have been answered or assumptions have been explicitly accepted.
-3. This skill acts as the implementation executor of the **Optimized Prompt** generated in the previous step.
-
-The agent MUST NOT skip the pre-diagnosis phase merely because the requested feature appears technically simple.
+The output must be consistent with the current repository structure, `AGENTS.md`, `CONSTRAINTS.md`, Clean Architecture boundaries, project naming conventions, and pragmatic testing strategy.
 
 ---
 
-## PHASE 2: WORKFLOW GENERATION
+## PHASE 1: MANDATORY PRE-DIAGNOSIS & SIZING
+Before generating the final specification, the agent MUST verify that:
+1. The feature has a clear `kebab-case` `<feature-id>` and is registered in `feature_list.json` (if running in Standalone Mode, add the entry to `feature_list.json` and `PROGRESS.md`).
+2. All `depends_on` prerequisites in `feature_list.json` have status `accepted`.
+3. The feature is session-sized (typically 100–250 lines of spec). If it combines multiple unrelated screens or domains, recommend splitting it in `feature_list.json`.
+4. Any blocking **Necessary Questions** have been answered by the user or assumptions have been explicitly stated.
 
-Once context is sufficient, construct a comprehensive technical workflow covering all required architectural layers.
+---
 
-### 2.1 UI/UX Layer
+## PHASE 2: ARCHITECTURAL & SCENARIO DESIGN
+
+Once context is sufficient, construct the unified specification covering behavior contracts and Android architectural layers:
+
+### 2.1 Goal, Non-Goals & Acceptance Scenarios (`Given / When / Then`)
+* Define the clear objective and explicit **Non-Goals** to prevent scope creep.
+* Write concrete **Acceptance Scenarios** (`Given <state> / When <action> / Then <observable outcome>`) covering the happy path and relevant edge/error states.
+
+### 2.2 Repository Research & Expected File Changes
+* Inspect the existing repository and list the exact files inspected, existing patterns to follow, current gaps, and the concrete files to create or modify.
+
+### 2.3 UI/UX Layer & Visual Assets (`docs/features/<feature-id>/ui/`)
 Identify whether UI changes are needed. When applicable, describe:
-* UI/UX requirements.
-* Dedicated feature design folders under `docs/ui/<feature-id>/screens/` and `docs/ui/<feature-id>/resources/` (ensure these folders exist; if they already exist, do NOT recreate or overwrite existing files).
-* Graphic asset conversion: raw PNG/JPEG graphic assets located in `docs/ui/<feature-id>/resources/` MUST be converted into optimized `.webp` format in `app/src/main/res/drawable/ic_<name>.webp`.
-* Exclusion rule: full-screen mockups (`docs/ui/<feature-id>/screens/<screen>/screen.png`) serve as visual reference layout guides ONLY and MUST NOT be converted into drawable resources.
-* Loading, error, empty, and success states, navigation implications, accessibility considerations, design-system requirements, mockup or screenshot needs.
+* UI/UX requirements and alignment with `DESIGN.md` (when present).
+* Dedicated feature folders under:
+  - `docs/features/<feature-id>/ui/screens/` (full-screen mockups/reference guides ONLY — **MUST NOT** be converted into Android drawables).
+  - `docs/features/<feature-id>/ui/resources/` (raw PNG/JPEG graphic assets — **MUST** be converted into optimized `.webp` format in the target UI module: `app/src/main/res/drawable/ic_<name>.webp` for Layer-Based projects, or `<feature>/presentation/src/main/res/drawable/ic_<name>.webp` / `core/designsystem/src/main/res/drawable/` for Feature-First projects).
+* Loading, error, empty, and success states, navigation implications (`navigation-3`), accessibility, and adaptive layout considerations (`adaptive`, `edge-to-edge`).
 
-Do not invent UI requirements that are not supported by the feature request or repository context.
+### 2.4 API Layer
+When an API is involved, define: HTTP methods, routes, request parameters, DTOs/JSON schemas, authentication requirements, and error mapping contracts. If not involved, explicitly state `"No API changes required"`.
 
-### 2.2 API Layer
-When an API is involved, define: HTTP methods, routes, request parameters, JSON schemas, authentication requirements, and error contracts. If the feature does not involve an API, explicitly state that no API changes are required.
+### 2.5 Persistence Layer
+When persistence is involved, detail: storage requirements (Room, DataStore), database schema changes, entities, DAO/repository changes, and migrations. If not involved, explicitly state `"No persistence changes required"`.
 
-### 2.3 Persistence Layer
-When persistence is involved, detail: storage requirements, database schema changes, entities, DAO/repository changes, migrations, and persistence validation. If persistence is not involved, explicitly state that no persistence changes are required.
+### 2.6 Durable Documentation Impact (For `workflow-documenter`)
+Explicitly specify which durable documents **`workflow-documenter`** will need to update after validation passes:
+* **Public KDoc**: Which new/modified Domain models, UseCases, Repositories, or ViewModels require English KDoc.
+* **`ARCHITECTURE.md`**: `create` / `update` / `not needed` — reason.
+* **`CONSTRAINTS.md`**: `create` / `update` / `not needed` — reason.
+* **`README.md` / `.agents/skills/README.md`**: `update` / `not needed` — reason.
 
-### 2.4 Implementation Description
-Write a concise technical overview of the feature architecture explaining: affected modules, relevant layers, primary data flow, important interfaces, integration points, dependency direction, and architectural constraints. Use existing repository patterns whenever possible.
-
-### 2.5 Granular Actionable Checklist
-Create a step-by-step implementation checklist organized logically according to the project's architecture. Typical ordering may include:
-`Schema / Models → Domain → Data → UseCase → UI → Integration → Testing → Validation`
-Split work into small, independently understandable steps.
-
-#### Governance Requirements
-Every generated workflow phase MUST include at its beginning:
-`- [ ] **MANDATORY**: Consult \`AGENTS.md\` for role-specific constraints`
-Every generated workflow phase MUST include at its end:
-`- [ ] **MANDATORY**: Execute \`compiler\` skill verification suite.`
-`- [ ] **MANDATORY**: Request Commit & Push (Manual or via \`git-governance\` skill) before advancing.`
-
-#### Testing Tasks
-Include specific unit-testing tasks only when testing analysis identifies a meaningful unit-test requirement. Identify the target component, behavior being tested, test boundary, and any conventions. Do not create unnecessary tests solely to satisfy a template.
+### 2.7 Granular Actionable Clean Architecture Checklist (For `workflow-implementer`)
+Create an ordered step-by-step checklist following the project's Clean Architecture layers (adapting module names to either `Layer-Based` or `Feature-First` topology per `module-architecture-governance`):
+`Database / Models → Domain (:domain or :<feature>:domain) → Data (:data or :<feature>:data) → UseCase (:usecases or :<feature>:usecases) → UI / Presentation (:app or :<feature>:presentation + :app wiring) → UI Design Assets → Testing & Integration → Compiler Self-Verification`
 
 ---
 
-## PHASE 3: OUTPUT FORMAT & STRUCTURE (The Template)
+## PHASE 3: OUTPUT FORMAT & STRUCTURE (`docs/features/<feature-id>/spec.md`)
 
-The final workflow MUST be saved as a new file at the project root named:
-`WORKFLOW_[FEATURE_NAME_IN_UPPER_SNAKE_CASE].md`
+1. Ensure the feature folder structure exists:
+   - `docs/features/<feature-id>/ui/screens/`
+   - `docs/features/<feature-id>/ui/resources/`
+   - `docs/features/<feature-id>/validator/`
+2. Save the specification at:
+   **`docs/features/<feature-id>/spec.md`**
 
-The output must exactly follow this Markdown structure:
+The file MUST follow this unified Markdown structure:
 
 ```markdown
-### 1. Idea Diagnosis & Assumptions
+# Feature Specification: [Feature Title]
+
+> 🔵 **Generated by**: `[PLANNER · workflow-feature]`
+
+## 1. Source Feature & Idea Diagnosis
+* **`id`:** `<feature-id>`
+* **`area`:** `<area>`
+* **`depends_on`:** `[...]`
+* **`status`:** `not_started`
+* **`module_topology`:** `Layer-Based (:domain, :usecases, :data, :app)` | `Feature-First (:<feature>:domain, :<feature>:usecases, :<feature>:data, :<feature>:presentation + :core:* + :app)`
 * **Objective:** Brief analysis of what is being built.
 * **Identified Ambiguities / Assumptions:** Key technical decisions that were clarified or explicitly accepted.
-* **Testing Requirement:** Identify which components require unit tests and why.
+* **Necessary Questions:** [Up to 3 targeted questions if unresolved, or "None — all requirements clarified."]
 
-### 2. Necessary Questions
-[If critical information is missing, up to three targeted technical questions. Otherwise, state no additional questions remain.]
+## 2. Goal, Non-Goals & Acceptance Scenarios
 
-### 3. Optimized Technical Workflow
+### Goal
+[1-2 paragraphs describing the user/system outcome this feature enables.]
 
-# Feature: [Feature Name]
+### Non-Goals
+* [Behavior or adjacent feature explicitly outside this slice.]
 
-## Technical Overview
-[Concise technical description]
+### Job Story
+When [situation/context],
+I want to [motivation/action],
+so I can [expected outcome].
 
-## Layer Breakdown
+### Acceptance Scenarios
 
-### UI/UX
-[Requirements and UI specifications]
+#### Scenario 1: [Happy Path Name]
+* **Given** [initial state]
+* **When** [user/system action]
+* **Then** [observable result]
+
+#### Scenario 2: [Error / Edge Case Name]
+* **Given** [initial state]
+* **When** [user/system action]
+* **Then** [observable result]
+
+## 3. Repository Research & Expected File Changes
+
+### Files Inspected
+* `<path>` — [why it matters]
+
+### Existing Patterns To Follow
+* [Established module topology (`Layer-Based` or `Feature-First`), DI, StateFlow/ViewModel, or Repository conventions]
+
+### Expected File Changes
+* `<path>` — create/modify; [reason]
+
+## 4. Android Layer Breakdown
+
+### UI/UX & Visual Assets
+* **UI Involved:** yes/no
+* **Design Source:** `DESIGN.md` / `docs/features/<feature-id>/ui/screens/` / N/A
+* **States & Navigation:** [Loading, Error, Empty, Success states, Navigation 3 routes, A11y, Adaptive]
+* **Graphic Assets Conversion:** [List PNG/JPEG files in `docs/features/<feature-id>/ui/resources/` to convert to `.webp` in the target UI module (`app/src/main/res/drawable/ic_<name>.webp` in Layer-Based, or `<feature>/presentation/src/main/res/drawable/ic_<name>.webp` / `core/designsystem/src/main/res/drawable/` in Feature-First), or N/A. Screen mockups in `ui/screens/` are excluded.]
 
 ### API Design
-[Describe API endpoints, methods, and schemas. If not, state "No API changes required".]
+[Describe API endpoints, methods, DTOs, and error contracts, or state "No API changes required".]
 
 ### Persistence
-[Database, model, or storage updates. If not, state "No persistence changes required".]
+[Describe Room/DataStore entities, DAOs, and migrations, or state "No persistence changes required".]
 
-## Actionable Implementation Checklist
+## 5. Durable Documentation Impact (For `workflow-documenter`)
+* **KDoc Targets:** [List new public classes/interfaces in Domain, Data, UseCase, UI/Presentation requiring English KDoc]
+* **`ARCHITECTURE.md`:** create / update / not needed — [reason]
+* **`CONSTRAINTS.md`:** create / update / not needed — [reason]
+* **`README.md` / `.agents/skills/README.md`:** update / not needed — [reason]
 
-- [ ] **Database / Models:** ...
-- [ ] **Domain:** ...
-- [ ] **Data:** ...
-- [ ] **UseCase:** ...
-- [ ] **UI:** ...
-- [ ] **UI Design Assets & Folders:** Ensure `docs/ui/<feature-id>/screens/` and `docs/ui/<feature-id>/resources/` exist (do NOT recreate if existing). Convert raw graphic assets in `docs/ui/<feature-id>/resources/` (PNG/JPEG) to `app/src/main/res/drawable/ic_<name>.webp` (screen mockups in `screens/` excluded).
-- [ ] **Testing & Integration:** ...
-- [ ] **Documentation Sync (MANDATORY):** Run `git status .agents/skills/` and update `.agents/skills/README.md` if there are any changes in the expert skills directory.
-- [ ] **Compiler Verification (MANDATORY):** Execute the `compiler` skill verification suite.
-- [ ] **Commit & Push (MANDATORY):** Request Commit & Push manually or via `git-governance` before advancing.
+## 6. Actionable Implementation Checklist (For `workflow-implementer`)
 
-## Documentation & References
-For more details on how to interact with the system or define journeys, refer to:
-- [Interacting with the Workflow](.agents/skills/workflow-feature/references/interact.md)
-- [Defining Feature Journeys](.agents/skills/workflow-feature/references/journeys.md)
-- [Pragmatic Testing Strategy](.agents/skills/workflow-feature/references/testing.md)
+- [ ] **MANDATORY Pre-Check:** Consult `AGENTS.md`, `CONSTRAINTS.md`, and `module-architecture-governance` for topology-specific constraints (`Layer-Based` vs `Feature-First`).
+- [ ] **Database / Models (`:core:database` / `:data` / `:<feature>:data`):** ...
+- [ ] **Domain (`:domain` or `:<feature>:domain`):** ...
+- [ ] **Data (`:data` or `:<feature>:data`):** ...
+- [ ] **UseCase (`:usecases` or `:<feature>:usecases`):** ...
+- [ ] **UI / Presentation (`:app` or `:<feature>:presentation` + `:app` NavHost/DI wiring):** ...
+- [ ] **UI Design Assets & Folders:** Convert raw graphic assets in `docs/features/<feature-id>/ui/resources/` (PNG/JPEG) to `.webp` in the target UI module (`app/src/main/res/drawable/ic_<name>.webp` or `<feature>/presentation/src/main/res/drawable/ic_<name>.webp`; mockups in `ui/screens/` excluded).
+- [ ] **Testing & Integration:** [Unit tests for Domain/Data/UseCase/ViewModel + Compose UI tests where applicable]
+- [ ] **Compiler Self-Verification (MANDATORY):** Execute the `compiler` skill verification suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`) and record evidence in `PROGRESS.md` and `feature_list.json` (`status: "passing"`).
+
+## 7. Validator Checklist (For `workflow-validator`)
+
+- [ ] Implementation stays strictly within `<feature-id>` scope (`WIP=1`) and `CONSTRAINTS.md`.
+- [ ] All Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior (no fake/hardcoded stubs).
+- [ ] Security rules (`android-intent-security`) are respected across `AndroidManifest.xml`, deep links, and incoming Intents.
+- [ ] `@compiler` verification evidence is present and valid; unit and Compose UI tests (`compose-ui-testing-patterns`) verify real behavior.
+- [ ] Structured validation report written to `docs/features/<feature-id>/validator/validation-report.md`.
 ```

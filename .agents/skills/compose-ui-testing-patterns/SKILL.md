@@ -118,7 +118,7 @@ Key points:
 
 For keyboard, TV, and desktop UI, drive navigation with the same input model users use (keys/D-pad), not clicks alone. Assert focused semantics, not colors or scale; reserve screenshots for visual focus treatment.
 
-Details—focus graph, `FocusRequester`, restoration, key handlers, and test patterns: [`compose-focus-navigation`](../compose-focus-navigation/SKILL.md).
+Details—focus graph, `FocusRequester`, restoration, key handlers, and test patterns: [`compose-focus-navigation`](../../catalog/compose-focus-navigation/SKILL.md).
 
 ## Screenshot tests
 
@@ -165,7 +165,7 @@ When image appearance matters, provide a deterministic local painter/bitmap inst
 | UI test depends on real image loading/network/time | Fake or freeze the source |
 | Simulating hover/press/focus with mouse or touch events | Inject `MutableInteractionSource` and emit the interaction |
 | Relying on the default `InteractionSource` in tests | Pass `MutableInteractionSource` so you can control state |
-| TV/keyboard UI tested with `performClick` only | Use key input and focus assertions; see [compose-focus-navigation](../compose-focus-navigation/SKILL.md) |
+| TV/keyboard UI tested with `performClick` only | Use key input and focus assertions; see [compose-focus-navigation](../../catalog/compose-focus-navigation/SKILL.md) |
 
 ## Red flags during review
 

@@ -173,7 +173,7 @@ Pass the smallest useful UI contract:
 - Prefer explicit event callbacks over passing the whole state holder through the tree.
 - Keep navigation as callbacks that describe user intent.
 - Map domain models to UI models when direct use would pull business rules into rendering.
-- Pass provider lambdas for frame-rate values that should be read in layout or draw, per [`compose-state-deferred-reads`](../compose-state-deferred-reads/SKILL.md).
+- Pass provider lambdas for frame-rate values that should be read in layout or draw, per [`compose-state-deferred-reads`](../../catalog/compose-state-deferred-reads/SKILL.md).
 
 Handle navigation, snackbar, analytics, or event collection near the state holder, where the source and imperative target are available. If effect handling grows, extract a small sibling effect handler rather than passing the state holder into the UI composable. Use [`compose-side-effects`](../compose-side-effects/SKILL.md) for effect APIs, keys, cleanup, and stale captures.
 
@@ -209,6 +209,6 @@ For each scenario, establish RED by omitting or reverting the relevant rule, the
 
 - [`compose-state-authoring`](../compose-state-authoring/SKILL.md) — correct local `remember` and mutable state authoring.
 - [`compose-side-effects`](../compose-side-effects/SKILL.md) — choose effect APIs and composition-scoped coroutine boundaries.
-- [`compose-focus-navigation`](../compose-focus-navigation/SKILL.md) — focus state, requesters, and keyboard/D-pad behavior.
+- [`compose-focus-navigation`](../../catalog/compose-focus-navigation/SKILL.md) — focus state, requesters, and keyboard/D-pad behavior.
 - [`compose-ui-testing-patterns`](../compose-ui-testing-patterns/SKILL.md) — test plain state-driven UI without constructing the full app graph.
-- [`kotlin-multiplatform-expect-actual`](../kotlin-multiplatform-expect-actual/SKILL.md) — keep shared UI plain while platform services stay behind semantic boundaries.
+- [`kotlin-multiplatform-expect-actual`](../../catalog/kotlin-multiplatform-expect-actual/SKILL.md) — keep shared UI plain while platform services stay behind semantic boundaries.

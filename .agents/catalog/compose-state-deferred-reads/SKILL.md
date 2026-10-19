@@ -78,7 +78,7 @@ RowB(
 )
 ```
 
-`decorateMeasureConstraints` is a small layout helper (see [`compose-modifier-and-layout-style`](../compose-modifier-and-layout-style/SKILL.md)). While height is unknown, siblings use a fixed fallback in composition; once known, only layout invalidates — not an extra composition cascade.
+`decorateMeasureConstraints` is a small layout helper (see [`compose-modifier-and-layout-style`](../../skills/compose-modifier-and-layout-style/SKILL.md)). While height is unknown, siblings use a fixed fallback in composition; once known, only layout invalidates — not an extra composition cascade.
 
 ## 1. Prefer block-form modifiers
 
@@ -201,7 +201,7 @@ Use these when the state changes where something is placed or painted. If the st
 
 ## Related
 
-- [`compose-state-authoring`](../compose-state-authoring/SKILL.md) — when `mutableState*` belongs in composition vs callbacks.
-- [`compose-state-hoisting`](../compose-state-hoisting/SKILL.md) — where state-holder vs plain UI split applies when passing providers/lambdas across boundaries.
+- [`compose-state-authoring`](../../skills/compose-state-authoring/SKILL.md) — when `mutableState*` belongs in composition vs callbacks.
+- [`compose-state-hoisting`](../../skills/compose-state-hoisting/SKILL.md) — where state-holder vs plain UI split applies when passing providers/lambdas across boundaries.
 - [`compose-stability-diagnostics`](../compose-stability-diagnostics/SKILL.md) — parameter stability and compiler reports.
-- [`compose-modifier-and-layout-style`](../compose-modifier-and-layout-style/SKILL.md) — measure-phase constraint decoration helper.
+- [`compose-modifier-and-layout-style`](../../skills/compose-modifier-and-layout-style/SKILL.md) — measure-phase constraint decoration helper.

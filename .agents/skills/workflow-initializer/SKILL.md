@@ -1,90 +1,83 @@
 ---
 name: workflow-initializer
-description: Initializes a new Android project with the AI-assisted development workflow seed. It sets up the governance files and guides the initial customization of agents and skills.
+description: Initializes a new or existing Android project with the unified Android AI Workflow Foundation multi-agent setup. Configures AGENTS.md, workflow.json, AI context exclusions, safety hooks, and provider-specific subagent definitions (implementer, validator, documenter) with git worktree isolation.
 metadata:
   author: Albert Martorell Garcia
-  version: 1.1.0
+  version: 2.0.0
   keywords:
-  - setup
-  - initialization
-  - workflow-seed
-  - project-kickoff
+    - setup
+    - initialization
+    - multi-agent
+    - git-worktree
+    - project-kickoff
 ---
-# Workflow Initializer Specialist
 
-This skill provides a structured process for setting up the AI-assisted workflow in a new Android project. It ensures that the project starts with a solid architectural foundation and a clear collaboration protocol between humans and agents.
+# Workflow Initializer Specialist (`workflow-initializer`)
+
+This skill provides a structured process for setting up the **Unified Android AI Workflow Foundation** in a new or existing Android project. It configures the core workflow engine, technical guardrails, safety hooks, and multi-agent worktree definitions.
 
 ## Proactive Behavior
-If you are loaded in a project where `AGENTS.md` is missing, you MUST immediately notify the user and offer to perform the **PHASE 1: Mandatory Foundation Deployment**.
+If you are loaded in a project where `AGENTS.md` is missing, you MUST immediately notify the user and offer to perform **PHASE 1: Mandatory Foundation Deployment**.
 
 ## Initialization Process
 
 ### PHASE 1: Mandatory Foundation Deployment
-When this skill is activated, the agent MUST first acknowledge the core foundation already installed via `npx skills`. 
+When this skill is activated, acknowledge the core foundation installed under `.agents/skills/`:
 
-1. **List Mandatory Skills**: The agent MUST display the list of core skills and shared guardrails that are now active in the project. Read `.agents/skills/README.md` to present a high-level summary of these installed skills. If the file is missing, fetch it first from `https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/develop/.agents/skills/README.md`.
+1. **List Active Core Skills**: Read `.agents/skills/README.md` to present a summary of the active Core Workflow Engine (`workflow-initializer`, `build-brief`, `harness-starter`, `workflow-orchestrator`, `workflow-feature`, `workflow-implementer`, `workflow-validator`, `workflow-documenter`, `compiler`, `git-governance`, `foundation-evolve`, `hook-creator`, `skill-creator`) and Shared Engineering Guardrails. If `.agents/skills/README.md` is missing, fetch it from `https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/develop/.agents/skills/README.md`.
+2. **Persist Workflow Configuration**: Write `.agents/workflow.json` with:
+   ```json
+   {
+     "activeWorkflow": "foundation"
+   }
+   ```
 
-### PHASE 2: Development Workflow Selection
-After foundation deployment and before Stack Diagnosis, the agent MUST determine the active development workflow.
-
-1. **Workflow Comparison**: Present a clear comparison between available workflows:
-   - **Foundation Workflow (`foundation`)**:
-     - *Best for*: Lean projects and standard feature development.
-     - *Orchestrator*: `workflow-feature`.
-     - *Methodology*: Direct implementation through Domain -> Data -> UseCase -> UI layers.
-   - **AI Expert Workflow (`ai-expert-workflow`)**:
-     - *Best for*: Highly structured agentic development and complex project discovery.
-     - *Orchestrator*: `feature-flow`.
-     - *Methodology*: Formalized lifecycle (Build Brief -> Harness Starter -> Feature Spec -> Implementation -> Validator).
-
-2. **Persistence**: The selected workflow MUST be persisted in `.agents/workflow.json`.
-   - If the file exists, ask the user if they wish to switch.
-   - If a non-foundation workflow is selected, trigger the **Workflow Plugin Installation** logic.
-
-### PHASE 3: Stack Discovery & Optional Plugins
-After determining the workflow, the agent MUST ask the user about specific technical choices and offer optional plugins from the catalog.
+### PHASE 2: Stack Discovery & Optional Plugins
+Ask the user about their technical stack and offer optional catalog plugins:
 
 1. **Stack Diagnosis**:
    - **Project Name**: What is the name of this project?
-   - **AI Provider**: Which AI assistant / IDE provider do you use? (Gemini [Default] / Cursor / Claude Code)
-   - **Architecture**: MVI, MVVM, or other?
-   - **Dependency Injection**: Hilt (Recommended), Koin, or none?
-   - **Persistence**: Room (Recommended), SQLDelight, or none?
+   - **AI Provider**: Which AI assistant / IDE provider do you use? (`Gemini` [Default] / `Cursor` / `Claude Code`)
+   - **UI Architecture**: `MVI`, `MVVM` (Recommended), or other?
+   - **Module Topology**: `Layer-Based` (`:domain`, `:usecases`, `:data`, `:app` — Default for PoCs/lean apps) or `Feature-First` (`:<feature>:domain`, `:<feature>:usecases`, `:<feature>:data`, `:<feature>:presentation` + `:core:*` + `:app` — Recommended for scalable multi-feature apps)?
+   - **Dependency Injection**: `Hilt` (Recommended), `Koin`, or none?
+   - **Persistence**: `Room` (Recommended), `SQLDelight`, or none?
 
-2. **Optional Plugins Selection**: 
-   Read the **Optional Catalog Skills & Workflows** section from `.agents/skills/README.md`. Present these categorized optional plugins to the user and ask which ones they wish to install.
+2. **Optional Catalog Plugins Selection**:
+   Read the **Optional Catalog Skills** section from `.agents/skills/README.md`. Present these categorized optional plugins (e.g., `hilt`, `room-schema-governance`, `firebase-*`, `camerax`, `wear-compose-m3`, `perfetto-trace-analysis`, `to-plan`, `using-chrisbanes-skills`) and ask which ones the user wishes to install.
 
-3. **General Plugin Installation**: For each selected standalone plugin, fetch its `SKILL.md` from GitHub (`https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/develop/.agents/catalog/[plugin-name]/SKILL.md`) and write it to `.agents/skills/[plugin-name]/SKILL.md`.
+3. **Optional Plugin Installation**: For each selected plugin, copy or fetch its `SKILL.md` from `.agents/catalog/[plugin-name]/SKILL.md` (`https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/develop/.agents/catalog/[plugin-name]/SKILL.md`) and write it to `.agents/skills/[plugin-name]/SKILL.md`.
 
-### Workflow Plugin Installation
-When a complex workflow plugin is selected:
-1. **Fetch Manifest**: Fetch the JSON manifest from GitHub (`https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/develop/.agents/catalog/workflows/[identifier].json`) using `read_url`.
-2. **Resolve Dependencies**: Identify the `skills` list and `excludes` list from the manifest.
-3. **Install Requirements**: For each skill in the `skills` list, fetch its `SKILL.md` from `.agents/catalog/` in the GitHub repo and write it locally to `.agents/skills/[skill-name]/SKILL.md`.
-4. **Enforce Exclusions**: If the manifest contains an `excludes` list (e.g., `workflow-feature`), the agent MUST ensure those skills are NOT active or are explicitly disabled for feature orchestration.
-5. **Active Workflow Setup**: Write the selected identifier to `.agents/workflow.json`.
-
-### PHASE 4: Project Customization
-1. **Materialize Governance Templates**: Create `AGENTS.md` in the project root directory by reading `.agents/skills/workflow-initializer/references/AGENTS_TEMPLATE.md`. Ensure `.agents/skills/README.md` is present and up to date by downloading it from the GitHub repository URL if necessary.
-2. **AI Context Exclusion & Safety Hooks Setup**:
-   - Delegate context exclusion creation directly to the `ai-context-exclusion` skill, passing the selected AI Provider (or defaulting to `Gemini` if omitted or unrecognized) to materialize the required file (`.aiexclude`, `.cursorignore`, or `.claude/settings.json`).
-   - Delegate safety hooks setup to the `agent-safety-hooks` skill, passing the selected AI Provider to materialize both the hook configuration and script into the provider's official hook locations (`.claude/settings.json` + `.claude/hooks/block-rm-rf.js`, `.agents/hooks.json` + `.agents/hooks/block-rm-rf.js`, or `.cursor/hooks.json` + `.cursor/hooks/block-rm-rf.js`).
-3. **Replacement**: During materialization of `AGENTS.md`, replace the following placeholders with values from the Stack Diagnosis:
+### PHASE 3: Project Customization & Subagent Setup
+1. **Materialize `AGENTS.md`**: Create `AGENTS.md` in the project root by reading `.agents/skills/workflow-initializer/references/AGENTS_TEMPLATE.md` and replacing:
    - `[PROJECT_NAME]` -> User's Project Name.
+   - `[AI_PROVIDER]` -> Gemini, Cursor, or Claude Code.
    - `[ARCHITECTURE]` -> MVVM or MVI.
-   - `[DI_TOOL]` -> Hilt or Koin.
-   - `[PERSISTENCE]` -> Room or SQLDelight.
-4. **Git Baseline**: If not already initialized, perform `git init` and set up the `develop` and `main` branches according to `git-governance`.
+   - `[MODULE_TOPOLOGY]` -> `Layer-Based (:domain, :usecases, :data, :app)` or `Feature-First (:<feature>:domain, :<feature>:usecases, :<feature>:data, :<feature>:presentation + :core:* + :app)`.
+   - `[DI_TOOL]` -> Hilt, Koin, or None.
+   - `[PERSISTENCE]` -> Room, SQLDelight, or None.
+2. **Materialize Subagents & `.worktrees/` Ignore Rule**:
+   - Read `.agents/skills/workflow-initializer/references/SUBAGENTS_TEMPLATE.md`.
+   - Ensure `.worktrees/` is added to the project's `.gitignore`.
+   - When materializing `workflow-implementer` (for **Claude Code** in `.claude/agents/workflow-implementer.md` or **Cursor** in `.cursor/agents/workflow-implementer.md`), check if `hilt`, `room-schema-governance`, or any `firebase-*` skills (`firebase-local-env-setup`, `firebase-auth-basics`, `firebase-remote-config`, `firebase-ai-logic`) are installed in `.agents/skills/` and uncomment/append them to the `skills:` list.
+   - Materialize `workflow-validator` (with its lightweight audit skill set) and `workflow-documenter` (`model: inherit`, `isolation: worktree`).
+   - If the selected AI Provider is **Gemini / Antigravity**, confirm that subagents are natively invoked via `invoke_subagent` (`Model: "inherit"`) using `.agents/skills/workflow-*/SKILL.md`.
+3. **AI Context Exclusion & Safety Hooks Setup**:
+   - Delegate context exclusion creation to the `ai-context-exclusion` skill, passing the selected AI Provider (defaulting to `Gemini` if omitted) to materialize `.aiexclude`, `.cursorignore`, or `.claude/settings.json`.
+   - Delegate safety hooks setup to the `agent-safety-hooks` skill, passing the selected AI Provider to materialize the hook configuration and script into the provider's official location (`.claude/settings.json` + `.claude/hooks/block-rm-rf.js`, `.agents/hooks.json` + `.agents/hooks/block-rm-rf.js`, or `.cursor/hooks.json` + `.cursor/hooks/block-rm-rf.js`).
+4. **Git Baseline & Next Step Guidance**:
+   - If not already initialized, run `git init` and establish the `main` and `develop` branches according to `git-governance`.
+   - Guide the user on the two entry modes available next:
+     * **New Product / Full Backlog Mode**: Run `@build-brief` -> `@harness-starter` -> `@workflow-orchestrator`.
+     * **Existing Project / Standalone Feature Mode**: Run `@harness-starter` (for an initial backlog) or invoke `@workflow-orchestrator` directly with a feature request.
 
-## Actionable Checklist for New Projects
-- [ ] Acknowledge mandatory foundation deployment.
-- [ ] List all mandatory skills by parsing `.agents/skills/README.md`.
-- [ ] Perform **Workflow Comparison** and Selection.
-- [ ] Persist selection in `workflow.json`.
-- [ ] Install **Workflow Plugins** and resolve `skills/excludes` dependencies.
+## Actionable Checklist for Project Setup
+- [ ] Acknowledge mandatory foundation deployment and list active skills from `.agents/skills/README.md`.
+- [ ] Write `.agents/workflow.json` (`"activeWorkflow": "foundation"`).
 - [ ] Perform **Stack Diagnosis** with the user (Name, AI Provider, Arch, DI, DB).
-- [ ] Present and install standalone **Optional Plugins** from the catalog (using `.agents/skills/README.md`).
-- [ ] Materialize `AGENTS.md` (in project root) from `references/AGENTS_TEMPLATE.md` with dynamic replacements.
-- [ ] Delegate AI context exclusion creation (`.aiexclude`, `.cursorignore`, or `.claude/settings.json`) to `ai-context-exclusion` skill (using `Gemini` as fallback if empty/unrecognized).
-- [ ] Delegate safety hooks creation (`.claude/settings.json` + `.claude/hooks/`, `.agents/hooks.json` + `.agents/hooks/`, or `.cursor/hooks.json` + `.cursor/hooks/`) to `agent-safety-hooks` skill.
-- [ ] Run `git init` and establish the `git-governance` baseline.
+- [ ] Present and install selected **Optional Catalog Plugins**.
+- [ ] Materialize `AGENTS.md` from `references/AGENTS_TEMPLATE.md` with dynamic replacements.
+- [ ] Add `.worktrees/` to `.gitignore` and materialize provider-specific subagents from `references/SUBAGENTS_TEMPLATE.md`.
+- [ ] Delegate AI context exclusion creation to `ai-context-exclusion`.
+- [ ] Delegate safety hooks creation to `agent-safety-hooks`.
+- [ ] Verify Git baseline (`main` / `develop`) per `git-governance`.

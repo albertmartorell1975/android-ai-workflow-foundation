@@ -108,7 +108,7 @@ The same trap applies anywhere a `rememberUpdatedState` delegate is **read eager
 
 When the captured value should trigger recreation of the remembered object, make it a `remember` key and skip `rememberUpdatedState` entirely. Reserve `rememberUpdatedState` for values that must stay fresh inside a long-lived scope (effect coroutine, event callback) **without** restarting that scope.
 
-`rememberUpdatedState` also does not make render state "non-recomposing." If the UI needs to display a changing value, read normal `State` in composition or use the deferred-read patterns in [`compose-state-deferred-reads`](../compose-state-deferred-reads/SKILL.md) for frame-rate values.
+`rememberUpdatedState` also does not make render state "non-recomposing." If the UI needs to display a changing value, read normal `State` in composition or use the deferred-read patterns in [`compose-state-deferred-reads`](../../catalog/compose-state-deferred-reads/SKILL.md) for frame-rate values.
 
 ## Collecting Flow
 
@@ -222,9 +222,9 @@ fun Preloader(interactionSource: MutableInteractionSource) {
 }
 ```
 
-Use `snapshotFlow { … }` inside `LaunchedEffect` when you need to sample multiple snapshot reads or debounce rapid changes without keying the effect on every derived value. For TV/D-pad focus navigation semantics, see [`compose-focus-navigation`](../compose-focus-navigation/SKILL.md).
+Use `snapshotFlow { … }` inside `LaunchedEffect` when you need to sample multiple snapshot reads or debounce rapid changes without keying the effect on every derived value. For TV/D-pad focus navigation semantics, see [`compose-focus-navigation`](../../catalog/compose-focus-navigation/SKILL.md).
 
-**Measurement:** `onSizeChanged` / `onGloballyPositioned` are valid **callbacks**, but they fire during the layout phase. Writing snapshot state there is only safe if no earlier phase reads it. If a sibling reads that state in composition, layout is back-writing into composition and the sibling will recompose every measure pass. Apply captured dimensions in `Modifier.layout` (see [`compose-modifier-and-layout-style`](../compose-modifier-and-layout-style/SKILL.md) §7 and [`compose-state-deferred-reads`](../compose-state-deferred-reads/SKILL.md)).
+**Measurement:** `onSizeChanged` / `onGloballyPositioned` are valid **callbacks**, but they fire during the layout phase. Writing snapshot state there is only safe if no earlier phase reads it. If a sibling reads that state in composition, layout is back-writing into composition and the sibling will recompose every measure pass. Apply captured dimensions in `Modifier.layout` (see [`compose-modifier-and-layout-style`](../compose-modifier-and-layout-style/SKILL.md) §7 and [`compose-state-deferred-reads`](../../catalog/compose-state-deferred-reads/SKILL.md)).
 
 ## Red flags during review
 

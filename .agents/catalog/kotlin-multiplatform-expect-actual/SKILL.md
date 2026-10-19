@@ -121,6 +121,6 @@ When shared UI reaches a platform leaf:
 Stay focused on platform boundaries in this skill; wire shared UI like any other Compose target:
 
 - [`kotlin-control-flow`](../kotlin-control-flow/SKILL.md) — keeping common-code business branching explicit with `when`, guard conditions, exhaustiveness, and smart casts.
-- [`compose-state-hoisting`](../compose-state-hoisting/SKILL.md) — shared plain UI composables vs state-holder wiring.
-- [`compose-side-effects`](../compose-side-effects/SKILL.md) — effect keys and cleanup in actual composables (`LaunchedEffect`, `DisposableEffect`, etc.).
-- [`compose-modifier-and-layout-style`](../compose-modifier-and-layout-style/SKILL.md) and [`compose-slot-api-pattern`](../compose-slot-api-pattern/SKILL.md) — reusable shared Compose APIs (modifiers, slots).
+- [`compose-state-hoisting`](../../skills/compose-state-hoisting/SKILL.md) — shared plain UI composables vs state-holder wiring.
+- [`compose-side-effects`](../../skills/compose-side-effects/SKILL.md) — effect keys and cleanup in actual composables (`LaunchedEffect`, `DisposableEffect`, etc.).
+- [`compose-modifier-and-layout-style`](../../skills/compose-modifier-and-layout-style/SKILL.md) and [`compose-slot-api-pattern`](../compose-slot-api-pattern/SKILL.md) — reusable shared Compose APIs (modifiers, slots).

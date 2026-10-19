@@ -18,16 +18,16 @@ Instead of organizing the project by layers at the root, you organize it by **Fe
 There are two ways to structure a feature, and it is crucial to understand the difference:
 
 * **Option A: 4 Independent Gradle Sub-Modules (OUR MANDATORY STRATEGY)**
-  Dins de la carpeta física `/characters/`, existeixen 4 fitxers `build.gradle.kts` independents:
+  Inside the physical `/characters/` directory, create 4 independent `build.gradle.kts` sub-modules:
   - `:characters:domain` (Pure Kotlin)
   - `:characters:usecases` (Pure Kotlin)
   - `:characters:data` (Android Library)
   - `:characters:presentation` (Android Library)
-  > **Per què l'Opcio A?**: Perquè Gradle tracta cada capa com un projecte aïllat. Si edites el disseny d'un botó a `:characters:presentation`, Gradle **no torna a compilar ni domain ni data**.
+  > **Why Option A?**: Because Gradle treats each layer as an isolated project. If you edit a button style in `:characters:presentation`, Gradle **does not recompile `domain`, `usecases`, or `data`**.
 
 * **Option B: 1 Single Gradle Module with Internal Packages (Antipattern for large apps)**
-  Una sola carpeta `/feature-characters` amb 1 sol `build.gradle.kts` i 4 paquets de Kotlin interns (`domain/`, `usecases/`, `data/`, `presentation/`).
-  > **Per què NO l'Opció B?**: Perquè qualsevol canvi a la UI o a dades obliga a Gradle a re-compilar el mòdul sencer, perdent el superpoder de l'evitació de compilació (*Compilation Avoidance*).
+  A single `/feature-characters` folder with only 1 `build.gradle.kts` and 4 internal Kotlin packages (`domain/`, `usecases/`, `data/`, `presentation/`).
+  > **Why NOT Option B?**: Because any change to UI or data forces Gradle to recompile the entire feature module, losing the superpower of *Compilation Avoidance*.
 
 ### Build-Time Superpower (Compilation Avoidance)
 Because of how Gradle dependency graphs work, this structure optimizes build times drastically. 
