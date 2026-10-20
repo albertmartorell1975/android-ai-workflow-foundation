@@ -1,4 +1,7 @@
 {
+  "workflow-planner": [
+    "workflow-planner"
+  ],
   "workflow-implementer": [
     "workflow-implementer",
     "compiler",

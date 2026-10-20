@@ -1,4 +1,4 @@
-# Architectural & Scope Discipline (`workflow-feature`)
+# Architectural & Scope Discipline (`workflow-planner`)
 
 ## 1. Repository and Architectural Discipline
 

@@ -1,6 +1,6 @@
 ---
 name: workflow-orchestrator
-description: Master multi-agent orchestrator for the Android AI Workflow Foundation. Coordinates feature development in both Standalone Feature Mode and Backlog Queue Mode (feature_list.json), managing git worktrees and delegating sequentially to workflow-feature (Planner), workflow-implementer, workflow-validator, and workflow-documenter.
+description: Master multi-agent orchestrator for the Android AI Workflow Foundation. Coordinates feature development in both Standalone Feature Mode and Backlog Queue Mode (feature_list.json), managing git worktrees and delegating sequentially to workflow-planner (Planner), workflow-implementer, workflow-validator, and workflow-documenter.
 metadata:
   author: Albert Martorell Garcia / Antonio Leiva / Nino Ruano
   version: 2.0.0
@@ -23,7 +23,7 @@ Combines the Foundation Workflow architecture by Albert Martorell Garcia with th
 To make agent activity immediately recognizable in the chat and logs, every agent in the pipeline MUST prefix its responses, status updates, and `PROGRESS.md` entries with its assigned color badge:
 
 * 🟣 **`[ORCHESTRATOR · workflow-orchestrator]`** — Pipeline coordination, `feature_list.json`, `git worktree` management, and final `@git-governance` commits.
-* 🔵 **`[PLANNER · workflow-feature]`** — Technical diagnosis and specification at `docs/features/<feature-id>/spec.md`.
+* 🔵 **`[PLANNER · workflow-planner]`** — Technical diagnosis and specification at `docs/features/<feature-id>/spec.md`.
 * 🟡 **`[IMPLEMENTER · workflow-implementer]`** — Clean Architecture code, unit/UI tests, and `@compiler` verification in an isolated worktree.
 * 🟢 **`[VALIDATOR · workflow-validator]`** *(or 🔴 on `REVISE` / `BLOCK`)* — Strictly read-only 4-level independent audit (Spec Contract, Clean Architecture & Security, Test/Compiler Evidence, Runtime) returning an `accept` / `revise` / `block` verdict with an `Implementation Repair Brief` in its response.
 * 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc, durable documentation sync, and checklist completion in an isolated worktree.
@@ -85,7 +85,7 @@ Triggered when the user asks to continue the project backlog, run the next avail
     * Prompt the human developer with the unresolved findings and 4 clear action pathways:
       1. **Manual Override (`accept`)**: Developer verifies findings as non-critical/false positive -> proceeds directly to Stage 4 (`workflow-documenter`).
       2. **Human Guidance Brief (`hint`)**: Developer supplies corrective instructions or code fixes -> launches 1 extra targeted repair pass with `workflow-implementer` followed by `workflow-validator`.
-      3. **Re-plan Specification (`replan`)**: Contradictory or ambiguous requirement -> re-invokes `workflow-feature` (Stage 1), resets `repair_attempts = 0`, and re-plans `spec.md`.
+      3. **Re-plan Specification (`replan`)**: Contradictory or ambiguous requirement -> re-invokes `workflow-planner` (Stage 1), resets `repair_attempts = 0`, and re-plans `spec.md`.
       4. **Cancel or Defer (`cancel`)**: Developer suspends the feature -> cleans up temporary worktrees and branches, leaving `develop` untouched, and sets status to `blocked` or `deferred`.
   - **Post-Intervention Pipeline Continuity**: Once resolved by the human (via Manual Override or successful Human Hint validation), the workflow resumes its standard lifecycle completely: `workflow-documenter` executes (Stage 4), followed by worktree consolidation, cleanup, and atomic layer-by-layer Conventional Commits via `@git-governance` (Stage 5).
 - **Never Push Without Authorization**: Do not run `git push` or merge into `develop`/`main` unless the user explicitly asks.
@@ -97,7 +97,7 @@ Triggered when the user asks to continue the project backlog, run the next avail
 For a selected `<feature-id>`, execute the roles sequentially until `accepted` or `blocked`:
 
 ```text
-[1. Planner: workflow-feature] ◄────────────────────────────────┐
+[1. Planner: workflow-planner] ◄────────────────────────────────┐
        │  (creates docs/features/<feature-id>/spec.md)          │
        ▼                                                        │ (3. Re-plan)
 [2. Implementer: workflow-implementer]  ◄─────────────┐         │
@@ -127,12 +127,13 @@ For a selected `<feature-id>`, execute the roles sequentially until `accepted` o
 [5. Orchestrator Consolidation & @git-governance Commits]
 ```
 
-### Stage 1: Planning (`workflow-feature`)
+### Stage 1: Planning (`workflow-planner` Subagent)
 - Check if `docs/features/<feature-id>/spec.md` exists and is current.
-- If missing or incomplete, execute (or delegate to) **`workflow-feature`** to perform the technical pre-diagnosis, clarify any blocking questions with the user, and generate `docs/features/<feature-id>/spec.md`.
-- If `workflow-feature` identifies Necessary Questions for the user, pause and get user confirmation before launching the Implementer.
+- If missing or incomplete, spawn the **`workflow-planner`** subagent (🔵 `[PLANNER · workflow-planner]`) with a clean context. It reads repository architecture, formulates up to 3 Necessary Questions if blocking requirements are ambiguous, and generates the unified specification at `docs/features/<feature-id>/spec.md` without modifying executable code.
+- If `workflow-planner` identifies Necessary Questions for the user, pause and get user confirmation before launching the Implementer.
 
-### Stage 2: Implementation (`workflow-implementer` in Worktree)
+### Stage 2: Implementation (`workflow-implementer` in Hydrated Worktree)
+- Create the isolated worktree `.worktrees/impl-<feature-id>` from `feature/<feature-id>` and **hydrate local Android environment files** (`local.properties`, `.env`, `keystore.properties`, `app/google-services.json` if uncommitted per [subagent-providers.md](references/subagent-providers.md)).
 - Spawn the **`workflow-implementer`** subagent. Instruct it to execute inside its isolated worktree and pass the handoff context:
   - `feature_id`: `<feature-id>`
   - `spec_path`: `docs/features/<feature-id>/spec.md`

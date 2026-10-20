@@ -35,7 +35,7 @@ This project uses the **Android AI Workflow Foundation Unified Multi-Agent Pipel
 ### Visual Identity Badges (Mandatory)
 Every agent and subagent MUST prefix its responses and `PROGRESS.md` entries with its assigned color badge:
 * 🟣 **`[ORCHESTRATOR · workflow-orchestrator]`** — Pipeline coordination, `feature_list.json`, `git worktree` management, and final `@git-governance` commits.
-* 🔵 **`[PLANNER · workflow-feature]`** — Feature diagnosis and unified specification (`docs/features/<feature-id>/spec.md`).
+* 🔵 **`[PLANNER · workflow-planner]`** — Feature diagnosis and unified specification (`docs/features/<feature-id>/spec.md`).
 * 🟡 **`[IMPLEMENTER · workflow-implementer]`** — Clean Architecture code, tests, and `@compiler` verification in an isolated `git worktree`.
 * 🟢 **`[VALIDATOR · workflow-validator]`** *(or 🔴 on `revise` / `block`)* — Independent 4-level validation and `docs/features/<feature-id>/validator/validation-report.md` in an isolated `git worktree`. Bounded to `MAX_REPAIR_ATTEMPTS = 2` before triggering the Human Decision Gate (`needs_human_review`).
 * 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc and durable Markdown documentation in an isolated `git worktree`. Runs upon validator acceptance or human override.
@@ -45,5 +45,5 @@ Every agent and subagent MUST prefix its responses and `PROGRESS.md` entries wit
    - Use `@build-brief` (for product discovery) and `@harness-starter` (to derive `feature_list.json`, `PROGRESS.md`, and `init.sh`).
    - Run `@workflow-orchestrator` to execute the next ready feature (or parallelize independent ready features) from `feature_list.json`.
 2. **Standalone Feature Mode (Ad-hoc)**:
-   - Request a feature directly via `@workflow-orchestrator` (or `@workflow-feature`).
+   - Request a feature directly via `@workflow-orchestrator` (or `@workflow-planner`).
    - The orchestrator automatically registers the feature in `feature_list.json` and `PROGRESS.md`, generates `docs/features/<feature-id>/spec.md`, and launches the subagents (`implementer` -> `validator` -> `documenter`) in isolated `git worktree` instances with `model: inherit`.

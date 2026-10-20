@@ -24,7 +24,7 @@ If you are loaded in a project where `AGENTS.md` is missing, you MUST immediatel
 ### PHASE 1: Mandatory Foundation Deployment
 When this skill is activated, acknowledge the core foundation installed under `.agents/skills/`:
 
-1. **List Active Core Skills**: Read `.agents/skills/README.md` to present a summary of the active Core Workflow Engine (`workflow-initializer`, `build-brief`, `harness-starter`, `workflow-orchestrator`, `workflow-feature`, `workflow-implementer`, `workflow-validator`, `workflow-documenter`, `compiler`, `git-governance`, `foundation-evolve`, `hook-creator`, `skill-creator`) and Shared Engineering Guardrails (Architecture, Compose, Kotlin, Testing, Hilt, Room, Firebase). If `.agents/skills/README.md` is missing, fetch it from `https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/develop/.agents/skills/README.md`.
+1. **List Active Core Skills**: Read `.agents/skills/README.md` to present a summary of the active Core Workflow Engine (`workflow-initializer`, `build-brief`, `harness-starter`, `workflow-orchestrator`, `workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter`, `compiler`, `git-governance`, `foundation-evolve`, `hook-creator`, `skill-creator`) and Shared Engineering Guardrails (Architecture, Compose, Kotlin, Testing, Hilt, Room, Firebase). If `.agents/skills/README.md` is missing, fetch it from `https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/develop/.agents/skills/README.md`.
 
 ### PHASE 2: Stack Auto-Detection & Optional Plugins
 The Foundation uses opinionated, industry-standard engineering defaults (**MVVM with Hybrid UI State**, **Hilt** for DI, **Room** for local database, and **Firebase** suite). Avoid interrogating the user with unnecessary questionnaires.
@@ -54,11 +54,11 @@ The Foundation uses opinionated, industry-standard engineering defaults (**MVVM 
    - Determine the active skills for `workflow-implementer`:
      * Start with the base list from `SUBAGENT_SKILLS.json` for `workflow-implementer`.
      * If any optional catalog plugins were installed into `.agents/skills/` during Phase 2, append their names to the implementer skills list.
-   - Substitute the placeholders (`[INJECT_IMPLEMENTER_SKILLS]`, `[INJECT_VALIDATOR_SKILLS]`, `[INJECT_DOCUMENTER_SKILLS]`) in the template with the lists, formatted correctly for the chosen provider:
+   - Substitute the placeholders (`[INJECT_PLANNER_SKILLS]`, `[INJECT_IMPLEMENTER_SKILLS]`, `[INJECT_VALIDATOR_SKILLS]`, `[INJECT_DOCUMENTER_SKILLS]`) in the template with the lists, formatted correctly for the chosen provider:
      * For **Antigravity**, format as: `  - skills/<skill-name>`
      * For **Claude Code**, format as: `  - <skill-name>`
      * For **Cursor**, format as: `- <skill-name>`
-   - Materialize the three subagent files (`workflow-implementer`, `workflow-validator`, `workflow-documenter`) into the correct provider directory (`.agents/agents/`, `.claude/agents/`, or `.cursor/agents/`).
+   - Materialize the four subagent files (`workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter`) into the correct provider directory (`.agents/agents/`, `.claude/agents/`, or `.cursor/agents/`).
 3. **AI Context Exclusion & Safety Hooks Setup**:
    - Delegate context exclusion creation to the `ai-context-exclusion` skill, passing the selected AI Provider (defaulting to `Gemini` if omitted) to materialize `.aiexclude`, `.cursorignore`, or `.claude/settings.json`.
    - Delegate safety hooks setup to the `agent-safety-hooks` skill, passing the selected AI Provider to materialize the hook configuration and script into the provider's official location (`.claude/settings.json` + `.claude/hooks/block-rm-rf.js`, `.agents/hooks.json` + `.agents/hooks/block-rm-rf.js`, or `.cursor/hooks.json` + `.cursor/hooks/block-rm-rf.js`).

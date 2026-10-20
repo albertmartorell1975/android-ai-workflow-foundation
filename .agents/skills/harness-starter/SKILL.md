@@ -77,7 +77,7 @@ For EVERY feature derived in `feature_list.json`, ensure its dedicated unified f
 
 ### 3. Keep Scope Tight (Feature Slicing)
 
-The feature list should contain session-sized feature slices, not epics and not low-level chores. Each feature must represent user-visible or system-verifiable behavior that is plausibly completable and verifiable in one focused pipeline run (`workflow-feature` -> `workflow-implementer` -> `workflow-validator` -> `workflow-documenter`).
+The feature list should contain session-sized feature slices, not epics and not low-level chores. Each feature must represent user-visible or system-verifiable behavior that is plausibly completable and verifiable in one focused pipeline run (`workflow-planner` -> `workflow-implementer` -> `workflow-validator` -> `workflow-documenter`).
 
 Use this operational slicing test before writing `feature_list.json`:
 

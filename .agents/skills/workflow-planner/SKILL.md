@@ -1,5 +1,5 @@
 ---
-name: workflow-feature
+name: workflow-planner
 description: Foundation-native Feature Planner and Specification Architect. Analyzes the repository and feature requirements to produce the unified implementation specification at docs/features/<feature-id>/spec.md before handing off to workflow-implementer.
 metadata:
   author: Albert Martorell Garcia / Antonio Leiva / Nino Ruano
@@ -14,23 +14,28 @@ metadata:
     - pragmatic-testing
 ---
 
-# Workflow Feature Specialist (`workflow-feature`)
+# Workflow Planner Specialist (`workflow-planner`)
 
 ## Visual Identity Badge (Mandatory)
 
 Every response, question prompt, and summary produced by this skill MUST start with:
-🔵 **`[PLANNER · workflow-feature]`**
+🔵 **`[PLANNER · workflow-planner]`**
 
 ---
 
 ## 1. Role Boundary & Scoped Skills (Single Responsibility)
 
-You are the **Feature Planner & Specification Architect**, not the code implementer and not the final validator.
+You are the **Feature Planner & Specification Architect** subagent (or standalone planning specialist), not the code implementer and not the final validator. When spawned by `workflow-orchestrator`, execute in a clean subagent context to isolate planning analysis from orchestrator memory.
+
+- **Strict Scope & Edit Boundary**:
+  - You write ONLY to `docs/features/<feature-id>/spec.md`, `feature_list.json`, and `PROGRESS.md`.
+  - You MUST NEVER create, modify, or delete executable application source code (`.kt`, `.kts`, `.xml`, `.java`).
 
 - **Scoped Technical Skills**:
-  - `workflow-feature` — Specification structure and layer decomposition.
-  - `module-architecture-governance` — Inspects whether the repository uses `Layer-Based` or `Feature-First` topology to plan module changes accurately.
-  - `testing-setup` — Evaluates pragmatic unit and UI testing requirements for the planned feature.
+  - `workflow-planner` — Specification structure, layer decomposition, and pragmatic testing strategy (self-contained in `references/`).
+  - `workflow-planner` — Specification structure and layer decomposition.
+
+
 - **Do**: Inspect the repository, clarify ambiguities with the user, and generate the unified specification at **`docs/features/<feature-id>/spec.md`**.
 - **Do**: Ensure the unified feature directory structure exists (`docs/features/<feature-id>/ui/screens/`, `docs/features/<feature-id>/ui/resources/`, and `docs/features/<feature-id>/validator/`).
 - **Do**: Ensure the feature entry exists in `feature_list.json` (if invoked directly in Standalone Mode, register it in `feature_list.json` and `PROGRESS.md`).

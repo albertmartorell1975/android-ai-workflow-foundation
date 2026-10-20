@@ -8,7 +8,7 @@ This reference defines how `workflow-orchestrator` spawns isolated subagents (`w
 
 Every agent in the pipeline identifies itself with its canonical color badge (see Visual Identity Protocol in `workflow-orchestrator/SKILL.md`):
 * 🟣 **`[ORCHESTRATOR · workflow-orchestrator]`**
-* 🔵 **`[PLANNER · workflow-feature]`**
+* 🔵 **`[PLANNER · workflow-planner]`**
 * 🟡 **`[IMPLEMENTER · workflow-implementer]`**
 * 🟢/🔴 **`[VALIDATOR · workflow-validator]`**
 * 🔷 **`[DOCUMENTER · workflow-documenter]`**
@@ -29,10 +29,32 @@ git add docs/features/<feature-id>/ feature_list.json PROGRESS.md
 git commit -m "docs(spec): [<feature-id>] add unified feature specification"
 ```
 
-### Step B: Implementer Worktree (`workflow-implementer`)
+### Step B: Implementer Worktree (`workflow-implementer`) & Android Environment Hydration
 Create an isolated worktree on temporary branch `wt/impl-<feature-id>` branched from `feature/<feature-id>`:
 ```bash
 git worktree add -B wt/impl-<feature-id> .worktrees/impl-<feature-id> feature/<feature-id>
+```
+
+#### 🛡 Android Environment Hydration (Crucial)
+Git worktrees only check out tracked files. Git-ignored files containing local SDK paths, build environment properties, or local credentials do not travel with the worktree. Immediately after creating any worktree, hydrate it from the repository root:
+```bash
+# Bash / macOS / Linux
+cp -n local.properties .worktrees/impl-<feature-id>/ 2>/dev/null || true
+cp -n .env .worktrees/impl-<feature-id>/ 2>/dev/null || true
+cp -n keystore.properties .worktrees/impl-<feature-id>/ 2>/dev/null || true
+if [ -f app/google-services.json ]; then
+  mkdir -p .worktrees/impl-<feature-id>/app
+  cp -n app/google-services.json .worktrees/impl-<feature-id>/app/ 2>/dev/null || true
+fi
+
+# PowerShell / Windows
+if (Test-Path "local.properties") { Copy-Item "local.properties" ".worktrees/impl-<feature-id>/" -Force }
+if (Test-Path ".env") { Copy-Item ".env" ".worktrees/impl-<feature-id>/" -Force }
+if (Test-Path "keystore.properties") { Copy-Item "keystore.properties" ".worktrees/impl-<feature-id>/" -Force }
+if (Test-Path "app/google-services.json") {
+  New-Item -ItemType Directory -Path ".worktrees/impl-<feature-id>/app" -Force | Out-Null
+  Copy-Item "app/google-services.json" ".worktrees/impl-<feature-id>/app/" -Force
+}
 ```
 * Inside `.worktrees/impl-<feature-id>`, the Implementer writes code, runs `@compiler`, updates `feature_list.json` (`passing`) and `PROGRESS.md`, and stages + commits its work to `wt/impl-<feature-id>` (as a temporary worktree checkpoint).
 
@@ -92,23 +114,27 @@ In Antigravity, subagents are defined under `.agents/agents/` and invoked using 
 * **`TypeName`**: `"self"` (or custom subagent defined via `define_subagent`)
 * **`Model`**: `"inherit"` (Default — ensures compatibility with the active Gemini model tier without quota or tier errors)
 * **`Role`**:
+  - `"🔵 Planner (workflow-planner)"`
   - `"🟡 Implementer (workflow-implementer)"`
   - `"🟢 Validator (workflow-validator)"` (set `EnableWriteTools: false` if defined via `define_subagent`)
   - `"🔷 Documenter (workflow-documenter)"`
-* **`Workspace`**: `"inherit"` when executing inside `.worktrees/<role>-<feature-id>`
-* **`Prompt`**: Instruct the subagent to read its corresponding `.agents/agents/workflow-<role>.md` file (materialized by `workflow-initializer`) to acquire its skills and base instructions. Pass dynamic handoff payload (feature ID, worktree path, spec path, and repair brief on revise).
+* **`Workspace`**: `"inherit"`
+* **`Prompt`**: Instruct the subagent to read its corresponding `.agents/agents/workflow-<role>.md` file (materialized by `workflow-initializer`) to acquire its skills and base instructions. Pass dynamic handoff payload (feature ID, spec path, repair brief on revise, or target questions).
 
 ### B. Cursor (`.cursor/agents/`)
 Cursor loads subagent definitions from `.cursor/agents/<name>.md` (materialized by `workflow-initializer`):
 * `model: inherit`
+* Roles: `workflow-planner.md`, `workflow-implementer.md`, `workflow-validator.md`, `workflow-documenter.md`.
 * For `workflow-validator.md`: `readonly: true` ensures the evaluator cannot modify any files on disk.
-* Executes inside the isolated `.worktrees/<role>-<feature-id>` worktree.
+* For `workflow-planner.md`: writes strictly to `docs/features/<feature-id>/spec.md`, `feature_list.json`, and `PROGRESS.md`.
+* Executes inside the workspace or isolated `.worktrees/<role>-<feature-id>` worktree.
 
 ### C. Claude Code (`.claude/agents/`)
 Claude Code natively loads subagents from `.claude/agents/<name>.md` (materialized by `workflow-initializer`):
-* `name`: `workflow-implementer` | `workflow-validator` | `workflow-documenter`
+* `name`: `workflow-planner` | `workflow-implementer` | `workflow-validator` | `workflow-documenter`
 * `model`: `inherit`
-* `isolation`: `worktree`
-* `color`: `yellow` | `green` | `cyan`
+* `isolation`: `worktree` (for implementer, validator, documenter)
+* `color`: `blue` | `yellow` | `green` | `cyan`
 * `skills`: The explicit scoped list of Foundation skills for that specific role.
+* For `workflow-planner.md`: restricted to planning and specification authoring without modifying executable code.
 * For `workflow-validator.md`: `disallowedTools: [Write, Edit]` guarantees strict read-only operation.

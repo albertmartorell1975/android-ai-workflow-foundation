@@ -26,7 +26,7 @@ This repository contains [one-sentence project summary].
 Feature development is coordinated by **`workflow-orchestrator`** using isolated **`git worktree`** environments and `model: inherit` by default:
 
 1. 🟣 **Orchestrator (`workflow-orchestrator`)**: Selects a feature (either ad-hoc from the user or the next ready feature from `feature_list.json`), manages `git worktree` lifecycles, coordinates subagents, and performs final layer-specific Conventional Commits via `git-governance`.
-2. 🔵 **Planner (`workflow-feature`)**: Analyzes the feature and generates the unified contract at `docs/features/<feature-id>/spec.md`.
+2. 🔵 **Planner (`workflow-planner`)**: Analyzes the feature and generates the unified contract at `docs/features/<feature-id>/spec.md`.
 3. 🟡 **Implementer (`workflow-implementer`)**: Runs in an isolated worktree, implements Clean Architecture layers + tests, executes the `compiler` verification suite, and marks the feature `passing`.
 4. 🟢 **Validator (`workflow-validator`)**: Runs in an isolated worktree, audits the implementation across 4 validation levels, and writes `docs/features/<feature-id>/validator/validation-report.md` (`accept`, `revise`, or `block`).
 5. 🔷 **Documenter (`workflow-documenter`)**: Runs in an isolated worktree after `accept`, updates KDoc and durable docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`, `spec.md`), and updates `PROGRESS.md`.

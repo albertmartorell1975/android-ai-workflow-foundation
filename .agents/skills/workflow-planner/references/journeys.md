@@ -1,6 +1,6 @@
 # Defining Feature Journeys
 
-Journeys in the `workflow-feature` skill represent the user path through the new feature. Defining these early helps ensure the UI and API designs cover all necessary states.
+Journeys in the `workflow-planner` skill represent the user path through the new feature. Defining these early helps ensure the UI and API designs cover all necessary states.
 
 ## Standard Journey Steps
 When defining a journey for a feature, consider:

@@ -1,6 +1,6 @@
 # Interacting with the Workflow Skill
 
-This document describes how to effectively interact with the `workflow-feature` skill to ensure the best results during the feature planning phase.
+This document describes how to effectively interact with the `workflow-planner` skill to ensure the best results during the feature planning phase.
 
 ## Triggering the Skill
 To start a new feature workflow, provide a clear description of the feature to the AI. Example:

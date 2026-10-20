@@ -40,7 +40,7 @@
       "testing-setup": ".agents/skills/testing-setup/SKILL.md",
       "viewmodel-architecture-governance": ".agents/skills/viewmodel-architecture-governance/SKILL.md",
       "workflow-documenter": ".agents/skills/workflow-documenter/SKILL.md",
-      "workflow-feature": ".agents/skills/workflow-feature/SKILL.md",
+      "workflow-planner": ".agents/skills/workflow-planner/SKILL.md",
       "workflow-implementer": ".agents/skills/workflow-implementer/SKILL.md",
       "workflow-initializer": ".agents/skills/workflow-initializer/SKILL.md",
       "workflow-orchestrator": ".agents/skills/workflow-orchestrator/SKILL.md",
