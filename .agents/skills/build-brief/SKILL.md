@@ -204,7 +204,7 @@ Stop discovery when there is enough information to answer:
 - What is explicitly out of scope?
 - What remains unknown?
 
-Then ask the user whether to proceed to the next phase (`@harness-starter` to derive `AGENTS.md`, `feature_list.json`, `PROGRESS.md`, and `init.sh`). Do not proceed automatically.
+Then ask the user whether to proceed to the next phase (`@harness-starter` to derive `AGENTS.md`, `feature_list.json`, `PROGRESS.md`, and `.github/workflows/gate.yml`). Do not proceed automatically.
 
 ## Teaching Mode
 

@@ -17,7 +17,7 @@ ANDROID AI WORKFLOW FOUNDATION (v2.0.0)
         │
         ├── Phase 1: Project Discovery & Harness Setup
         │     ├── New Product / MVP / Epic : build-brief (discovery) → harness-starter
-        │     └── Existing Codebase       : harness-starter (derives AGENTS.md, init.sh, PROGRESS.md, feature_list.json)
+        │     └── Existing Codebase       : harness-starter (derives AGENTS.md, PROGRESS.md, CONSTRAINTS.md, feature_list.json, gate.yml)
         │
         ├── Phase 2: Feature Execution Modes
         │     ├── Mode A: Standalone Feature Mode (Ad-hoc / on-demand single feature run)
@@ -169,8 +169,8 @@ The initializer guides the project setup:
 ### 1. Active Core Workflow Skills (`.agents/skills/`)
 * `workflow-initializer` — Project bootstrapping, safety hooks, context exclusions, and subagent setup.
 * `build-brief` — Guided product and domain discovery before coding.
-* `harness-starter` — Generates `AGENTS.md`, `init.sh`, `PROGRESS.md`, `CONSTRAINTS.md`, and `feature_list.json`.
-* `workflow-orchestrator` (🟣) — Coordinates the feature backlog, `git worktree` lifecycles, subagents, and `@git-governance` commits.
+* `harness-starter` — Generates `AGENTS.md`, `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json`, and `.github/workflows/gate.yml`.
+* `workflow-orchestrator` (🟣) — Coordinates feature backlog, git worktrees, subagents, `@git-governance` commits, and GitHub PR delivery across 3 modes (`plan`, `execute`, `publish`).
 * `workflow-planner` (🔵) — Feature Planner and Specification Architect (`docs/features/<id>/spec.md`).
 * `workflow-implementer` (🟡) — Worktree Implementer subagent + `@compiler` self-verification.
 * `workflow-validator` (🟢/🔴) — Read-only Worktree 4-level Validator subagent.

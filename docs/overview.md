@@ -27,7 +27,7 @@ The Foundation structures development across three modular layers:
                    │                                       │
                    ▼                                       │
              [@harness-starter] ◄──────────────────────────┘
-             (Creates AGENTS.md, init.sh, PROGRESS.md, CONSTRAINTS.md, feature_list.json)
+             (Creates AGENTS.md, PROGRESS.md, CONSTRAINTS.md, feature_list.json)
                                        │
                                        ▼
                          PHASE 2: FEATURE EXECUTION MODES
@@ -73,6 +73,9 @@ The Foundation structures development across three modular layers:
                                         │
                                         ▼
                        [@git-governance] (Atomic Layer Commits)
+                                         │
+                                         ▼
+                       [GitHub Delivery: publish] (Stage 6: PR + CI Gate)
 ```
 
 ---
@@ -97,7 +100,7 @@ During project initialization, the Foundation automatically installs lifecycle s
 
 ### 2. `build-brief` & `harness-starter`
 * **`build-brief`**: Conducts a structured one-question-at-a-time discovery interview for new products or major modules, producing `CONTEXT.md`, `docs/build-brief.md`, `docs/domain-model.md`, and `DESIGN.md`.
-* **`harness-starter`**: Derives `AGENTS.md`, `init.sh`, `PROGRESS.md`, `CONSTRAINTS.md`, and `feature_list.json` (plus `docs/features/<feature-id>/` directories), either from `build-brief` discovery docs or directly from an existing Android codebase.
+* **`harness-starter`**: Derives `AGENTS.md`, `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json`, and `.github/workflows/gate.yml` (plus `docs/features/<feature-id>/` directories), either from `build-brief` discovery docs or directly from an existing Android codebase.
 
 ---
 

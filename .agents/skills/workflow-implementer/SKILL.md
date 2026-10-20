@@ -82,9 +82,9 @@ Follow the ordered checklist in `docs/features/<feature-id>/spec.md` and respect
 7. **Unit & Compose UI Tests**:
    - Add or update unit tests for Domain, Data, UseCases, and ViewModels.
    - Add or update Compose UI tests (`compose-ui-testing-patterns`) covering key UI states (`Loading`, `Error`, `Empty`, `Success`) and user interactions.
-   - If the feature creates or updates `init.sh`, ensure it is an executable non-blocking gate (e.g., `./gradlew testDebugUnitTest lintDebug --quiet`).
+   - If the feature touches CI workflows, ensure `.github/workflows/gate.yml` runs the canonical `@compiler` command.
 
-> **See [Implementation Rules](references/implementation-rules.md)** for scope discipline, `init.sh` standards, and verification recording rules.
+> **See [Implementation Rules](references/implementation-rules.md)** for scope discipline, quality gate standards, and verification recording rules.
 
 ### Step 4: Mandatory Self-Verification (`@compiler` Suite)
 Because **`workflow-validator`** runs in a separate worktree and relies on your recorded compilation evidence to avoid redundant full Gradle rebuilds when possible, you **MUST** execute the `@compiler` skill verification suite before finishing:

@@ -42,7 +42,7 @@ Every agent and subagent MUST prefix its responses and `PROGRESS.md` entries wit
 
 ### Two Ways to Run Work
 1. **Project / Backlog Mode**:
-   - Use `@build-brief` (for product discovery) and `@harness-starter` (to derive `feature_list.json`, `PROGRESS.md`, and `init.sh`).
+   - Use `@build-brief` (for product discovery) and `@harness-starter` (to derive `feature_list.json`, `PROGRESS.md`, and `.github/workflows/gate.yml`).
    - Run `@workflow-orchestrator` to execute the next ready feature (or parallelize independent ready features) from `feature_list.json`.
 2. **Standalone Feature Mode (Ad-hoc)**:
    - Request a feature directly via `@workflow-orchestrator` (or `@workflow-planner`).

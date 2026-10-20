@@ -1,6 +1,6 @@
 ---
 name: harness-starter
-description: Create or update the minimal startup harness for an Android repository after product discovery or on an existing project before feature implementation. Use when the user asks to use harness-starter, prepare the initial repo harness, create AGENTS/init/progress/feature list, or move from discovery docs to a coding-agent-ready repository. The skill reads existing discovery docs (or inspects an existing Android repository), derives AGENTS.md, init.sh, PROGRESS.md, CONSTRAINTS.md, and feature_list.json, and sets up the unified docs/features/<feature-id>/ directories.
+description: Create or update the minimal startup harness for an Android repository after product discovery or on an existing project before feature implementation. Use when the user asks to use harness-starter, prepare the initial repo harness, create AGENTS/progress/feature list, CI gate, or move from discovery docs to a coding-agent-ready repository. The skill reads existing discovery docs (or inspects an existing Android repository), derives AGENTS.md, PROGRESS.md, CONSTRAINTS.md, feature_list.json, and .github/workflows/gate.yml, and sets up the unified docs/features/<feature-id>/ directories.
 ---
 
 # Origin
@@ -27,7 +27,7 @@ When creating or updating `AGENTS.md`:
 - Do not reopen product discovery unless the user asks for discovery or the repository has neither discovery docs nor an existing codebase to inspect.
 - Create or update only the startup harness artifacts:
   - `AGENTS.md`
-  - `init.sh`
+  - `.github/workflows/gate.yml` (deterministic CI gate)
   - `PROGRESS.md`
   - `CONSTRAINTS.md` (if durable operational rules exist)
   - `feature_list.json`
@@ -56,14 +56,17 @@ If neither discovery docs nor an existing project description exist, ask the use
 
 ### 1. Inspect Current State
 
-Check whether each target file (`AGENTS.md`, `init.sh`, `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json`) already exists. For existing files, preserve intent and only fix gaps needed for the harness.
+Check whether each target file (`AGENTS.md`, `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json`, and `.github/workflows/gate.yml`) already exists. For existing files, preserve intent and only fix gaps needed for the harness.
 
 ### 2. Derive The Minimal Harness
 
 Create/update the target files using `references/artifact-templates.md`:
 
 - `AGENTS.md`: project landing page, multi-agent workflow routing, and operating rules.
-- `init.sh`: standard non-blocking startup/verification gate (e.g. `./gradlew testDebugUnitTest --quiet` for bootstrapped Android projects).
+- `.github/workflows/gate.yml`: Deterministic GitHub Actions CI Gate.
+  - **Purpose & Scope**: Automatically executes a headless, non-interactive Gradle check (`testDebugUnitTest` + `lintDebug`) on every Pull Request targeting `develop` or `main`. It does NOT execute the AI-driven `@compiler` skill (which runs only in local IDE sessions); it runs exclusively on GitHub's Ubuntu runners to provide machine-verified proof of compilation and test health.
+  - **JDK Configuration**: Configured with JDK 17 by default (the mandatory baseline for AGP 8.x+ and Kotlin 2.0). If the project specifies `jvmToolchain(21)` or targets SDK 36+, configure JDK 21.
+  - **Lifecycle Rule**: Inspected and created **only once** during initial repository harness setup by `@harness-starter`. If `.github/workflows/gate.yml` (or an existing CI workflow) already exists, preserve it untouched. Routine feature commits in `@workflow-orchestrator` and `@git-governance` NEVER create, evaluate, or modify CI workflows.
 - `PROGRESS.md`: current verified state and lightweight session log.
 - `CONSTRAINTS.md`: operational `MUST` / `MUST NOT` rules discovered so far.
 - `feature_list.json`: machine-readable feature backlog with `id`, `area`, `title`, `user_visible_behavior`, `depends_on`, `status`, `verification`, `evidence`, and `notes`.
@@ -92,12 +95,8 @@ Use `depends_on` to express execution prerequisites. Features whose `depends_on`
 
 ### 4. Handle Missing Technical Commands
 
-If the Android app is not bootstrapped yet, `init.sh` should be honest and provisional:
+If the Android app is not bootstrapped yet, record in `PROGRESS.md` that product bootstrap is pending, list expected future Gradle commands from `@compiler` (`./gradlew testDebugUnitTest lintDebug --parallel --build-cache --configuration-cache`), and proceed with the first bootstrap feature in `feature_list.json`.
 
-- confirm the directory,
-- report that product bootstrap is pending,
-- list expected future Gradle commands (`./gradlew testDebugUnitTest lintDebug`),
-- exit successfully only if this is intentional for the pre-bootstrap phase.
 
 ### 5. Quality Check
 
@@ -108,7 +107,7 @@ Before finishing, verify:
 - Every feature has `id`, `area`, `title`, `user_visible_behavior`, `depends_on`, `status`, `verification`, `evidence`, and `notes`.
 - Every `depends_on` entry references an existing feature `id`, does not reference itself, and does not create a dependency cycle.
 - `PROGRESS.md` names the standard startup and verification paths.
-- `init.sh` is executable (`chmod +x init.sh` where supported).
+- `.github/workflows/gate.yml` exists and configures the deterministic `@compiler` CI gate.
 - All `docs/features/<feature-id>/` subdirectories (`ui/screens`, `ui/resources`, `validator`) exist.
 
 ## Teaching Note

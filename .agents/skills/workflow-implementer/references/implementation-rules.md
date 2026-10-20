@@ -33,20 +33,17 @@ Feature status convention:
 
 ---
 
-## 3. `init.sh` Rule
+## 3. Canonical `@compiler` Quality Gate Rule
 
-Once a repository has a runnable Android baseline, `init.sh` must be an executable non-blocking gate, not a help screen.
-
-Default Android baseline behavior:
+Once a repository has a runnable Android baseline, the quality gate is defined deterministically by the canonical `@compiler` invocation:
 
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-./gradlew testDebugUnitTest lintDebug --quiet
+./gradlew testDebugUnitTest lintDebug --parallel --build-cache --configuration-cache
 ```
 
-Only allow an informational-only `init.sh` during an explicitly pre-bootstrap phase.
+- **Exit code 0 (`BUILD SUCCESSFUL`)**: Quality gate passed. The implementer may mark the feature `passing`.
+- **Exit code != 0 (`BUILD FAILED`)**: Quality gate failed. The implementer MUST repair the failure before requesting validation.
+- During an explicitly pre-bootstrap phase where Android Gradle files do not yet exist, record that bootstrap is pending in `PROGRESS.md` and proceed with initial harness/module scaffolding.
 
 ---
 

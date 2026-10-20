@@ -23,14 +23,14 @@ The operational backbone responsible for project discovery, harness state, `git 
 
 * **workflow-initializer**: Project bootstrapping, stack diagnosis, safety hooks, context exclusions, and provider-specific subagent setup (`.claude/agents/`, `.cursor/agents/`, Antigravity).
 * **build-brief**: Guided product discovery for new apps, MVPs, or significant modules (`CONTEXT.md`, `docs/build-brief.md`, `docs/domain-model.md`, `DESIGN.md`).
-* **harness-starter**: Derives and maintains the project startup harness (`AGENTS.md`, `init.sh`, `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json`) and unified feature folders (`docs/features/<feature-id>/`).
-* **workflow-orchestrator** (🟣): Master multi-agent orchestrator supporting both **Standalone Feature Mode** and **Backlog Queue Mode (`feature_list.json`)**, coordinating isolated `git worktree` subagents, bounded repair loops (`MAX_REPAIR_ATTEMPTS = 2`) with a Human Decision Gate (`needs_human_review`), and final `@git-governance` commits.
+* **harness-starter**: Derives and maintains the project startup harness (`AGENTS.md`, `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json`, and `.github/workflows/gate.yml`) and unified feature folders (`docs/features/<feature-id>/`).
+* **workflow-orchestrator** (🟣): Master multi-agent orchestrator supporting **Standalone Feature Mode**, **Backlog Queue Mode (`feature_list.json`)**, and **GitHub Delivery across 3 modes (`plan`, `execute`, `publish`)**, coordinating isolated hydrated `git worktree` subagents, bounded repair loops (`MAX_REPAIR_ATTEMPTS = 2`) with a Human Decision Gate (`needs_human_review`), atomic `@git-governance` commits, and structured PR publication.
 * **workflow-planner** (🔵): Feature Planner and Specification Architect subagent that produces the unified feature contract at `docs/features/<feature-id>/spec.md`.
 * **workflow-implementer** (🟡): Implementer subagent executing in an isolated `git worktree` to build Clean Architecture layers + tests and run `@compiler` verification.
 * **workflow-validator** (🟢/🔴): Independent Validator subagent executing in an isolated `git worktree` across 4 validation levels and producing `docs/features/<feature-id>/validator/validation-report.md` with an `Implementation Repair Brief`.
 * **workflow-documenter** (🔷): Documenter subagent executing in an isolated `git worktree` after validation acceptance to author English KDoc, update durable docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`), and complete `spec.md`.
 * **compiler**: Centralized project verification, compilation, Lint, and deployment engine.
-* **git-governance**: Enforces Git Flow conventions, branching rules, and atomic layer-specific Conventional Commits.
+* **git-governance**: Enforces Git Flow conventions, branching rules, atomic layer-specific Conventional Commits, idempotent GitHub PR publication, and parallel wave rebase reconciliation.
 * **foundation-evolve**: Synchronizes useful skills and improvements from working projects back to the Foundation.
 
 ### 1.2 Shared Engineering Guardrails

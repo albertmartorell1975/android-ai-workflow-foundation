@@ -38,7 +38,7 @@ Before writing code:
 1. Confirm the working directory and active git branch (`git branch --show-current`).
 2. Read `PROGRESS.md` for current verified state and next step.
 3. Read `feature_list.json` to inspect active or ready features.
-4. Run `./init.sh` (or the `@compiler` baseline check) when verifying project health.
+4. Run the `@compiler` baseline check (`./gradlew testDebugUnitTest lintDebug --parallel --build-cache --configuration-cache`) when verifying project health.
 
 ## Working Rules
 
@@ -48,32 +48,51 @@ Before writing code:
 - Apply **KISS** and follow the active skills in `.agents/skills/`.
 ```
 
-## `init.sh`
+## `.github/workflows/gate.yml`
 
-Purpose: canonical non-blocking startup/verification gate.
+- **Purpose**: Deterministic GitHub Actions Quality Gate for Pull Requests. Executes a headless, non-interactive Gradle check in the cloud (checkout -> JDK setup -> Gradle cache -> `testDebugUnitTest` and `lintDebug`). Unlike the AI-driven `@compiler` skill (which runs in the local IDE with code analysis, Compose previews, and optional asset generation), `gate.yml` is a pure CI script running on GitHub infrastructure with zero AI intervention.
+- **JDK Configuration**: Defaults to JDK 17 (the mandatory baseline for AGP 8.x+ and Kotlin 2.0). If the project specifies `jvmToolchain(21)` or targets Android SDK 36+, configure `java-version: '21'`.
+- **Lifecycle**: Inspected and materialized **once** during repository harness initialization by `@harness-starter`. Standard feature commits in `@workflow-orchestrator` and `@git-governance` never create or alter CI workflows.
 
-### Pre-bootstrap variant
+```yaml
+name: Quality Gate
 
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
 
-echo "Repository: $(pwd)"
-echo "Harness status: pre-bootstrap"
-echo "Android application stack is not initialized yet."
-echo "Next step: run workflow-orchestrator on the first bootstrap feature in feature_list.json."
-```
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-### Bootstrapped Android variant
+jobs:
+  verify:
+    name: Verify Gradle Quality Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
 
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-echo "Repository: $(pwd)"
-echo "Running baseline Android unit tests and lint checks..."
-./gradlew testDebugUnitTest lintDebug --quiet
-echo "Baseline verification passed."
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17' # AGP 8.x baseline. Update to '21' if project uses jvmToolchain(21) or SDK 36+
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/develop' && github.ref != 'refs/heads/main' }}
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Run Canonical Gate Command
+        run: ./gradlew testDebugUnitTest lintDebug --parallel --build-cache --configuration-cache
 ```
 
 ## `PROGRESS.md`
@@ -86,7 +105,7 @@ Purpose: current verified state first, lightweight history second.
 ## Current Verified State
 
 - Repository root: `[absolute or relative path]`
-- Standard startup/verification gate: `./init.sh` (`./gradlew testDebugUnitTest lintDebug`)
+- Standard startup/verification gate: `@compiler` canonical check (`./gradlew testDebugUnitTest lintDebug --parallel --build-cache --configuration-cache`)
 - Current next ready feature: `[feature id]`
 - Current blocker: `[none / blocker]`
 - Last verified at: `[date or not yet verified]`
@@ -98,8 +117,8 @@ Purpose: current verified state first, lightweight history second.
 - Date: `[date]`
 - Agent: 🟣 `[ORCHESTRATOR · harness-starter]`
 - Goal: Initialize the project startup harness.
-- Completed: `AGENTS.md`, `init.sh`, `PROGRESS.md`, `CONSTRAINTS.md`, and `feature_list.json` created or updated.
-- Verification run: `[json validation / chmod / gradle check]`
+- Completed: `AGENTS.md`, `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json`, and `.github/workflows/gate.yml` created or updated.
+- Verification run: `[json validation / gradle check]`
 - Files or artifacts updated: `[list]`
 - Next best step: `[run workflow-orchestrator for <feature-id>]`
 ```
@@ -135,7 +154,7 @@ Schema:
     "spec_path": "docs/features/short-kebab-case-id/spec.md",
     "validation_path": "docs/features/short-kebab-case-id/validator/validation-report.md",
     "verification": [
-      "./gradlew testDebugUnitTest lintDebug",
+      "./gradlew testDebugUnitTest lintDebug --parallel --build-cache --configuration-cache",
       "Concrete acceptance or Compose UI test verification step."
     ],
     "evidence": [],
