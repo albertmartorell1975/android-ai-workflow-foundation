@@ -41,6 +41,17 @@ To be executed in order BEFORE finalizing any task:
 6. **Database Schema Verification (Conditional)**: If a database (such as Room) is used and any `@Entity` or schema file was modified, verify that the Database version has been incremented and all entities/tables are correctly registered. Otherwise, skip.
 7. **Skill Lock Integrity**: Verify that `skills-lock.json` is synchronized with the actual content of the `.agents/skills/` directory.
 
+### 3. Canonical Deterministic Gate Command (Console & CI Baseline)
+When executing a deterministic, non-interactive project verification gate (such as during `workflow-implementer` baseline check, `workflow-orchestrator` Stage 5 consolidation, `git-governance` rebase validation, or GitHub Actions CI in `.github/workflows/gate.yml`), agents and CI runners MUST execute the exact canonical command:
+
+```bash
+./gradlew testDebugUnitTest lintDebug --parallel --build-cache --configuration-cache
+```
+
+* **Deterministic Binary Contract**:
+  - `exit_code == 0` (`BUILD SUCCESSFUL`) ➔ **PASS**. Verification succeeds.
+  - `exit_code != 0` (`BUILD FAILED`) ➔ **FAIL**. Immediately blocks marking a feature as `passing`, blocks Validator `accept`, and strictly refuses `publish`.
+
 ## Build Performance Guidelines (MANDATORY)
 
 1. **Modular Verification**: Use targeted Gradle tasks instead of full project builds.
