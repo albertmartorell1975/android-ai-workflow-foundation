@@ -26,12 +26,13 @@ ANDROID AI WORKFLOW FOUNDATION (v2.0.0)
         ├── Multi-Agent Worktree Pipeline (model: inherit + isolated git worktrees)
         │     ├── 🟣 Orchestrator (workflow-orchestrator)
         │     ├── 🔵 Planner      (workflow-feature → docs/features/<id>/spec.md)
-        │     ├── 🟠 Implementer  (workflow-implementer → Code + Tests + @compiler)
-        │     ├── 🟢 Validator    (workflow-validator → docs/features/<id>/validator/validation-report.md)
+        │     ├── 🟡 Implementer  (workflow-implementer → Code + Tests + @compiler)
+        │     ├── 🟢 Validator    (workflow-validator → Read-only 4-level evaluation + Repair Brief)
         │     └── 🔷 Documenter   (workflow-documenter → English KDoc + Durable Docs)
         │
         └── Shared Engineering Guardrails
               ├── Clean Architecture (Domain / Data / UseCases / UI & Dual Topologies)
+              ├── Stack Essentials (Hilt, Room & Firebase Core Skills)
               ├── Kotlin, Coroutines, Flow & Jetpack Compose Standards
               ├── Compiler Verification, Testing & Intent Security
               └── Git Governance & AI Lifecycle Safety Hooks
@@ -43,10 +44,10 @@ Every agent in the pipeline identifies its work in chat, validation reports, and
 
 | Role | Core Skill | Execution Scope | Key Responsibilities |
 | :--- | :--- | :--- | :--- |
-| 🟣 **Orchestrator** | `workflow-orchestrator` | Main Feature Branch (`feature/<feature-id>`) | Selects features (Standalone or from `feature_list.json`), manages `git worktree` lifecycles, coordinates subagents, handles `REVISE` loops, and creates atomic layer-by-layer Conventional Commits via `git-governance`. |
+| 🟣 **Orchestrator** | `workflow-orchestrator` | Main Feature Branch (`feature/<feature-id>`) | Selects features (Standalone or from `feature_list.json`), manages `git worktree` lifecycles, coordinates subagents, persists `validation-report.md`, routes `REVISE` repair briefs, and creates atomic layer-by-layer Conventional Commits via `git-governance`. |
 | 🔵 **Planner** | `workflow-feature` | Main Feature Branch (`feature/<feature-id>`) | Performs pre-diagnosis, asks up to 3 clarifying questions, and writes the unified contract at `docs/features/<feature-id>/spec.md` (`Given/When/Then` scenarios + Android layer breakdown + Clean Architecture checklist). |
-| 🟠 **Implementer** | `workflow-implementer` | Isolated Worktree (`.worktrees/impl-<feature-id>`) | Implements Clean Architecture layers (`Domain -> Data -> UseCase -> UI`), converts `ui/resources/` assets to `.webp`, writes unit/Compose UI tests, runs the `@compiler` suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`), and sets status to `passing`. |
-| 🟢/🔴 **Validator** | `workflow-validator` | Isolated Worktree (`.worktrees/val-<feature-id>`) | Lightweight read-only auditor across **4 validation levels**: (1) Spec contract, (2) Security (`android-intent-security`) & Scope Discipline, (3) `@compiler` evidence & test quality audit (`compose-ui-testing-patterns`), (4) Emulator runtime via `@android-cli` (when active). Writes `docs/features/<feature-id>/validator/validation-report.md` (`accept`, `revise` + Repair Brief, or `block`). |
+| 🟡 **Implementer** | `workflow-implementer` | Isolated Worktree (`.worktrees/impl-<feature-id>`) | Implements Clean Architecture layers (`Domain -> Data -> UseCase -> UI`), converts `ui/resources/` assets to `.webp`, writes unit/Compose UI tests, runs the `@compiler` suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`), and sets status to `passing`. |
+| 🟢/🔴 **Validator** | `workflow-validator` | Isolated Worktree (`.worktrees/val-<feature-id>`) | Strictly read-only auditor across **4 validation levels**: (1) Spec contract, (2) Security (`android-intent-security`) & Scope Discipline, (3) `@compiler` evidence & test quality audit (`compose-ui-testing-patterns`), (4) Emulator runtime via `@android-cli` (when active). Returns its verdict (`accept`, `revise` + Repair Brief, or `block`) directly to `workflow-orchestrator` without modifying repository files. |
 | 🔷 **Documenter** | `workflow-documenter` | Isolated Worktree (`.worktrees/doc-<feature-id>`) | Runs only after `accept`. Authors English KDoc on new public classes, updates durable docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`), and checks `[x]` completed items in `spec.md` without altering executable code. |
 
 ---
@@ -111,7 +112,7 @@ docs/features/<feature-id>/
 │   ├── screens/                    # Full-screen reference mockups (PNG/HTML — NEVER converted to drawables)
 │   └── resources/                  # Raw graphic assets (PNG/JPEG -> converted to res/drawable/ic_*.webp)
 └── validator/
-    └── validation-report.md        # Structured 4-level report (Verdict + Findings + Repair Brief)
+    └── validation-report.md        # Structured 4-level report persisted by Orchestrator
 ```
 
 ---
@@ -126,7 +127,7 @@ Run the following command from your Android project's root directory:
 npx skills add albertmartorell1975/android-ai-workflow-foundation
 ```
 
-This installs the active Foundation skills into `.agents/skills/`.
+This installs the 37 active Foundation skills into `.agents/skills/`.
 
 ### Step 2: Activate the Initializer
 
@@ -146,22 +147,22 @@ The initializer guides the project setup:
    - **Active AI Provider**: `Gemini` (Antigravity), `Claude Code`, or `Cursor`.
 2. **Automated Governance & Subagent Materialization**:
    - **`AGENTS.md` & `.agents/workflow.json`**: Materializes project-specific instructions and sets `"activeWorkflow": "foundation"`.
-   - **Provider-Specific Subagents (`model: inherit` + `isolation: worktree`)**:
-     * **Claude Code**: Materializes `.claude/agents/workflow-implementer.md`, `workflow-validator.md`, and `workflow-documenter.md` with scoped skills, color badges, and worktree isolation.
-     * **Cursor**: Materializes `.cursor/agents/workflow-*.md`.
-     * **Gemini / Antigravity**: Uses native `invoke_subagent` with `Model: "inherit"` and isolated worktrees.
-   - **Subagent Scoped Skills & Conditional Stacks**:
+   - **Provider-Specific Subagents (`SUBAGENT_SKILLS.json` + `model: inherit` + `git worktree`)**:
+     * **Claude Code**: Materializes `.claude/agents/workflow-implementer.md`, `workflow-validator.md` (`disallowedTools: [Write, Edit]`), and `workflow-documenter.md` with scoped skills, color badges, and worktree isolation.
+     * **Cursor**: Materializes `.cursor/agents/workflow-*.md` (`readonly: true` on `workflow-validator`).
+     * **Gemini / Antigravity**: Materializes `.agents/agents/workflow-*.md` and uses native `invoke_subagent` with `Model: "inherit"` and isolated worktrees.
+   - **Subagent Scoped Skills**:
      * 🟣 **`workflow-orchestrator`**: `workflow-orchestrator`, `git-governance`.
      * 🔵 **`workflow-feature`**: `workflow-feature`, `module-architecture-governance`, `testing-setup`.
-     * 🟠 **`workflow-implementer`**: Core Architecture, Kotlin, Flow, Compose, Testing, and `@compiler`. Dynamically loads **conditional stack skills** (`hilt`, `room-schema-governance`, `firebase-*`) when installed in `.agents/skills/`.
-     * 🟢/🔴 **`workflow-validator`**: Lightweight read-only verification (`workflow-validator`, `android-intent-security`, `compose-ui-testing-patterns`, conditional `compiler`, and `android-cli`).
+     * 🟡 **`workflow-implementer`**: Core Architecture, Kotlin, Flow, Compose, Testing, `@compiler`, Hilt (`hilt`), Room (`room-schema-governance`), and Firebase (`firebase-*`), plus any optional catalog plugins installed in `.agents/skills/`.
+     * 🟢/🔴 **`workflow-validator`**: Lightweight read-only verification (`workflow-validator`, `android-intent-security`, `compose-ui-testing-patterns`, `compiler`, and `android-cli`).
      * 🔷 **`workflow-documenter`**: Documentation-only (`workflow-documenter`, `kotlin-style`).
    - **Context Exclusion (`ai-context-exclusion`)**: Materializes `.aiexclude`, `.cursorignore`, or `.claude/settings.json`, automatically ignoring `.worktrees/`, `.gradle/`, and build caches.
    - **🛡 Automated AI Safety Hooks (`agent-safety-hooks`)**:
-     * Installs provider-native lifecycle interception (`PreToolUse` in Claude Code / Antigravity, `beforeShellExecution` in Cursor) via `block-rm-rf.js` / `.ps1`.
+     * Installs provider-native lifecycle interception (`PreToolUse` in Claude Code / Antigravity, `beforeShellExecution` in Cursor) via `block-rm-rf.js`.
      * **Zero-Accident Guardrail**: Intercepts and blocks destructive terminal commands (such as `rm -rf`, `rmdir /s /q`, `Remove-Item -Recurse -Force`, `git clean -fdx`, and root-level deletions) before execution, ensuring autonomous subagents running in worktrees cannot damage the project.
 3. **Optional Catalog Skills**:
-   Select optional technology plugins from `.agents/catalog/` (such as `hilt`, `room-schema-governance`, `firebase-*`, `camerax`, `wear-compose-m3`, `perfetto-trace-analysis`, `to-plan`, `using-chrisbanes-skills`).
+   Select optional technology and diagnostic plugins from `.agents/catalog/` (such as `camerax`, `wear-compose-m3`, `perfetto-trace-analysis`, `to-plan`, `using-chrisbanes-skills`).
 
 ---
 
@@ -173,19 +174,20 @@ The initializer guides the project setup:
 * `harness-starter` — Generates `AGENTS.md`, `init.sh`, `PROGRESS.md`, `CONSTRAINTS.md`, and `feature_list.json`.
 * `workflow-orchestrator` (🟣) — Coordinates the feature backlog, `git worktree` lifecycles, subagents, and `@git-governance` commits.
 * `workflow-feature` (🔵) — Feature Planner and Specification Architect (`docs/features/<id>/spec.md`).
-* `workflow-implementer` (🟠) — Worktree Implementer subagent + `@compiler` self-verification.
-* `workflow-validator` (🟢/🔴) — Worktree 4-level Validator subagent (`docs/features/<id>/validator/validation-report.md`).
+* `workflow-implementer` (🟡) — Worktree Implementer subagent + `@compiler` self-verification.
+* `workflow-validator` (🟢/🔴) — Read-only Worktree 4-level Validator subagent.
 * `workflow-documenter` (🔷) — Worktree KDoc and durable documentation subagent.
 * `compiler`, `git-governance`, `foundation-evolve`.
 
-### 2. Shared Engineering Guardrails (`.agents/skills/`)
+### 2. Shared Engineering Guardrails & Stack Essentials (`.agents/skills/`)
 * **`agent-safety-hooks`** — Automated pre-tool execution safety guard installed by default to block catastrophic commands (`rm -rf`, recursive deletion) across Claude Code, Cursor, and Gemini.
 * **`ai-context-exclusion`** — Provider-agnostic AI context governance (`.aiexclude`, `.cursorignore`, `.claude/settings.json`) ensuring the AI never indexes `.worktrees/`, `.gradle/`, and build caches.
 * **Architecture & Governance** — `dependency-manager`, `design-system-governance`, `kotlin-style`, `module-architecture-governance`, `repository-pattern-governance`, `testing-setup`, `viewmodel-architecture-governance`.
+* **Stack Essentials (DI, Persistence & Cloud)** — `hilt`, `room-schema-governance`, `firebase-basics`, `firebase-auth-basics`, `firebase-remote-config-basics`.
 * **Platform, Compose & Concurrency** — `adaptive`, `android-cli`, `android-intent-security`, `compose-modifier-and-layout-style`, `compose-side-effects`, `compose-state-authoring`, `compose-state-hoisting`, `compose-ui-testing-patterns`, `edge-to-edge`, `kotlin-coroutines-structured-concurrency`, `kotlin-flow-state-event-modeling`, `navigation-3`.
 
 ### 3. Optional Catalog Plugins (`.agents/catalog/`)
-* Activated on demand for libraries, profiling, and diagnostics (`hilt`, `room-schema-governance`, `firebase-*`, `camerax`, `wear-compose-m3`, `perfetto-trace-analysis`, `r8-analyzer`, `compose-recomposition-performance`, `compose-stability-diagnostics`, `compose-focus-navigation`, `hook-creator`, `skill-creator`, `to-plan`, `using-chrisbanes-skills`).
+* Activated on demand for specialized libraries, profiling, and diagnostics (`camerax`, `wear-compose-m3`, `perfetto-trace-analysis`, `r8-analyzer`, `compose-recomposition-performance`, `compose-stability-diagnostics`, `compose-focus-navigation`, `kotlin-control-flow`, `kotlin-functions`, `hook-creator`, `skill-creator`, `to-plan`, `using-chrisbanes-skills`).
 
 ---
 
