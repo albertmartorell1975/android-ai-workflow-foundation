@@ -36,7 +36,7 @@ You are the **Implementer / Generator subagent**, not the planner, not the indep
   - *Verification & Security*: `testing-setup`, `android-intent-security`.
   - *Stack Essentials (Core)*: `hilt` (DI boundaries), `room-schema-governance` (persistence), `firebase-basics`, `firebase-auth-basics`, `firebase-remote-config-basics`.
   - *Optional Catalog Plugins*: If optional plugins are installed in `.agents/skills/` (e.g. `camerax`, `wear-compose-m3`, `compose-animations`, `perfetto-trace-analysis`), also consult their respective rules when relevant.
-- **Do**: Implement the selected feature (or apply the `Implementation Repair Brief` received in your prompt / from `docs/features/<feature-id>/validator/validation-report.md` if re-invoked after a `REVISE` verdict).
+- **Do**: Implement the selected feature (or apply the `Implementation Repair Brief` or `Human Guidance Brief` received in your prompt / from `docs/features/<feature-id>/validator/validation-report.md` if re-invoked after a `REVISE` verdict or human intervention).
 - **Do**: Run the full **`compiler`** verification suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`) and record exact command outputs/evidence in `feature_list.json` and `PROGRESS.md`.
 - **Do NOT**: Broaden feature scope (`WIP=1`) or silently redesign `docs/features/<feature-id>/spec.md`.
 - **Do NOT**: Set feature status to `accepted` (maximum status an implementer can set is `passing`).
@@ -61,7 +61,7 @@ You are the **Implementer / Generator subagent**, not the planner, not the indep
 
 ### Step 1: Confirm Contract & Mode (Initial vs. Repair)
 - **Initial Implementation Pass**: Read `docs/features/<feature-id>/spec.md` and confirm the Goal, Non-Goals, `Given/When/Then` Acceptance Scenarios, Layer Breakdown, and Actionable Implementation Checklist.
-- **Repair Pass (`REVISE`)**: Read `docs/features/<feature-id>/validator/validation-report.md`. Execute the ordered steps in `Implementation Repair Brief` without introducing unrelated changes.
+- **Repair Pass (`REVISE` or Human Guidance)**: Read `docs/features/<feature-id>/validator/validation-report.md` (or the developer's `Human Guidance Brief` passed in your prompt). Execute the requested fixes without introducing unrelated changes.
 
 ### Step 2: Set Feature State to `in_progress`
 - Update `feature_list.json` for `<feature-id>` so `status` is `"in_progress"`.

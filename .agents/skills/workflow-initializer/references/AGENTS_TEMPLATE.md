@@ -37,8 +37,8 @@ Every agent and subagent MUST prefix its responses and `PROGRESS.md` entries wit
 * 🟣 **`[ORCHESTRATOR · workflow-orchestrator]`** — Pipeline coordination, `feature_list.json`, `git worktree` management, and final `@git-governance` commits.
 * 🔵 **`[PLANNER · workflow-feature]`** — Feature diagnosis and unified specification (`docs/features/<feature-id>/spec.md`).
 * 🟡 **`[IMPLEMENTER · workflow-implementer]`** — Clean Architecture code, tests, and `@compiler` verification in an isolated `git worktree`.
-* 🟢 **`[VALIDATOR · workflow-validator]`** *(or 🔴 on `revise` / `block`)* — Independent 4-level validation and `docs/features/<feature-id>/validator/validation-report.md` in an isolated `git worktree`.
-* 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc and durable Markdown documentation in an isolated `git worktree`.
+* 🟢 **`[VALIDATOR · workflow-validator]`** *(or 🔴 on `revise` / `block`)* — Independent 4-level validation and `docs/features/<feature-id>/validator/validation-report.md` in an isolated `git worktree`. Bounded to `MAX_REPAIR_ATTEMPTS = 2` before triggering the Human Decision Gate (`needs_human_review`).
+* 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc and durable Markdown documentation in an isolated `git worktree`. Runs upon validator acceptance or human override.
 
 ### Two Ways to Run Work
 1. **Project / Backlog Mode**:

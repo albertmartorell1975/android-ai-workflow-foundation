@@ -73,10 +73,21 @@ Triggered when the user asks to continue the project backlog, run the next avail
   - Ensure the base feature branch `feature/<feature-id>` exists from `develop` (per `git-governance`).
   - Each subagent (`implementer`, `validator`, `documenter`) runs in an isolated **`git worktree`** (see [Subagent Providers & Worktree Protocol](references/subagent-providers.md)).
   - Subagents only commit to their temporary worktree branch to pass state to the next subagent; **only the main orchestrator** merges the validated & documented result into `feature/<feature-id>` and creates the final layer-by-layer Conventional Commits.
-- **Independent Validation Gate**:
+- **Independent Validation Gate & Bounded Repair Loop**:
   - Never treat `passing` as final acceptance. `passing` means `workflow-implementer` finished code and passed `@compiler`.
   - Only `workflow-validator` can emit `accept`, `revise`, or `block`.
   - The Validator is strictly read-only and reports in chat/response. The orchestrator records acceptance and persists `docs/features/<feature-id>/validator/validation-report.md`.
+  - **Bounded Repair Loop (`MAX_REPAIR_ATTEMPTS = 2`)**: To prevent infinite autonomous loops and token exhaustion, the repair cycle between `workflow-implementer` and `workflow-validator` is strictly bounded to a maximum of 2 repair attempts (1 initial implementation + up to 2 repair iterations).
+  - **Human Decision Gate (`needs_human_review`)**: If `repair_attempts > MAX_REPAIR_ATTEMPTS` without reaching `accept`:
+    * Pause autonomous looping immediately.
+    * Do **NOT** delete or reset the worktree; preserve `.worktrees/impl-<feature-id>` and `docs/features/<feature-id>/validator/validation-report.md` intact.
+    * Set feature status to `needs_human_review` in `feature_list.json` and `PROGRESS.md`.
+    * Prompt the human developer with the unresolved findings and 4 clear action pathways:
+      1. **Manual Override (`accept`)**: Developer verifies findings as non-critical/false positive -> proceeds directly to Stage 4 (`workflow-documenter`).
+      2. **Human Guidance Brief (`hint`)**: Developer supplies corrective instructions or code fixes -> launches 1 extra targeted repair pass with `workflow-implementer` followed by `workflow-validator`.
+      3. **Re-plan Specification (`replan`)**: Contradictory or ambiguous requirement -> re-invokes `workflow-feature` (Stage 1), resets `repair_attempts = 0`, and re-plans `spec.md`.
+      4. **Cancel or Defer (`cancel`)**: Developer suspends the feature -> cleans up temporary worktrees and branches, leaving `develop` untouched, and sets status to `blocked` or `deferred`.
+  - **Post-Intervention Pipeline Continuity**: Once resolved by the human (via Manual Override or successful Human Hint validation), the workflow resumes its standard lifecycle completely: `workflow-documenter` executes (Stage 4), followed by worktree consolidation, cleanup, and atomic layer-by-layer Conventional Commits via `@git-governance` (Stage 5).
 - **Never Push Without Authorization**: Do not run `git push` or merge into `develop`/`main` unless the user explicitly asks.
 
 ---
@@ -86,15 +97,29 @@ Triggered when the user asks to continue the project backlog, run the next avail
 For a selected `<feature-id>`, execute the roles sequentially until `accepted` or `blocked`:
 
 ```text
-[1. Planner: workflow-feature]
-       │  (creates docs/features/<feature-id>/spec.md)
-       ▼
-[2. Implementer: workflow-implementer]  ◄──────────────┐
-       │  (isolated worktree -> code + @compiler)      │
-       ▼                                               │ REVISE (Implementation Repair Brief passed in prompt)
-[3. Validator: workflow-validator] ────────────────────┘
-       │  (isolated worktree -> read-only 4-level audit -> returns verdict in response)
-       │  ACCEPT
+[1. Planner: workflow-feature] ◄────────────────────────────────┐
+       │  (creates docs/features/<feature-id>/spec.md)          │
+       ▼                                                        │ (3. Re-plan)
+[2. Implementer: workflow-implementer]  ◄─────────────┐         │
+       │  (isolated worktree -> code + @compiler)     │         │
+       ▼                                              │         │
+[3. Validator: workflow-validator]                    │         │
+       │                             │                │         │
+(ACCEPT)                             │ (REVISE)       │ (Auto   │
+       │                             ▼                │  repair │
+       │                  [Attempts <= MAX (2)?]      │  pass)  │
+       │                    ├── Yes ──────────────────┤         │
+       │                    │                         │         │
+       │                    └── No (Limit reached)    │         │
+       │                           │                  │         │
+       │                           ▼                  │         │
+       │              [🛑 Human Decision Gate]        │         │
+       │                (needs_human_review)          │         │
+       │ ◄────────────────├── 1. Override             │         │
+       │                  ├── 2. Human Hint ──────────┘         │
+       │                  ├── 3. Re-plan ───────────────────────┘
+       │                  └── 4. Cancel ──► [Clean & Abort]
+       │
        ▼
 [4. Documenter: workflow-documenter]
        │  (isolated worktree -> KDoc + durable docs + spec.md [x])
@@ -122,9 +147,18 @@ For a selected `<feature-id>`, execute the roles sequentially until `accepted` o
   - `model`: `inherit`
 - Review the response from **`workflow-validator`**:
   - Persist `docs/features/<feature-id>/validator/validation-report.md` with the validator's report.
-  - If verdict is **`revise`**: Route the `Implementation Repair Brief` directly into the prompt of **`workflow-implementer`** (Stage 2), then re-run **`workflow-validator`** (Stage 3).
+  - If verdict is **`revise`**:
+    * Check current repair count (`repair_attempts`).
+    * **If `repair_attempts < MAX_REPAIR_ATTEMPTS` (default: 2)**:
+      - Increment `repair_attempts++`.
+      - Route the `Implementation Repair Brief` directly into the prompt of **`workflow-implementer`** (Stage 2), then re-run **`workflow-validator`** (Stage 3).
+    * **If `repair_attempts >= MAX_REPAIR_ATTEMPTS`**:
+      - Trigger the **Human Decision Gate**: set status to `needs_human_review` in `feature_list.json` and `PROGRESS.md`.
+      - Keep `.worktrees/impl-<feature-id>` intact without cleaning it up.
+      - Present the unresolved findings and the 4 decision options (Manual Override, Human Guidance Hint, Re-plan `spec.md`, Cancel/Defer) to the user.
+      - Upon user decision, resume the pipeline according to the selected pathway.
   - If verdict is **`block`**: Stop immediately, set status to `blocked` in `feature_list.json`, and report the blocker to the user with the `🔴 [VALIDATOR · workflow-validator]` summary.
-  - If verdict is **`accept`**: Proceed to Stage 4 (`workflow-documenter`).
+  - If verdict is **`accept`** (or **Manual Override** confirmed by human): Proceed to Stage 4 (`workflow-documenter`).
 
 ### Stage 4: Documentation (`workflow-documenter` in Worktree)
 - Spawn the **`workflow-documenter`** subagent in an isolated worktree starting from the implemented state:

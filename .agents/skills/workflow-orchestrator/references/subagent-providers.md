@@ -4,17 +4,16 @@ This reference defines how `workflow-orchestrator` spawns isolated subagents (`w
 
 ---
 
-## 1. Visual Color Identity Table
+## 1. Visual Badges & Worktree Isolation
 
-Every agent must identify itself at the top of its output and `PROGRESS.md` entries using its visual badge:
+Every agent in the pipeline identifies itself with its canonical color badge (see Visual Identity Protocol in `workflow-orchestrator/SKILL.md`):
+* 🟣 **`[ORCHESTRATOR · workflow-orchestrator]`**
+* 🔵 **`[PLANNER · workflow-feature]`**
+* 🟡 **`[IMPLEMENTER · workflow-implementer]`**
+* 🟢/🔴 **`[VALIDATOR · workflow-validator]`**
+* 🔷 **`[DOCUMENTER · workflow-documenter]`**
 
-| Role | Skill | Color | Universal Badge |
-| :--- | :--- | :--- | :--- |
-| **Orchestrator** | `workflow-orchestrator` | Purple (`purple`) | 🟣 `[ORCHESTRATOR · workflow-orchestrator]` |
-| **Planner** | `workflow-feature` | Blue (`blue`) | 🔵 `[PLANNER · workflow-feature]` |
-| **Implementer** | `workflow-implementer` | Yellow (`yellow`) | 🟡 `[IMPLEMENTER · workflow-implementer]` |
-| **Validator** | `workflow-validator` | Green (`green`) / Red (`red`) | 🟢 `[VALIDATOR · workflow-validator]` *(or 🔴 on `REVISE`/`BLOCK`)* |
-| **Documenter** | `workflow-documenter` | Cyan (`cyan`) | 🔷 `[DOCUMENTER · workflow-documenter]` |
+**Isolation Principle**: Each subagent (`implementer`, `validator`, `documenter`) executes exclusively in its dedicated `git worktree`. Subagents never commit directly to `feature/<feature-id>`; they commit only to temporary `wt/*` branches. Only `workflow-orchestrator` merges the finalized work and creates atomic Conventional Commits via `@git-governance`.
 
 ---
 
@@ -46,13 +45,20 @@ git worktree add -B wt/val-<feature-id> .worktrees/val-<feature-id> wt/impl-<fea
   - Audits the spec contract, diff, test implementations, and recorded compiler evidence.
   - Can rerun focused tests or `@android-cli` if needed for verification, but **never modifies source code or project files**.
   - **Does NOT write files to the repository.** Returns its verdict (`accept`, `revise`, or `block`), findings, and `Implementation Repair Brief` directly in its output summary to `workflow-orchestrator`.
-* **Handoff Handling by Orchestrator**:
-  - The Orchestrator receives the Validator's summary and persists `docs/features/<feature-id>/validator/validation-report.md`.
-  - **If Verdict is `REVISE`**:
-    * Remove `.worktrees/val-<feature-id>`.
-    * Re-invoke `workflow-implementer` in `.worktrees/impl-<feature-id>`, passing the `Implementation Repair Brief` directly into its prompt.
-  - **If Verdict is `ACCEPT`**:
-    * Proceed to Step D (`workflow-documenter`).
+* **Handoff & Worktree State Transitions**:
+  - Persist report: Orchestrator saves `docs/features/<feature-id>/validator/validation-report.md`.
+  - Always clean up validator worktree: `git worktree remove .worktrees/val-<feature-id> --force`.
+  - **Verdict `ACCEPT`**: Proceed directly to Step D (`workflow-documenter`).
+  - **Verdict `REVISE` (Within limit: `repair_attempts < MAX_REPAIR_ATTEMPTS`)**:
+    * Re-invoke `workflow-implementer` in existing worktree `.worktrees/impl-<feature-id>` with the repair brief.
+  - **Verdict `REVISE` (Limit reached: `needs_human_review`)**:
+    * **Preserve Worktree**: Keep `.worktrees/impl-<feature-id>` intact (do **NOT** delete or reset) while awaiting user direction.
+    * **Worktree Handling per Decision**:
+      - *1. Override (`accept`)*: Leave worktree as is -> proceed directly to Step D (`workflow-documenter`).
+      - *2. Human Hint (`hint`)*: Re-run implementer in `.worktrees/impl-<feature-id>` with the developer's guidance -> re-run validator.
+      - *3. Re-plan (`replan`)*: Update `spec.md` on base feature branch; reset `.worktrees/impl-<feature-id>` to new spec state.
+      - *4. Cancel (`cancel`)*: Remove worktree (`git worktree remove .worktrees/impl-<feature-id> --force`), delete `wt/*` branches, leaving `develop` untouched.
+  - **Verdict `BLOCK`**: Clean up temporary worktrees and set status to `"blocked"`.
 
 ### Step D: Documenter Worktree (`workflow-documenter`)
 Once the Validator returns `ACCEPT`, create an isolated worktree on temporary branch `wt/doc-<feature-id>` starting from `wt/impl-<feature-id>`:

@@ -97,7 +97,7 @@ To avoid redundant full Gradle rebuilds across worktrees while maintaining high 
 Evaluate your findings and emit one of the three verdicts:
 
 - **`accept`**: Zero Critical or High findings; all acceptance scenarios, architecture rules, and test checks pass.
-- **`revise`**: Fixable Critical, High, or Medium findings exist. You **MUST** include a clear, ordered, copy-paste-ready **`Implementation Repair Brief`** in your response so `workflow-implementer` can fix every issue on the next pass without needing extra context.
+- **`revise`**: Fixable Critical, High, or Medium findings exist. You **MUST** include a clear, ordered, copy-paste-ready **`Implementation Repair Brief`** in your response so `workflow-implementer` can fix every issue on the next pass without needing extra context. The orchestrator routes this brief into a bounded repair loop (up to `MAX_REPAIR_ATTEMPTS = 2`); if findings persist after reaching the limit, the orchestrator triggers the Human Decision Gate (`needs_human_review`).
 - **`block`**: Validation cannot proceed due to a fundamental architectural/security blocker or missing specification.
 
 For each finding that leads to `revise` or `block`, include:
