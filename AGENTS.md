@@ -13,7 +13,6 @@ Before modifying skills, catalog plugins, templates, or documentation, consult:
 * `README.md` — Framework architecture, installation, visual role badges, entry modes, and skill management.
 * `docs/overview.md` — Complete architectural design, modular layers, execution modes (Standalone vs Backlog), and the 5-role `git worktree` pipeline.
 * `.agents/skills/README.md` — Canonical index of Active Foundation Skills and Optional Catalog Skills.
-* `.agents/workflow.json` — Current workflow configuration for repository maintenance.
 
 ## Repository Structure & Modules
 
@@ -47,7 +46,7 @@ Before modifying skills, catalog plugins, templates, or documentation, consult:
 A maintenance or feature task on the Foundation repository is complete only when:
 
 1. Target skill, manifest, or documentation changes are implemented following Foundation standards.
-2. All JSON/YAML files (`package.json`, `workflow.json`, `*.yaml`, `*.json`) pass syntax validation.
+2. All JSON/YAML files (`package.json`, `*.yaml`, `*.json`) pass syntax validation.
 3. `.agents/skills/README.md` and `workflow-initializer/SKILL.md` templates are synchronized if skills were modified.
 4. All file references and Markdown links across `docs/` and `README.md` are valid and resolvable.
 5. No unintended changes remain, and the working tree is ready for user review via `@git-governance`.

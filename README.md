@@ -139,14 +139,12 @@ Activate workflow-initializer
 
 The initializer guides the project setup:
 
-1. **Stack Diagnosis & AI Provider Selection**:
-   - **Module Topology**: `Layer-Based` (`:domain`, `:usecases`, `:data`, `:app`) or `Feature-First` (`:<feature>:*` + `:core:*`).
-   - **Architecture**: `MVVM` or `MVI`.
-   - **Dependency Injection**: `Hilt` or `Koin`.
-   - **Persistence**: `Room` or `SQLDelight`.
-   - **Active AI Provider**: `Gemini` (Antigravity), `Claude Code`, or `Cursor`.
+1. **Stack Auto-Inspection & AI Provider Confirmation**:
+   - **Defaults**: Applies Foundation standards by default (MVVM with Hybrid UI State, Hilt, Room, and Firebase suite).
+   - **Auto-Detection**: Infers Project Name and Module Topology (Layer-Based vs Feature-First) directly from Gradle files.
+   - **AI Provider**: Confirms active environment (Gemini / Antigravity, Claude Code, or Cursor).
 2. **Automated Governance & Subagent Materialization**:
-   - **`AGENTS.md` & `.agents/workflow.json`**: Materializes project-specific instructions and sets `"activeWorkflow": "foundation"`.
+   - **`AGENTS.md`**: Materializes project-specific instructions and rules.
    - **Provider-Specific Subagents (`SUBAGENT_SKILLS.json` + `model: inherit` + `git worktree`)**:
      * **Claude Code**: Materializes `.claude/agents/workflow-implementer.md`, `workflow-validator.md` (`disallowedTools: [Write, Edit]`), and `workflow-documenter.md` with scoped skills, color badges, and worktree isolation.
      * **Cursor**: Materializes `.cursor/agents/workflow-*.md` (`readonly: true` on `workflow-validator`).
