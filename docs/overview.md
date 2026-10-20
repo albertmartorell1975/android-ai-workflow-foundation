@@ -42,23 +42,37 @@ The Foundation structures development across three modular layers:
                                        ▼
                       SHARED MULTI-AGENT WORKTREE PIPELINE
           ─────────────────────────────────────────────────────────────
-                     [workflow-orchestrator] 🟣 (Queue & Worktrees)
-                                       │
-                                       ▼
-                      [workflow-feature] 🔵 (Generates spec.md)
-                                       │
-                                       ▼
-                    [workflow-implementer] 🟡 (Code & Tests) ◄──────┐
-                                       │                            │ (REVISE + Repair Brief)
-                                       ▼                            │
-                     [workflow-validator] 🟢/🔴 (Read-Only Audit) ──┘
-                                       │
-                                       │ (ACCEPT)
-                                       ▼
-                     [workflow-documenter] 🔷 (KDoc & spec.md [x])
-                                       │
-                                       ▼
-                      [@git-governance] (Atomic Layer Commits)
+                      [workflow-orchestrator] 🟣 (Queue & Worktrees)
+                                        │
+                                        ▼
+                       [workflow-feature] 🔵 (Generates spec.md) ◄────────────────┐
+                                        │                                         │
+                                        ▼                                         │ (3. Re-plan)
+                     [workflow-implementer] 🟡 (Code & Tests) ◄─────────┐         │
+                                        │                               │         │
+                                        ▼                               │         │
+                      [workflow-validator] 🟢/🔴 (Read-Only Audit)      │         │
+                        │                             │                 │         │
+               (ACCEPT) │                    (REVISE) │                 │         │
+                        │                             ▼                 │ (Auto   │
+                        │                  [Attempts <= MAX (2)?]       │  repair │
+                        │                    ├── Yes ───────────────────┤  pass)  │
+                        │                    │                          │         │
+                        │                    └── No (Limit reached)     │         │
+                        │                           │                   │         │
+                        │                           ▼                   │         │
+                        │              [🛑 Human Decision Gate]         │         │
+                        │                (needs_human_review)           │         │
+                        │ ◄────────────────├── 1. Override              │         │
+                        │                  ├── 2. Human Hint ───────────┘         │
+                        │                  ├── 3. Re-plan ────────────────────────┘
+                        │                  └── 4. Cancel ──► [Clean & Abort]
+                        │
+                        ▼
+                      [workflow-documenter] 🔷 (KDoc & spec.md [x])
+                                        │
+                                        ▼
+                       [@git-governance] (Atomic Layer Commits)
 ```
 
 ---
@@ -115,7 +129,8 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
 * Reads `feature_list.json` and `PROGRESS.md` (creating or appending the feature entry automatically in Standalone Mode).
 * Can run ready features sequentially or launch independent features (whose `depends_on` prerequisites are all `accepted`) in parallel worktrees.
 * Manages the `feature/<feature-id>` branch and temporary subagent worktrees (`.worktrees/impl-<id>`, `.worktrees/val-<id>`, `.worktrees/doc-<id>`).
-* Receives the read-only evaluation from `workflow-validator`, persists `docs/features/<feature-id>/validator/validation-report.md`, and passes the `Implementation Repair Brief` directly to `workflow-implementer` on `revise`.
+* Receives the read-only evaluation from `workflow-validator`, persists `docs/features/<feature-id>/validator/validation-report.md`, and bounds repair cycles to `MAX_REPAIR_ATTEMPTS = 2` (passing the `Implementation Repair Brief` directly to `workflow-implementer` on `revise` when attempts remain).
+* **Human-in-the-Loop Decision Gate**: When repair attempts exceed the limit without reaching `accept`, pauses looping immediately, preserves `.worktrees/impl-<feature-id>`, sets status to `needs_human_review`, and presents 4 resolution options (Manual Override, Human Guidance Hint, Re-plan `spec.md`, or Cancel/Defer). Once resolved to acceptance, seamlessly resumes Stage 4 (Documenter) and Stage 5 (Consolidation & Commits).
 * **Exclusively owns `@git-governance`**: Consolidates the final worktree after documentation completes, marks the feature `accepted` in `feature_list.json`, and creates atomic layer-specific Conventional Commits (`feat(domain)`, `feat(data)`, `feat(usecases)`, `feat(ui)`, `test`, `docs`).
 
 ### 2. 🔵 Planner (`workflow-feature`)
