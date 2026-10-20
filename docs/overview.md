@@ -5,7 +5,7 @@ The **Android AI Workflow Foundation v2.0.0** is a unified multi-agent framework
 The Foundation structures development across three modular layers:
 
 1. **Project Initialization & Harness Setup** (`workflow-initializer`, `build-brief`, `harness-starter`)
-2. **Unified Multi-Agent Feature Pipeline** (`workflow-orchestrator`, `workflow-feature`, `workflow-implementer`, `workflow-validator`, `workflow-documenter`)
+2. **Unified Multi-Agent Feature Pipeline** (`workflow-orchestrator`, `workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter`)
 3. **Shared Engineering Guardrails & Android Expertise** (`compiler`, `git-governance`, Clean Architecture, Hilt, Room, Firebase, Kotlin, and Jetpack Compose skills)
 
 ---
@@ -45,7 +45,7 @@ The Foundation structures development across three modular layers:
                       [workflow-orchestrator] 🟣 (Queue & Worktrees)
                                         │
                                         ▼
-                       [workflow-feature] 🔵 (Generates spec.md) ◄────────────────┐
+                       [workflow-planner] 🔵 (Generates spec.md) ◄────────────────┐
                                         │                                         │
                                         ▼                                         │ (3. Re-plan)
                      [workflow-implementer] 🟡 (Code & Tests) ◄─────────┐         │
@@ -84,11 +84,11 @@ Bootstraps the project environment:
 * Performs Stack Auto-Inspection (Project Name, Module Topology [Layer-Based vs Feature-First], and confirms AI Provider). Standards (MVVM, Hilt, Room, Firebase) are active by default.
 * Materializes `AGENTS.md`.
 * Configures AI Context Exclusion (`ai-context-exclusion`), automatically excluding `.worktrees/`, `.gradle/`, and build outputs from the AI context.
-* Materializes provider-specific subagent definitions (`.claude/agents/`, `.cursor/agents/`, or native Antigravity `.agents/agents/` configuration) using **`SUBAGENT_SKILLS.json`** (plus any installed optional catalog plugins) for single-source-of-truth skill injection with `model: inherit`, and adds `.worktrees/` to `.gitignore`.
+* Materializes provider-specific subagent definitions (`workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter` under `.claude/agents/`, `.cursor/agents/`, or native Antigravity `.agents/agents/` configuration) using **`SUBAGENT_SKILLS.json`** (plus any installed optional catalog plugins) for single-source-of-truth skill injection with `model: inherit`, and adds `.worktrees/` to `.gitignore`.
 
 #### 🛡 Automated AI Safety Hooks (`agent-safety-hooks`)
 During project initialization, the Foundation automatically installs lifecycle safety hooks tailored to the active AI provider (**Claude Code**, **Cursor**, or **Gemini / Antigravity**):
-* **Destructive Command Interception**: Intercepts shell commands before execution and strictly blocks catastrophic patterns such as `rm -rf`, `rmdir /s /q`, `Remove-Item -Recurse -Force`, `git clean -fdx`, and root-level directory purges.
+* **Destructive Command Interception**: Intercepts shell commands before execution and strictly blocks catastrophic patterns such as `rm -rf`, `rmdir /s /q`, `Remove-Item -Recurse -Force`, `git clean -fdx`, `git reset --hard`, autonomous `gh pr merge` (ensuring PR merges are strictly human), and destructive force pushes.
 * **Provider Integration**:
   * **Claude Code**: Registered as a `PreToolUse` hook in `.claude/settings.json` executing `block-rm-rf.js`.
   * **Cursor**: Registered as a `beforeShellExecution` hook under `.cursor/hooks/`.
@@ -133,7 +133,8 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
 * **Human-in-the-Loop Decision Gate**: When repair attempts exceed the limit without reaching `accept`, pauses looping immediately, preserves `.worktrees/impl-<feature-id>`, sets status to `needs_human_review`, and presents 4 resolution options (Manual Override, Human Guidance Hint, Re-plan `spec.md`, or Cancel/Defer). Once resolved to acceptance, seamlessly resumes Stage 4 (Documenter) and Stage 5 (Consolidation & Commits).
 * **Exclusively owns `@git-governance`**: Consolidates the final worktree after documentation completes, marks the feature `accepted` in `feature_list.json`, and creates atomic layer-specific Conventional Commits (`feat(domain)`, `feat(data)`, `feat(usecases)`, `feat(ui)`, `test`, `docs`).
 
-### 2. 🔵 Planner (`workflow-feature`)
+### 2. 🔵 Planner (`workflow-planner`)
+* Spawns in a clean subagent context with edit permissions restricted strictly to specification files (`docs/features/<feature-id>/spec.md`, `feature_list.json`, `PROGRESS.md`), never modifying executable application code.
 * Inspects the repository and clarifies up to 3 blocking technical questions with the user.
 * Produces the unified feature contract at **`docs/features/<feature-id>/spec.md`**, combining:
   - Idea Diagnosis & Assumptions
@@ -143,7 +144,7 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
   - Granular Clean Architecture Checklist (`Database/Models -> Domain -> Data -> UseCase -> UI -> Testing -> @compiler`)
 
 ### 3. 🟡 Implementer (`workflow-implementer`)
-* Runs in an isolated `git worktree` (`.worktrees/impl-<feature-id>`).
+* Runs in an isolated `git worktree` (`.worktrees/impl-<feature-id>`) that is automatically hydrated with uncommitted local Android build files (`local.properties`, `.env`, `keystore.properties`, `app/google-services.json`).
 * Implements the feature (or executes the `Implementation Repair Brief` passed by `workflow-orchestrator` on a `REVISE` pass) across Layer-Based or Feature-First modules.
 * **Comprehensive Core & Stack Skills**: Uses Core Architecture, Compose, Kotlin, Hilt (`hilt`), Room (`room-schema-governance`), and Firebase (`firebase-*`) skills out of the box, plus any optional catalog plugins installed in `.agents/skills/`.
 * Converts raw graphic assets in `docs/features/<id>/ui/resources/` to `.webp` in `app/src/main/res/drawable/ic_<name>.webp` (or `:<feature>:presentation/src/main/res/drawable/`) while leaving screen mockups in `ui/screens/` untouched.

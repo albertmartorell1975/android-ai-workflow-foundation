@@ -4,7 +4,7 @@ This document defines the operating rules, repository structure, maintenance pro
 
 ## Project Overview
 
-The **Android AI Workflow Foundation** is a unified multi-agent workflow framework for Android development. This repository hosts the core multi-agent workflow engine (`workflow-initializer`, `build-brief`, `harness-starter`, `workflow-orchestrator`, `workflow-feature`, `workflow-implementer`, `workflow-validator`, `workflow-documenter`, `compiler`, `git-governance`, `foundation-evolve`, `hook-creator`, `skill-creator`), shared technical guardrails, optional catalog skills, and framework documentation.
+The **Android AI Workflow Foundation** is a unified multi-agent workflow framework for Android development. This repository hosts the core multi-agent workflow engine (`workflow-initializer`, `build-brief`, `harness-starter`, `workflow-orchestrator`, `workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter`, `compiler`, `git-governance`, `foundation-evolve`, `hook-creator`, `skill-creator`), shared technical guardrails, optional catalog skills, and framework documentation.
 
 ## Read First
 
