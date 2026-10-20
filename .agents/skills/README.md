@@ -62,7 +62,14 @@ Active technical knowledge for Android, Kotlin, Compose, and platform-specific e
 * **kotlin-flow-state-event-modeling**: State, event, and Flow modelling patterns.
 * **navigation-3**: Jetpack Navigation 3 patterns and integration.
 
-The complete active set is defined by the 32 skills physically installed under `.agents/skills/`.
+### 1.4 Stack Essentials (DI, Persistence & Cloud)
+* **hilt**: Dependency Injection boundaries and optimizations.
+* **room-schema-governance**: Room database integrity and schema evolution.
+* **firebase-basics**: Firebase CLI setup, emulators, and project configuration.
+* **firebase-auth-basics**: Firebase Authentication integration patterns.
+* **firebase-remote-config-basics**: Firebase Remote Config and parameter governance.
+
+The complete active set is defined by the 37 skills physically installed under `.agents/skills/`.
 
 > External origin does not imply optional status. A skill created by an external expert can still be an active Foundation skill when it is installed under `.agents/skills/`.
 
@@ -78,9 +85,6 @@ They are activated when a project requires a specific library, tool, or capabili
 * **using-chrisbanes-skills**: Intelligent router to identify precise expert patterns for Kotlin and Compose based on Chris Banes' best practices.
 
 ### 2.2 Technology & Library Plugins
-* **hilt**: Dependency Injection boundaries and optimizations.
-* **room-schema-governance**: Room database integrity and schema evolution.
-* **firebase-* Suite**: CLI setup (`firebase-basics`), Auth patterns (`firebase-auth-basics`), and Remote Config management (`firebase-remote-config-basics`).
 * **camerax**: Camera and Media3 integration patterns.
 * **wear-compose-m3**: Material 3 patterns for Wear OS.
 * **verified-email**: Email verification using Android Credential Manager.
