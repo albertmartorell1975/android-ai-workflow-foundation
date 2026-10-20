@@ -12,6 +12,14 @@
             "args": [
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-rm-rf.js"
             ]
+          },
+          {
+            "type": "command",
+            "if": "Bash(git commit*)",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/check-agents-size.js"
+            ]
           }
         ]
       }

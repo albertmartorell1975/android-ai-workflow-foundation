@@ -36,7 +36,7 @@ The operational backbone responsible for project discovery, harness state, `git 
 ### 1.2 Shared Engineering Guardrails
 Technical standards shared by the active Foundation environment across all subagents.
 
-* **agent-safety-hooks**: Automated safety guard installed automatically during project setup to block destructive actions (such as `rm -rf`, `git reset --hard`, `git clean -f`, `gh pr merge`, or forced pushes) tailored to your active AI provider (Gemini, Cursor, or Claude Code).
+* **agent-safety-hooks**: Automated safety and context-size guards installed automatically during project setup (`block-rm-rf.js` to block destructive actions like `rm -rf`, `git reset --hard`, `git clean -f`, `gh pr merge`, or forced pushes, and `check-agents-size.js` to enforce the 10 KB `AGENTS.md` limit) tailored to your active AI provider (Gemini, Cursor, or Claude Code).
 * **ai-context-exclusion**: Provider-agnostic AI context exclusion governance across Gemini, Cursor, and Claude Code.
 * **dependency-manager**: Governance for `libs.versions.toml` and dependency compatibility.
 * **design-system-governance**: Design System standards covering Material 3, accessibility, RTL, adaptive UI, and reusability.

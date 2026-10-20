@@ -7,6 +7,10 @@
           {
             "type": "command",
             "command": "node ./hooks/block-rm-rf.js"
+          },
+          {
+            "type": "command",
+            "command": "node ./hooks/check-agents-size.js"
           }
         ]
       }

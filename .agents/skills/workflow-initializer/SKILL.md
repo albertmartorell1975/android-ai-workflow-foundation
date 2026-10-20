@@ -61,7 +61,7 @@ The Foundation uses opinionated, industry-standard engineering defaults (**MVVM 
    - Materialize the four subagent files (`workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter`) into the correct provider directory (`.agents/agents/`, `.claude/agents/`, or `.cursor/agents/`).
 3. **AI Context Exclusion & Safety Hooks Setup**:
    - Delegate context exclusion creation to the `ai-context-exclusion` skill, passing the selected AI Provider (defaulting to `Gemini` if omitted) to materialize `.aiexclude`, `.cursorignore`, or `.claude/settings.json`.
-   - Delegate safety hooks setup to the `agent-safety-hooks` skill, passing the selected AI Provider to materialize the hook configuration and script into the provider's official location (`.claude/settings.json` + `.claude/hooks/block-rm-rf.js`, `.agents/hooks.json` + `.agents/hooks/block-rm-rf.js`, or `.cursor/hooks.json` + `.cursor/hooks/block-rm-rf.js`).
+   - Delegate safety hooks setup to the `agent-safety-hooks` skill, passing the selected AI Provider to materialize the hook configuration and script into the provider's official location (`.claude/settings.json` + `.claude/hooks/{block-rm-rf.js, check-agents-size.js}`, `.agents/hooks.json` + `.agents/hooks/{block-rm-rf.js, check-agents-size.js}`, or `.cursor/hooks.json` + `.cursor/hooks/{block-rm-rf.js, check-agents-size.js}`).
 4. **Git Baseline & Next Step Guidance**:
    - If not already initialized, run `git init` and establish the `main` and `develop` branches according to `git-governance`.
    - Guide the user on the two entry modes available next:

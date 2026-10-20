@@ -4,6 +4,9 @@
     "beforeShellExecution": [
       {
         "command": "node .cursor/hooks/block-rm-rf.js"
+      },
+      {
+        "command": "node .cursor/hooks/check-agents-size.js"
       }
     ]
   }

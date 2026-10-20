@@ -12,13 +12,14 @@ Integrated and adapted for Android AI Workflow Foundation with permission.
 
 Use this skill to create or update the smallest useful repository harness. The output lets any orchestrator or subagent answer: what is this project, how do I start and verify it, what is the next ready feature, and what constraints apply.
 
-## AGENTS.md Preservation
+## AGENTS.md Preservation & Size Discipline
 
 When creating or updating `AGENTS.md`:
 
 * Preserve existing project-specific Workflow Governance and Stack Diagnosis rules when present.
 * If `AGENTS.md` was already materialized by `workflow-initializer`, enrich its project summary and Read First references conservatively without overwriting the Foundation governance rules.
 * Keep `AGENTS.md` short and routing-oriented. It is a landing page, not an encyclopedia.
+* **10 KB Hard Size Limit**: `AGENTS.md` MUST NOT exceed 10 KB (10,240 bytes) under any circumstance. This avoids the "lost in the middle" degradation in LLM context windows. Move detailed architectural rules, API contracts, or domain encyclopedias into `CONSTRAINTS.md`, `ARCHITECTURE.md`, or dedicated skills.
 
 ## Hard Rules
 
@@ -102,7 +103,7 @@ If the Android app is not bootstrapped yet, record in `PROGRESS.md` that product
 
 Before finishing, verify:
 
-- `AGENTS.md` answers: what is the project, how to start, how to verify, and how the Foundation multi-agent pipeline works.
+- `AGENTS.md` answers: what is the project, how to start, how to verify, and how the Foundation multi-agent pipeline works, and remains strictly under 10 KB (10,240 bytes).
 - `feature_list.json` is valid JSON.
 - Every feature has `id`, `area`, `title`, `user_visible_behavior`, `depends_on`, `status`, `verification`, `evidence`, and `notes`.
 - Every `depends_on` entry references an existing feature `id`, does not reference itself, and does not create a dependency cycle.
