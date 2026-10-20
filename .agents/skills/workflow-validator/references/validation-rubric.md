@@ -1,6 +1,6 @@
 # Feature Validation Rubric & Report Template (`workflow-validator`)
 
-Use this rubric during independent validation and write the result to **`docs/features/<feature-id>/validator/validation-report.md`**.
+Use this rubric during independent validation and return the structured evaluation in your output response to **`workflow-orchestrator`** (which persists it to `docs/features/<feature-id>/validator/validation-report.md` if needed). Do not write or edit files directly from `workflow-validator`.
 
 ---
 
@@ -34,9 +34,9 @@ Use this rubric during independent validation and write the result to **`docs/fe
 
 ---
 
-## 3. Mandatory Template for `docs/features/<feature-id>/validator/validation-report.md`
+## 3. Mandatory Output Structure (Returned to `workflow-orchestrator`)
 
-Always write `docs/features/<feature-id>/validator/validation-report.md` using this exact structure so **`workflow-implementer`** and **`workflow-orchestrator`** can parse it effortlessly:
+Always format your validation response using this exact structure so **`workflow-orchestrator`** and **`workflow-implementer`** can use it directly:
 
 ```markdown
 # Validation Report: <feature-id>

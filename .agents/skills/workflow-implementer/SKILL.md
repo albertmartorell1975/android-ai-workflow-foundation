@@ -30,16 +30,13 @@ Every response, status update, and `PROGRESS.md` log entry produced by this suba
 You are the **Implementer / Generator subagent**, not the planner, not the independent validator, and not the final documenter.
 
 - **Execution Environment**: Operate inside your isolated **`git worktree`** (e.g., `.worktrees/impl-<feature-id>` on branch `wt/impl-<feature-id>`) with `model: inherit` by default.
-- **Core Technical Skills (Always Active)**:
-  - *Kotlin & Concurrency*: `kotlin-style`, `kotlin-control-flow`, `kotlin-functions`, `kotlin-coroutines-structured-concurrency`, `kotlin-flow-state-event-modeling`.
-  - *Architecture & Dependencies*: `module-architecture-governance`, `repository-pattern-governance`, `viewmodel-architecture-governance`, `design-system-governance`, `dependency-manager`.
-  - *UI & Compose*: `compose-state-authoring`, `compose-state-hoisting`, `compose-side-effects`, `compose-stability-diagnostics`, `compose-recomposition-performance`, `compose-modifier-and-layout-style`, `compose-focus-navigation`, `navigation-3`, `adaptive`, `edge-to-edge`, `compose-ui-testing-patterns`.
-  - *Verification & Security*: `compiler`, `testing-setup`, `android-intent-security`.
-- **Conditional Stack Skills (Active when installed in `.agents/skills/`)**:
-  - *Dependency Injection (`Hilt`)*: `hilt` (when the project uses Hilt and `.agents/skills/hilt/SKILL.md` is installed).
-  - *Persistence (`Room`)*: `room-schema-governance` (when the project uses Room and `.agents/skills/room-schema-governance/SKILL.md` is installed).
-  - *Firebase Suite*: `firebase-local-env-setup`, `firebase-auth-basics`, `firebase-remote-config`, `firebase-ai-logic` (when the corresponding Firebase skills are installed in `.agents/skills/`).
-- **Do**: Implement the selected feature (or apply the `Implementation Repair Brief` if re-invoked after a `REVISE` verdict).
+- **Active Technical Guardrails & Skills**:
+  - *Core Technical Guardrails*: `compiler`, `kotlin-style`, `kotlin-coroutines-structured-concurrency`, `kotlin-flow-state-event-modeling`, `module-architecture-governance`, `repository-pattern-governance`, `viewmodel-architecture-governance`, `design-system-governance`, `dependency-manager`.
+  - *UI & Compose*: `compose-state-authoring`, `compose-state-hoisting`, `compose-side-effects`, `compose-modifier-and-layout-style`, `navigation-3`, `adaptive`, `edge-to-edge`, `compose-ui-testing-patterns`.
+  - *Verification & Security*: `testing-setup`, `android-intent-security`.
+  - *Stack Essentials (Core)*: `hilt` (DI boundaries), `room-schema-governance` (persistence), `firebase-basics`, `firebase-auth-basics`, `firebase-remote-config-basics`.
+  - *Optional Catalog Plugins*: If optional plugins are installed in `.agents/skills/` (e.g. `camerax`, `wear-compose-m3`, `compose-animations`, `perfetto-trace-analysis`), also consult their respective rules when relevant.
+- **Do**: Implement the selected feature (or apply the `Implementation Repair Brief` received in your prompt / from `docs/features/<feature-id>/validator/validation-report.md` if re-invoked after a `REVISE` verdict).
 - **Do**: Run the full **`compiler`** verification suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`) and record exact command outputs/evidence in `feature_list.json` and `PROGRESS.md`.
 - **Do NOT**: Broaden feature scope (`WIP=1`) or silently redesign `docs/features/<feature-id>/spec.md`.
 - **Do NOT**: Set feature status to `accepted` (maximum status an implementer can set is `passing`).

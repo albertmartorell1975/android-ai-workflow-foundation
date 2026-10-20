@@ -25,7 +25,7 @@ To make agent activity immediately recognizable in the chat and logs, every agen
 * 🟣 **`[ORCHESTRATOR · workflow-orchestrator]`** — Pipeline coordination, `feature_list.json`, `git worktree` management, and final `@git-governance` commits.
 * 🔵 **`[PLANNER · workflow-feature]`** — Technical diagnosis and specification at `docs/features/<feature-id>/spec.md`.
 * 🟡 **`[IMPLEMENTER · workflow-implementer]`** — Clean Architecture code, unit/UI tests, and `@compiler` verification in an isolated worktree.
-* 🟢 **`[VALIDATOR · workflow-validator]`** *(or 🔴 on `REVISE` / `BLOCK`)* — Lightweight independent 4-level audit (Spec Contract, Security & Scope, Test/Compiler Evidence, Runtime) and `docs/features/<feature-id>/validator/validation-report.md` generation in an isolated worktree.
+* 🟢 **`[VALIDATOR · workflow-validator]`** *(or 🔴 on `REVISE` / `BLOCK`)* — Strictly read-only 4-level independent audit (Spec Contract, Clean Architecture & Security, Test/Compiler Evidence, Runtime) returning an `accept` / `revise` / `block` verdict with an `Implementation Repair Brief` in its response.
 * 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc, durable documentation sync, and checklist completion in an isolated worktree.
 
 ---
@@ -68,14 +68,15 @@ Triggered when the user asks to continue the project backlog, run the next avail
 ## 2. Hard Governance Rules
 
 - **Single Responsibility**: The orchestrator never writes application code, tests, or KDoc directly while a subagent owns that role.
-- **Default Model Selection**: Always configure and invoke subagents with **`model: inherit`** by default so subagents automatically use the active session model (e.g., Gemini Flash 3.8, Gemini Pro, Claude Sonnet) without quota or tier errors. Only override if the user explicitly requests a specific tier.
+- **Default Model Selection**: Always configure and invoke subagents with **`model: inherit`** by default so subagents automatically use the active session model without quota or tier errors. Only override if the user explicitly requests a specific tier.
 - **Git Branch & Worktree Discipline**:
   - Ensure the base feature branch `feature/<feature-id>` exists from `develop` (per `git-governance`).
   - Each subagent (`implementer`, `validator`, `documenter`) runs in an isolated **`git worktree`** (see [Subagent Providers & Worktree Protocol](references/subagent-providers.md)).
   - Subagents only commit to their temporary worktree branch to pass state to the next subagent; **only the main orchestrator** merges the validated & documented result into `feature/<feature-id>` and creates the final layer-by-layer Conventional Commits.
 - **Independent Validation Gate**:
   - Never treat `passing` as final acceptance. `passing` means `workflow-implementer` finished code and passed `@compiler`.
-  - Only `workflow-validator` can emit `accept`, `revise`, or `block` in `docs/features/<feature-id>/validator/validation-report.md`.
+  - Only `workflow-validator` can emit `accept`, `revise`, or `block`.
+  - The Validator is strictly read-only and reports in chat/response. The orchestrator records acceptance and persists `docs/features/<feature-id>/validator/validation-report.md`.
 - **Never Push Without Authorization**: Do not run `git push` or merge into `develop`/`main` unless the user explicitly asks.
 
 ---
@@ -90,9 +91,9 @@ For a selected `<feature-id>`, execute the roles sequentially until `accepted` o
        ▼
 [2. Implementer: workflow-implementer]  ◄──────────────┐
        │  (isolated worktree -> code + @compiler)      │
-       ▼                                               │ REVISE (Repair Brief in
-[3. Validator: workflow-validator] ────────────────────┘ validator/validation-report.md)
-       │  (isolated worktree -> 4-level audit)
+       ▼                                               │ REVISE (Implementation Repair Brief passed in prompt)
+[3. Validator: workflow-validator] ────────────────────┘
+       │  (isolated worktree -> read-only 4-level audit -> returns verdict in response)
        │  ACCEPT
        ▼
 [4. Documenter: workflow-documenter]
@@ -107,29 +108,28 @@ For a selected `<feature-id>`, execute the roles sequentially until `accepted` o
 - If `workflow-feature` identifies Necessary Questions for the user, pause and get user confirmation before launching the Implementer.
 
 ### Stage 2: Implementation (`workflow-implementer` in Worktree)
-- Launch the **`workflow-implementer`** subagent in an isolated worktree with dynamic handoff context:
+- Spawn the **`workflow-implementer`** subagent. Instruct it to execute inside its isolated worktree and pass the handoff context:
   - `feature_id`: `<feature-id>`
   - `spec_path`: `docs/features/<feature-id>/spec.md`
-  - `validation_report_path`: `docs/features/<feature-id>/validator/validation-report.md` (when running a `REVISE` repair iteration)
+  - `repair_brief`: The `Implementation Repair Brief` text received from the validator (when running a `REVISE` repair iteration)
   - `model`: `inherit`
 - Verify that `workflow-implementer` executed the `@compiler` verification suite, recorded evidence in `PROGRESS.md` and `feature_list.json`, and updated the status to `passing`.
 
 ### Stage 3: Independent Validation (`workflow-validator` in Worktree)
-- Launch the **`workflow-validator`** subagent in an isolated worktree pointing to the implemented state:
+- Spawn the **`workflow-validator`** subagent in read-only mode in an isolated worktree pointing to the implemented state:
   - `feature_id`: `<feature-id>`
   - `spec_path`: `docs/features/<feature-id>/spec.md`
-  - `validation_report_path`: `docs/features/<feature-id>/validator/validation-report.md`
   - `model`: `inherit`
-- Read the resulting `docs/features/<feature-id>/validator/validation-report.md`:
-  - If verdict is **`revise`**: Route the `Implementation Repair Brief` inside `validation-report.md` back to **`workflow-implementer`** (Stage 2), then re-run **`workflow-validator`** (Stage 3).
+- Review the response from **`workflow-validator`**:
+  - Persist `docs/features/<feature-id>/validator/validation-report.md` with the validator's report.
+  - If verdict is **`revise`**: Route the `Implementation Repair Brief` directly into the prompt of **`workflow-implementer`** (Stage 2), then re-run **`workflow-validator`** (Stage 3).
   - If verdict is **`block`**: Stop immediately, set status to `blocked` in `feature_list.json`, and report the blocker to the user with the `🔴 [VALIDATOR · workflow-validator]` summary.
   - If verdict is **`accept`**: Proceed to Stage 4 (`workflow-documenter`).
 
 ### Stage 4: Documentation (`workflow-documenter` in Worktree)
-- Launch the **`workflow-documenter`** subagent in an isolated worktree starting from the validated state:
+- Spawn the **`workflow-documenter`** subagent in an isolated worktree starting from the implemented state:
   - `feature_id`: `<feature-id>`
   - `spec_path`: `docs/features/<feature-id>/spec.md`
-  - `validation_report_path`: `docs/features/<feature-id>/validator/validation-report.md`
   - `model`: `inherit`
 - Verify that `workflow-documenter` updated KDoc on new public classes, synchronized required durable docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`, `.agents/skills/README.md`), and checked `[x]` completed items in `docs/features/<feature-id>/spec.md`.
 
@@ -140,7 +140,7 @@ For a selected `<feature-id>`, execute the roles sequentially until `accepted` o
 4. Present the final handoff summary to the user:
    - 🟣 **`[ORCHESTRATOR · workflow-orchestrator]`**
    - **What was built**: 2-5 concise bullets of accepted behavior.
-   - **Validation**: Summary of `docs/features/<feature-id>/validator/validation-report.md` verdict and checks run.
+   - **Validation**: Summary of validator verdict and checks run.
    - **Documentation**: KDoc and markdown files updated by `workflow-documenter`.
    - **How to test locally**: Commands (`./init.sh` or `./gradlew`) and manual UI steps.
    - **Commits**: Created Conventional Commits on `feature/<feature-id>`.

@@ -20,7 +20,7 @@ Every agent must identify itself at the top of its output and `PROGRESS.md` entr
 
 ## 2. Git Worktree Lifecycle & State Handoff
 
-Because Git does not allow two worktrees to check out the exact same branch name simultaneously, and because a newly created worktree only sees **committed** state from its base ref, the orchestrator and subagents follow this exact handoff protocol for `<feature-id>`:
+Because Git does not allow two worktrees to check out the exact same branch name simultaneously, and because subagents must operate without interfering with each other's execution context, the orchestrator and subagents follow this exact handoff protocol for `<feature-id>`:
 
 ### Step A: Prepare Feature Branch (Orchestrator)
 Before spawning subagents, ensure `feature/<feature-id>` exists from `develop` and contains the committed specification `docs/features/<feature-id>/spec.md`:
@@ -35,21 +35,29 @@ Create an isolated worktree on temporary branch `wt/impl-<feature-id>` branched 
 ```bash
 git worktree add -B wt/impl-<feature-id> .worktrees/impl-<feature-id> feature/<feature-id>
 ```
-* Inside `.worktrees/impl-<feature-id>`, the Implementer writes code, runs `@compiler`, updates `feature_list.json` (`passing`) and `PROGRESS.md`, and stages + commits its work to `wt/impl-<feature-id>` (as a temporary worktree checkpoint so the Validator worktree can read it).
+* Inside `.worktrees/impl-<feature-id>`, the Implementer writes code, runs `@compiler`, updates `feature_list.json` (`passing`) and `PROGRESS.md`, and stages + commits its work to `wt/impl-<feature-id>` (as a temporary worktree checkpoint).
 
-### Step C: Validator Worktree (`workflow-validator`)
+### Step C: Validator Evaluation (`workflow-validator`)
 Create an isolated worktree on temporary branch `wt/val-<feature-id>` starting from `wt/impl-<feature-id>`:
 ```bash
 git worktree add -B wt/val-<feature-id> .worktrees/val-<feature-id> wt/impl-<feature-id>
 ```
-* Inside `.worktrees/val-<feature-id>`, the Validator audits the code, runs required checks, writes `docs/features/<feature-id>/validator/validation-report.md`, and commits the report to `wt/val-<feature-id>`.
-* **If Verdict is `REVISE`**:
-  - Copy or cherry-pick `docs/features/<feature-id>/validator/validation-report.md` into `.worktrees/impl-<feature-id>`, remove `.worktrees/val-<feature-id>`, and re-invoke `workflow-implementer` to execute the `Implementation Repair Brief`.
+* Inside `.worktrees/val-<feature-id>`, the Validator operates as a **strictly read-only evaluator**:
+  - Audits the spec contract, diff, test implementations, and recorded compiler evidence.
+  - Can rerun focused tests or `@android-cli` if needed for verification, but **never modifies source code or project files**.
+  - **Does NOT write files to the repository.** Returns its verdict (`accept`, `revise`, or `block`), findings, and `Implementation Repair Brief` directly in its output summary to `workflow-orchestrator`.
+* **Handoff Handling by Orchestrator**:
+  - The Orchestrator receives the Validator's summary and persists `docs/features/<feature-id>/validator/validation-report.md`.
+  - **If Verdict is `REVISE`**:
+    * Remove `.worktrees/val-<feature-id>`.
+    * Re-invoke `workflow-implementer` in `.worktrees/impl-<feature-id>`, passing the `Implementation Repair Brief` directly into its prompt.
+  - **If Verdict is `ACCEPT`**:
+    * Proceed to Step D (`workflow-documenter`).
 
 ### Step D: Documenter Worktree (`workflow-documenter`)
-Once the Validator returns `ACCEPT`, create an isolated worktree on temporary branch `wt/doc-<feature-id>` starting from `wt/val-<feature-id>`:
+Once the Validator returns `ACCEPT`, create an isolated worktree on temporary branch `wt/doc-<feature-id>` starting from `wt/impl-<feature-id>`:
 ```bash
-git worktree add -B wt/doc-<feature-id> .worktrees/doc-<feature-id> wt/val-<feature-id>
+git worktree add -B wt/doc-<feature-id> .worktrees/doc-<feature-id> wt/impl-<feature-id>
 ```
 * Inside `.worktrees/doc-<feature-id>`, the Documenter adds English KDoc, updates durable Markdown docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`, `spec.md`), updates `PROGRESS.md`, and commits to `wt/doc-<feature-id>`.
 
@@ -74,23 +82,27 @@ Once `workflow-documenter` finishes:
 ## 3. Provider-Specific Subagent Invocation
 
 ### A. Gemini / Google Antigravity
-In Antigravity, use the native `invoke_subagent` tool:
-* **`TypeName`**: `"self"` (or custom subagent defined via `define_subagent` with `enable_write_tools: true`)
-* **`Model`**: `"inherit"` (Default — ensures compatibility with whatever Gemini model tier is active in the user's session, such as Gemini Flash or Gemini Pro)
-* **`Workspace`**: `"share"` or `"branch"` (or `"inherit"` when using explicit `.worktrees/<role>-<feature-id>` paths)
+In Antigravity, subagents are defined under `.agents/agents/` and invoked using the native `invoke_subagent` tool:
+* **`TypeName`**: `"self"` (or custom subagent defined via `define_subagent`)
+* **`Model`**: `"inherit"` (Default — ensures compatibility with the active Gemini model tier without quota or tier errors)
 * **`Role`**:
   - `"🟡 Implementer (workflow-implementer)"`
-  - `"🟢 Validator (workflow-validator)"`
+  - `"🟢 Validator (workflow-validator)"` (set `EnableWriteTools: false` if defined via `define_subagent`)
   - `"🔷 Documenter (workflow-documenter)"`
-* **`Prompt`**: Pass the dynamic handoff payload (feature ID, worktree path, spec path, validation report path, and instruction to read `.agents/skills/workflow-<role>/SKILL.md`).
+* **`Workspace`**: `"inherit"` when executing inside `.worktrees/<role>-<feature-id>`
+* **`Prompt`**: Instruct the subagent to read its corresponding `.agents/agents/workflow-<role>.md` file (materialized by `workflow-initializer`) to acquire its skills and base instructions. Pass dynamic handoff payload (feature ID, worktree path, spec path, and repair brief on revise).
 
-### B. Claude Code (`.claude/agents/`)
-Claude Code natively loads subagents from `.claude/agents/<name>.md` (materialized by `workflow-initializer`). Each file includes YAML frontmatter with:
+### B. Cursor (`.cursor/agents/`)
+Cursor loads subagent definitions from `.cursor/agents/<name>.md` (materialized by `workflow-initializer`):
+* `model: inherit`
+* For `workflow-validator.md`: `readonly: true` ensures the evaluator cannot modify any files on disk.
+* Executes inside the isolated `.worktrees/<role>-<feature-id>` worktree.
+
+### C. Claude Code (`.claude/agents/`)
+Claude Code natively loads subagents from `.claude/agents/<name>.md` (materialized by `workflow-initializer`):
 * `name`: `workflow-implementer` | `workflow-validator` | `workflow-documenter`
 * `model`: `inherit`
 * `isolation`: `worktree`
 * `color`: `yellow` | `green` | `cyan`
-* `skills`: Scoped list of Foundation skills for that specific role.
-
-### C. Cursor (`.cursor/agents/`)
-Cursor loads subagent definitions from `.cursor/agents/<name>.md` (materialized by `workflow-initializer`) with `model: inherit` and executes inside the isolated `.worktrees/<role>-<feature-id>` worktree.
+* `skills`: The explicit scoped list of Foundation skills for that specific role.
+* For `workflow-validator.md`: `disallowedTools: [Write, Edit]` guarantees strict read-only operation.
