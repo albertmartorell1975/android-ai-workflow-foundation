@@ -44,7 +44,7 @@ Ask the user about their technical stack and offer optional catalog plugins:
    - **Persistence**: `Room` (Recommended), `SQLDelight`, or none?
 
 2. **Optional Catalog Plugins Selection**:
-   Read the **Optional Catalog Skills** section from `.agents/skills/README.md`. Present these categorized optional plugins (e.g., `hilt`, `room-schema-governance`, `firebase-*`, `camerax`, `wear-compose-m3`, `perfetto-trace-analysis`, `to-plan`, `using-chrisbanes-skills`) and ask which ones the user wishes to install.
+   Read the **Optional Catalog Skills** section from `.agents/skills/README.md`. Present these categorized optional plugins (e.g., `camerax`, `wear-compose-m3`, `perfetto-trace-analysis`, `to-plan`, `using-chrisbanes-skills`, `compose-animations`, `compose-stability-diagnostics`, `compose-recomposition-performance`, `compose-focus-navigation`, `kotlin-control-flow`, `kotlin-functions`) and ask which ones the user wishes to install.
 
 3. **Optional Plugin Installation**: For each selected plugin, copy or fetch its `SKILL.md` from `.agents/catalog/[plugin-name]/SKILL.md` (`https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/develop/.agents/catalog/[plugin-name]/SKILL.md`) and write it to `.agents/skills/[plugin-name]/SKILL.md`.
 
@@ -57,11 +57,17 @@ Ask the user about their technical stack and offer optional catalog plugins:
    - `[DI_TOOL]` -> Hilt, Koin, or None.
    - `[PERSISTENCE]` -> Room, SQLDelight, or None.
 2. **Materialize Subagents & `.worktrees/` Ignore Rule**:
-   - Read `.agents/skills/workflow-initializer/references/SUBAGENTS_TEMPLATE.md`.
    - Ensure `.worktrees/` is added to the project's `.gitignore`.
-   - When materializing `workflow-implementer` (for **Claude Code** in `.claude/agents/workflow-implementer.md` or **Cursor** in `.cursor/agents/workflow-implementer.md`), check if `hilt`, `room-schema-governance`, or any `firebase-*` skills (`firebase-local-env-setup`, `firebase-auth-basics`, `firebase-remote-config`, `firebase-ai-logic`) are installed in `.agents/skills/` and uncomment/append them to the `skills:` list.
-   - Materialize `workflow-validator` (with its lightweight audit skill set) and `workflow-documenter` (`model: inherit`, `isolation: worktree`).
-   - If the selected AI Provider is **Gemini / Antigravity**, confirm that subagents are natively invoked via `invoke_subagent` (`Model: "inherit"`) using `.agents/skills/workflow-*/SKILL.md`.
+   - Read the Single Source of Truth for skills from `.agents/skills/workflow-initializer/references/SUBAGENT_SKILLS.json`.
+   - Read `.agents/skills/workflow-initializer/references/SUBAGENTS_TEMPLATE.md`.
+   - Determine the active skills for `workflow-implementer`:
+     * Start with the base list from `SUBAGENT_SKILLS.json` for `workflow-implementer`.
+     * If any optional catalog plugins were installed into `.agents/skills/` during Phase 2, append their names to the implementer skills list.
+   - Substitute the placeholders (`[INJECT_IMPLEMENTER_SKILLS]`, `[INJECT_VALIDATOR_SKILLS]`, `[INJECT_DOCUMENTER_SKILLS]`) in the template with the lists, formatted correctly for the chosen provider:
+     * For **Antigravity**, format as: `  - skills/<skill-name>`
+     * For **Claude Code**, format as: `  - <skill-name>`
+     * For **Cursor**, format as: `- <skill-name>`
+   - Materialize the three subagent files (`workflow-implementer`, `workflow-validator`, `workflow-documenter`) into the correct provider directory (`.agents/agents/`, `.claude/agents/`, or `.cursor/agents/`).
 3. **AI Context Exclusion & Safety Hooks Setup**:
    - Delegate context exclusion creation to the `ai-context-exclusion` skill, passing the selected AI Provider (defaulting to `Gemini` if omitted) to materialize `.aiexclude`, `.cursorignore`, or `.claude/settings.json`.
    - Delegate safety hooks setup to the `agent-safety-hooks` skill, passing the selected AI Provider to materialize the hook configuration and script into the provider's official location (`.claude/settings.json` + `.claude/hooks/block-rm-rf.js`, `.agents/hooks.json` + `.agents/hooks/block-rm-rf.js`, or `.cursor/hooks.json` + `.cursor/hooks/block-rm-rf.js`).
@@ -77,7 +83,7 @@ Ask the user about their technical stack and offer optional catalog plugins:
 - [ ] Perform **Stack Diagnosis** with the user (Name, AI Provider, Arch, DI, DB).
 - [ ] Present and install selected **Optional Catalog Plugins**.
 - [ ] Materialize `AGENTS.md` from `references/AGENTS_TEMPLATE.md` with dynamic replacements.
-- [ ] Add `.worktrees/` to `.gitignore` and materialize provider-specific subagents from `references/SUBAGENTS_TEMPLATE.md`.
+- [ ] Add `.worktrees/` to `.gitignore` and materialize provider-specific subagents from `references/SUBAGENTS_TEMPLATE.md` using `SUBAGENT_SKILLS.json` + installed catalog plugins.
 - [ ] Delegate AI context exclusion creation to `ai-context-exclusion`.
 - [ ] Delegate safety hooks creation to `agent-safety-hooks`.
 - [ ] Verify Git baseline (`main` / `develop`) per `git-governance`.
