@@ -1,6 +1,6 @@
 ---
 name: agent-safety-hooks
-description: Automated safety hooks to block destructive actions (such as 'rm -rf' or recursive file deletion) tailored to your active AI provider (Gemini, Cursor, or Claude Code).
+description: Automated safety hooks to block destructive actions (such as 'rm -rf', 'git reset --hard', 'git clean -f', 'gh pr merge', or forced pushes) tailored to your active AI provider (Gemini, Cursor, or Claude Code).
 metadata:
   author: Albert Martorell Garcia
   version: 1.0.0
@@ -15,7 +15,7 @@ metadata:
 ---
 # Agent Safety Hooks Governance
 
-This skill manages provider-agnostic lifecycle safety hooks for Android projects. It prevents AI agents from executing destructive shell commands such as `rm -rf` by installing both the hook configuration and the hook script into the canonical hook locations of the active AI provider.
+This skill manages provider-agnostic lifecycle safety hooks for Android projects. It prevents AI agents from executing destructive shell commands such as `rm -rf`, `git reset --hard`, `git clean -f`, autonomous `gh pr merge` (ensuring PR merges are strictly human), or force pushes, by installing both the hook configuration and the hook script into the canonical hook locations of the active AI provider.
 
 ## Supported Providers & Canonical Hook Locations
 
@@ -23,7 +23,7 @@ Following each provider's official specification (such as [Claude Code Hook Loca
 
 | AI Provider | Hook Configuration File | Hook Script Location | Event / Matcher |
 | :--- | :--- | :--- | :--- |
-| **Claude Code** | `.claude/settings.json` | `.claude/hooks/block-rm-rf.js` | `PreToolUse` (`Bash\|PowerShell`, `if: "Bash(rm *)"`) |
+| **Claude Code** | `.claude/settings.json` | `.claude/hooks/block-rm-rf.js` | `PreToolUse` (`Bash\|PowerShell`, `if: "Bash(rm *\|git *\|gh *)"`) |
 | **Gemini / Antigravity (Default)** | `.agents/hooks.json` | `.agents/hooks/block-rm-rf.js` | `PreToolUse` (`run_shell_command` / `run_command`) |
 | **Cursor** | `.cursor/hooks.json` | `.cursor/hooks/block-rm-rf.js` | `beforeShellExecution` |
 
