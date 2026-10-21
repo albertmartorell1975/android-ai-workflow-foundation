@@ -44,7 +44,7 @@ Every agent in the pipeline identifies its work in chat, validation reports, and
 
 | Role | Core Skill | Execution Scope | Key Responsibilities |
 | :--- | :--- | :--- | :--- |
-| 🟣 **Orchestrator** | `workflow-orchestrator` | Main Feature Branch (`feature/<feature-id>`) | Selects features (Standalone or from `feature_list.json`), manages `git worktree` lifecycles, coordinates subagents, persists `validation-report.md`, manages bounded repair loops (`MAX_REPAIR_ATTEMPTS = 2`) with a Human Decision Gate (`needs_human_review`), and creates atomic layer-by-layer Conventional Commits via `git-governance`. |
+| 🟣 **Orchestrator** | `workflow-orchestrator` | Main Feature Branch (`feature/<feature-id>`) | Selects features (Standalone or from `feature_list.json`), manages `git worktree` lifecycles, coordinates subagents, evaluates proactive Human Checkpoints (`require_review_after`), persists `validation-report.md`, manages bounded repair loops (`MAX_REPAIR_ATTEMPTS = 2`) with a Human Decision Gate (`needs_human_review`), and creates atomic layer-by-layer Conventional Commits via `git-governance`. |
 | 🔵 **Planner** | `workflow-planner` | Clean Subagent Context (`docs/features/<id>/`) | Performs pre-diagnosis in a clean subagent context, asks up to 3 clarifying questions, and writes the unified contract at `docs/features/<feature-id>/spec.md` (`Given/When/Then` scenarios + Android layer breakdown + Clean Architecture checklist) with strictly bounded documentation edits. |
 | 🟡 **Implementer** | `workflow-implementer` | Isolated Worktree (`.worktrees/impl-<feature-id>`) | Executes in an isolated worktree with automated Android environment hydration (`local.properties`, `.env`), implements Clean Architecture layers (`Domain -> Data -> UseCase -> UI`), converts `ui/resources/` assets to `.webp`, writes unit/Compose UI tests, runs the `@compiler` suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`), and sets status to `passing`. |
 | 🟢/🔴 **Validator** | `workflow-validator` | Isolated Worktree (`.worktrees/val-<feature-id>`) | Strictly read-only auditor across **4 validation levels**: (1) Spec contract, (2) Security (`android-intent-security`) & Scope Discipline, (3) `@compiler` evidence & test quality audit (`compose-ui-testing-patterns`), (4) Emulator runtime via `@android-cli` (when active). Returns its verdict (`accept`, `revise` + Repair Brief, or `block`) directly to `workflow-orchestrator` without modifying repository files. |
@@ -69,6 +69,11 @@ When driving a multi-feature milestone, MVP release, or chained set of features:
 2. Run **`@workflow-orchestrator`** with: *"Process the backlog"* or *"Run next ready features"*.
 3. The orchestrator executes ready features sequentially—or parallelizes independent features whose `depends_on` prerequisites are `accepted` across separate `git worktree` instances.
 4. Continues until the queue is finished or a blocking issue requires developer intervention.
+
+### 🛡 Human-in-the-Loop Governance
+The Foundation guarantees developer control without sacrificing autonomous pipeline speed:
+* **Proactive Checkpoints (`require_review_after`)**: Features in `feature_list.json` can declare optional pause points (`"planner"`, `"implementer"`, `"validator"`, or array) to pause for developer review on critical workflows (e.g. auth, payments, core architecture), while routine features execute fully autonomously (`null`).
+* **Reactive Decision Gate (`needs_human_review`)**: If the repair cycle between implementer and validator cannot resolve within `MAX_REPAIR_ATTEMPTS = 2`, the orchestrator freezes the worktree and prompts the developer with 4 actionable pathways (`Approve`, `Hint`, `Manual Edit`, `Abort`).
 
 ---
 

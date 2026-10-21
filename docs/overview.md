@@ -47,13 +47,13 @@ The Foundation structures development across three modular layers:
                                         ▼
                        [workflow-planner] 🔵 (Generates spec.md) ◄────────────────┐
                                         │                                         │
-                                        ▼                                         │ (3. Re-plan)
+                                        ▼ (*)                                     │ (3. Re-plan)
                      [workflow-implementer] 🟡 (Code & Tests) ◄─────────┐         │
                                         │                               │         │
-                                        ▼                               │         │
+                                        ▼ (*)                           │         │
                       [workflow-validator] 🟢/🔴 (Read-Only Audit)      │         │
                         │                             │                 │         │
-               (ACCEPT) │                    (REVISE) │                 │         │
+           (*) (ACCEPT) │                    (REVISE) │                 │         │
                         │                             ▼                 │ (Auto   │
                         │                  [Attempts <= MAX (2)?]       │  repair │
                         │                    ├── Yes ───────────────────┤  pass)  │
@@ -76,6 +76,8 @@ The Foundation structures development across three modular layers:
                                          │
                                          ▼
                        [GitHub Delivery: publish] (Stage 6: PR + CI Gate)
+
+(*) Optional Human-in-the-Loop Checkpoint if configured in `require_review_after` ("planner", "implementer", "validator") or requested via prompt.
 ```
 
 ---
@@ -133,7 +135,9 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
 * Can run ready features sequentially or launch independent features (whose `depends_on` prerequisites are all `accepted`) in parallel worktrees.
 * Manages the `feature/<feature-id>` branch and temporary subagent worktrees (`.worktrees/impl-<id>`, `.worktrees/val-<id>`, `.worktrees/doc-<id>`).
 * Receives the read-only evaluation from `workflow-validator`, persists `docs/features/<feature-id>/validator/validation-report.md`, and bounds repair cycles to `MAX_REPAIR_ATTEMPTS = 2` (passing the `Implementation Repair Brief` directly to `workflow-implementer` on `revise` when attempts remain).
-* **Human-in-the-Loop Decision Gate**: When repair attempts exceed the limit without reaching `accept`, pauses looping immediately, preserves `.worktrees/impl-<feature-id>`, sets status to `needs_human_review`, and presents 4 resolution options (Manual Override, Human Guidance Hint, Re-plan `spec.md`, or Cancel/Defer). Once resolved to acceptance, seamlessly resumes Stage 4 (Documenter) and Stage 5 (Consolidation & Commits).
+* **Dual Human-in-the-Loop Architecture**:
+  - **Proactive Declarative Checkpoints (`require_review_after`)**: Features can declare optional pause points in `feature_list.json` (e.g., `"require_review_after": "planner"` or `"validator"`), or developers can request them ad-hoc via prompt. The orchestrator halts before the next stage, presents deliverables with clickable links, and offers structured options (`[Approve & Proceed]`, `[Human Hint]`, `[Manual Worktree Edits]`, `[Abort]`).
+  - **Reactive Decision Gate (`needs_human_review`)**: When autonomous repair attempts exceed `MAX_REPAIR_ATTEMPTS = 2` without reaching `accept`, pauses looping immediately, preserves `.worktrees/impl-<feature-id>`, sets status to `needs_human_review`, and presents 4 resolution options (Manual Override, Human Guidance Hint, Re-plan `spec.md`, or Cancel/Defer). Once resolved to acceptance, seamlessly resumes Stage 4 (Documenter) and Stage 5 (Consolidation & Commits).
 * **Exclusively owns `@git-governance`**: Consolidates the final worktree after documentation completes, marks the feature `accepted` in `feature_list.json`, and creates atomic layer-specific Conventional Commits (`feat(domain)`, `feat(data)`, `feat(usecases)`, `feat(ui)`, `test`, `docs`).
 
 ### 2. 🔵 Planner (`workflow-planner`)
