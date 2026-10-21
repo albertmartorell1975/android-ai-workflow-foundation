@@ -70,7 +70,7 @@ Create/update the target files using `references/artifact-templates.md`:
   - **Lifecycle Rule**: Inspected and created **only once** during initial repository harness setup by `@harness-starter`. If `.github/workflows/gate.yml` (or an existing CI workflow) already exists, preserve it untouched. Routine feature commits in `@workflow-orchestrator` and `@git-governance` NEVER create, evaluate, or modify CI workflows.
 - `PROGRESS.md`: current verified state and lightweight session log.
 - `CONSTRAINTS.md`: operational `MUST` / `MUST NOT` rules discovered so far.
-- `feature_list.json`: machine-readable feature backlog with `id`, `area`, `title`, `user_visible_behavior`, `depends_on`, `status`, `verification`, `evidence`, and `notes`.
+- `feature_list.json`: machine-readable feature backlog with `id`, `area`, `title`, `user_visible_behavior`, `depends_on`, `status`, optional `require_review_after` (proactive Human-in-the-Loop checkpoints), `verification`, `evidence`, and `notes`.
 
 For EVERY feature derived in `feature_list.json`, ensure its dedicated unified folder structure exists under `docs/features/<feature-id>/`:
 - `docs/features/<feature-id>/ui/screens/` — for feature screen mockups and layout blueprints (PNG/HTML).
@@ -105,7 +105,7 @@ Before finishing, verify:
 
 - `AGENTS.md` answers: what is the project, how to start, how to verify, and how the Foundation multi-agent pipeline works, and remains strictly under 10 KB (10,240 bytes).
 - `feature_list.json` is valid JSON.
-- Every feature has `id`, `area`, `title`, `user_visible_behavior`, `depends_on`, `status`, `verification`, `evidence`, and `notes`.
+- Every feature has `id`, `area`, `title`, `user_visible_behavior`, `depends_on`, `status`, optional `require_review_after` (null, "planner", "implementer", "validator", or array), `verification`, `evidence`, and `notes`.
 - Every `depends_on` entry references an existing feature `id`, does not reference itself, and does not create a dependency cycle.
 - `PROGRESS.md` names the standard startup and verification paths.
 - `.github/workflows/gate.yml` exists and configures the deterministic `@compiler` CI gate.

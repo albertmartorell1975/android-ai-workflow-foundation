@@ -18,7 +18,7 @@ Executes the feature pipeline through all roles until locally accepted:
 1. **Precondition Gate**: Must pass all 4 preconditions before mutating state.
 2. **Common Base SHA**: Fixes `base_sha = $(git rev-parse origin/<base_branch>)`. All concurrent worktrees branch from this exact commit.
 3. **GitHub Issue Sync**: Reuses existing issue or creates `[<feature-id>] <title>`.
-4. **Pipeline Execution**: Spawns hydrated worktree (`.worktrees/impl-<id>`) and runs the 5-stage loop (`workflow-planner -> workflow-implementer -> workflow-validator -> workflow-documenter -> Stage 5 local atomic commits`).
+4. **Pipeline Execution**: Spawns hydrated worktree (`.worktrees/impl-<id>`) and runs the 5-stage loop (`workflow-planner -> workflow-implementer -> workflow-validator -> workflow-documenter -> Stage 5 local atomic commits`), honoring any `require_review_after` human checkpoints configured in `feature_list.json` (or requested via prompt) before proceeding to subsequent stages.
 5. **Issue Evidence**: Updates the issue body with verification evidence. Commits remain local.
 
 ### Mode: `publish` (publicar) — GitHub PR Delivery

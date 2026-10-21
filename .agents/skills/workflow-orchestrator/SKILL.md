@@ -80,6 +80,14 @@ When coordinating backlog features or delivering to GitHub, the orchestrator eva
 - **Bounded Repair Loop (`MAX_REPAIR_ATTEMPTS = 2`) & Human Decision Gate (`needs_human_review`)**:
   - The repair cycle between `workflow-implementer` and `workflow-validator` is strictly bounded to a maximum of 2 repair attempts.
   - If unresolved after 2 repairs, autonomous looping stops immediately, the worktree is preserved intact, status is set to `needs_human_review`, and the user is presented with 4 clear pathways (Manual Override, Human Hint, Re-plan `spec.md`, Cancel).
+- **Proactive Human Checkpoints (`require_review_after`)**:
+  - The pipeline supports optional, declarative Human-in-the-Loop checkpoints configured per feature in `feature_list.json` (`"require_review_after": "planner" | "implementer" | "validator" | ["planner", "validator"]`) or specified ad-hoc in the user prompt.
+  - When a checkpointed stage completes, the orchestrator pauses autonomous progression, displays the stage summary with clickable artifact links, and presents 4 structured review options:
+    1. **`[Approve & Proceed]`**: Deliverables verified; continue to next pipeline stage.
+    2. **`[Human Guidance / Hint]`**: User provides corrective feedback; stage re-runs or next stage receives guidance.
+    3. **`[Manual Worktree Edits]`**: User directly edits or tests in the active worktree before signaling the orchestrator to resume.
+    4. **`[Abort / Defer]`**: Safely aborts or suspends feature processing, preserving worktree state.
+  - **Permissive Evaluation**: Any unrecognized value or invalid stage name in `require_review_after` is treated permissively as `null` (the autonomous flow proceeds without stopping or failing).
 - **Worktree Hydration**: Always copy `local.properties` (with `sdk.dir`) and uncommitted environment files into new worktrees before running subagents so Gradle can compile.
 - **Never Push Without Authorization**: Do not execute `git push` unless running in authorized `publish` mode.
 - **Never Merge**: Never execute `gh pr merge` or enable auto-merge.
@@ -91,13 +99,13 @@ When coordinating backlog features or delivering to GitHub, the orchestrator eva
 ```text
 [1. Planner: workflow-planner] ◄────────────────────────────────┐
        │  (creates docs/features/<feature-id>/spec.md)          │
-       ▼                                                        │ (3. Re-plan)
+       ▼ (*)                                                    │ (3. Re-plan)
 [2. Implementer: workflow-implementer]  ◄─────────────┐         │
        │  (hydrated worktree -> code + @compiler)     │         │
-       ▼                                              │         │
+       ▼ (*)                                          │         │
 [3. Validator: workflow-validator]                    │         │
        │                             │                │         │
-(ACCEPT)                             │ (REVISE)       │ (Auto   │
+(ACCEPT) (*)                         │ (REVISE)       │ (Auto   │
        │                             ▼                │  repair │
        │                  [Attempts <= MAX (2)?]      │  pass)  │
        │                    ├── Yes ──────────────────┤         │
@@ -121,22 +129,26 @@ When coordinating backlog features or delivering to GitHub, the orchestrator eva
        ▼
 [6. GitHub PR Delivery: publish mode]  (Optional / On Request)
        └── Push to remote + Structured Evidence PR (Closes #ID) -> Human Merge
+
+(*) Optional Human-in-the-Loop Checkpoint if configured in `require_review_after` ("planner", "implementer", "validator") or requested via prompt.
 ```
 
 ### Stage 1: Planning (`workflow-planner` Subagent)
 - Check if `docs/features/<feature-id>/spec.md` exists and is current.
 - Spawn **`workflow-planner`** (🔵 `[PLANNER · workflow-planner]`). It reads repository architecture, formulates up to 3 Necessary Questions if ambiguous, and writes `docs/features/<feature-id>/spec.md` without modifying executable code.
+- **Checkpoint Check `(*)`**: If `"planner"` is specified in `feature.require_review_after` (or requested via prompt), pause before Stage 2 and prompt for Human Approval.
 
 ### Stage 2: Implementation (`workflow-implementer` in Hydrated Worktree)
 - Create isolated worktree `.worktrees/impl-<feature-id>` from `feature/<feature-id>` and hydrate local Android environment files (`local.properties`, `.env`, `keystore.properties`).
 - Spawn **`workflow-implementer`** (🟡 `[IMPLEMENTER · workflow-implementer]`). It builds Clean Architecture layers, adds tests, runs `@compiler` verification, records evidence, and sets status to `passing`.
+- **Checkpoint Check `(*)`**: If `"implementer"` is specified in `feature.require_review_after` (or requested via prompt), pause before Stage 3 and prompt for Human Approval.
 
 ### Stage 3: Independent Validation (`workflow-validator` in Worktree)
 - Spawn **`workflow-validator`** (🟢/🔴) in read-only mode in an isolated worktree.
 - Persist `docs/features/<feature-id>/validator/validation-report.md`.
 - If `revise`: increment `repair_attempts++`. If `< MAX_REPAIR_ATTEMPTS`, route repair brief to Implementer (Stage 2). If `>= MAX_REPAIR_ATTEMPTS`, trigger **Human Decision Gate** (`needs_human_review`).
 - If `block`: Stop immediately and report blocker.
-- If `accept`: Proceed to Stage 4.
+- If `accept`: **Checkpoint Check `(*)`** — If `"validator"` is specified in `feature.require_review_after` (or requested via prompt), pause before Stage 4 and present the diff & `validation-report.md` for Human Approval. Otherwise, proceed directly to Stage 4.
 
 ### Stage 4: Documentation (`workflow-documenter` in Worktree)
 - Spawn **`workflow-documenter`** (🔷 `[DOCUMENTER · workflow-documenter]`).

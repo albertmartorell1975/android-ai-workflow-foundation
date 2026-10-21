@@ -151,6 +151,7 @@ Schema:
     "user_visible_behavior": "What the user or system can observe when this works.",
     "depends_on": [],
     "status": "not_started",
+    "require_review_after": null,
     "spec_path": "docs/features/short-kebab-case-id/spec.md",
     "validation_path": "docs/features/short-kebab-case-id/validator/validation-report.md",
     "verification": [
@@ -170,3 +171,12 @@ Status values:
 - `passing`: `workflow-implementer` completed implementation and passed `@compiler` self-verification; ready for `workflow-validator`.
 - `accepted`: `workflow-validator` returned `accept`, `workflow-documenter` updated documentation, and `workflow-orchestrator` persisted acceptance.
 - `blocked`: Implementation or validation cannot proceed due to an explicit blocker recorded in `notes` and `PROGRESS.md`.
+
+`require_review_after` values (Optional Human-in-the-Loop Checkpoints):
+
+- `null` (or omitted): Unattended autonomous execution. Pipeline runs `planner -> implementer -> validator -> documenter` without stopping.
+- `"planner"`: Pause after `workflow-planner` creates `docs/features/<feature-id>/spec.md`. The developer inspects architecture decisions, API contracts, and acceptance scenarios before code is written.
+- `"implementer"`: Pause after `workflow-implementer` passes compiler self-verification (`status: passing`), before `workflow-validator` audits.
+- `"validator"`: Pause after `workflow-validator` returns `accept`, before `workflow-documenter` and final git consolidation. The developer reviews the code diff and `validation-report.md`.
+- `["planner", "validator"]` (Array): Pause at multiple stages for critical features (e.g. payment flows, core architecture shifts).
+- *Permissive Evaluation*: Any unrecognized string, unknown value, or invalid stage name is treated permissively as `null` (autonomous flow continues without blocking).
