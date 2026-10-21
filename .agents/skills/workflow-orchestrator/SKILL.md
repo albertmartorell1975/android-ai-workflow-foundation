@@ -155,7 +155,7 @@ When coordinating backlog features or delivering to GitHub, the orchestrator eva
 - Authors English KDoc on public classes, updates durable documentation (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`), and marks `[x]` items in `spec.md`.
 
 ### Stage 5: Worktree Consolidation & Layer Commits (`@git-governance`)
-1. Merge the validated & documented worktree state back into `feature/<feature-id>` and remove temporary worktrees (`git worktree remove` + `git branch -d`).
+1. Merge the validated & documented worktree state back into `feature/<feature-id>` and remove temporary worktrees (`git worktree remove` + physical filesystem cleanup of untracked caches + `git branch -d`).
 2. Update `feature_list.json` status to `"accepted"` and append evidence to `PROGRESS.md`.
 3. Create atomic Conventional Commits per **`git-governance`** (`Domain -> Data -> UseCases -> UI -> Docs`), formatted as `<type>(<scope>): [<feature-id>] <subject>`.
 4. If running in local `execute` mode, present the handoff summary.

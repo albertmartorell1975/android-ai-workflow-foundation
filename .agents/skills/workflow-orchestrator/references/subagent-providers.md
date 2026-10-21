@@ -69,7 +69,15 @@ git worktree add -B wt/val-<feature-id> .worktrees/val-<feature-id> wt/impl-<fea
   - **Does NOT write files to the repository.** Returns its verdict (`accept`, `revise`, or `block`), findings, and `Implementation Repair Brief` directly in its output summary to `workflow-orchestrator`.
 * **Handoff & Worktree State Transitions**:
   - Persist report: Orchestrator saves `docs/features/<feature-id>/validator/validation-report.md`.
-  - Always clean up validator worktree: `git worktree remove .worktrees/val-<feature-id> --force`.
+  - Always clean up validator worktree:
+    ```bash
+    git worktree remove .worktrees/val-<feature-id> --force
+    # Physical cleanup of untracked build artifacts (e.g., .gradle/ daemon caches)
+    # Bash / macOS / Linux:
+    rm -rf .worktrees/val-<feature-id> 2>/dev/null || true
+    # PowerShell / Windows:
+    Remove-Item -Path ".worktrees/val-<feature-id>" -Recurse -Force -ErrorAction SilentlyContinue
+    ```
   - **Verdict `ACCEPT`**: Proceed directly to Step D (`workflow-documenter`).
   - **Verdict `REVISE` (Within limit: `repair_attempts < MAX_REPAIR_ATTEMPTS`)**:
     * Re-invoke `workflow-implementer` in existing worktree `.worktrees/impl-<feature-id>` with the repair brief.
@@ -91,11 +99,21 @@ git worktree add -B wt/doc-<feature-id> .worktrees/doc-<feature-id> wt/impl-<fea
 
 ### Step E: Consolidation & Worktree Cleanup (Orchestrator)
 Once `workflow-documenter` finishes:
-1. Remove the temporary worktree directories:
+1. Remove the temporary worktrees and purge untracked build caches (e.g., `.gradle/` daemon caches):
    ```bash
+   # Remove git worktrees
    git worktree remove .worktrees/impl-<feature-id> --force
-   git worktree remove .worktrees/val-<feature-id> --force
+   git worktree remove .worktrees/val-<feature-id> --force 2>/dev/null || true
    git worktree remove .worktrees/doc-<feature-id> --force
+
+   # Physical cleanup of untracked build artifacts / daemon caches
+   # Bash / macOS / Linux:
+   rm -rf .worktrees/impl-<feature-id> .worktrees/val-<feature-id> .worktrees/doc-<feature-id>
+   rmdir .worktrees 2>/dev/null || true
+
+   # PowerShell / Windows:
+   Remove-Item -Path ".worktrees/impl-<feature-id>", ".worktrees/val-<feature-id>", ".worktrees/doc-<feature-id>" -Recurse -Force -ErrorAction SilentlyContinue
+   if ((Test-Path ".worktrees") -and ((Get-ChildItem ".worktrees" -Force | Measure-Object).Count -eq 0)) { Remove-Item ".worktrees" -Force }
    ```
 2. Bring the validated & documented changes onto `feature/<feature-id>` (either via `git merge --squash wt/doc-<feature-id>` followed by `git reset` to stage atomic commits per Clean Architecture layer per `git-governance`, or fast-forward merge).
 3. Delete the temporary `wt/*` branches:
