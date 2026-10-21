@@ -35,6 +35,10 @@ The Foundation uses opinionated, industry-standard engineering defaults (**MVVM 
      * If `:domain`, `:usecases`, `:data`, or `:app` exist -> **`Layer-Based`** (`:domain`, `:usecases`, `:data`, `:app`).
      * If feature submodules exist (e.g. `:<feature>:presentation`) -> **`Feature-First`** (`:<feature>:*` + `:core:*` + `:app`).
      * If bootstrapping a brand-new project without modules yet -> Default to **`Layer-Based`** (or suggest `Feature-First` if the user is planning a large multi-feature enterprise app).
+   - **Tooling Inspection (GitHub CLI)**:
+     * Run `gh --version` (and `gh auth status` if found).
+     * If `gh` is installed and authenticated -> Report ready for automated PR creation in `publish` mode.
+     * If `gh` is missing or unauthenticated -> Report that `gh` is required for automated PR generation, and include Question 3 in the prompt below.
 
 2. **MANDATORY User Prompt (Target AI Provider & Catalog Plugins)**:
    > [!CAUTION]
@@ -59,10 +63,14 @@ The Foundation uses opinionated, industry-standard engineering defaults (**MVVM 
      * **Compose & UI**: `compose-animations`, `compose-stability-diagnostics`, `compose-recomposition-performance`, `compose-focus-navigation`, `compose-slot-api-pattern`, `compose-state-deferred-reads`
      * **Kotlin & Profiling**: `kotlin-control-flow`, `kotlin-functions`, `kotlin-multiplatform-expect-actual`, `kotlin-types-value-class`, `perfetto-trace-analysis`, `perfetto-sql`, `r8-analyzer`, `migrate-xml-views-to-jetpack-compose`, `hook-creator`, `skill-creator`
      Ask: *"Which optional plugins would you like to install? (List their names separated by commas, or reply 'None')*
+   - **Question 3: GitHub CLI Installation (Conditional)**:
+     If `gh` was not detected during auto-inspection, ask:
+     *"GitHub CLI (`gh`) is not installed. Would you like me to install it now via your system package manager (`winget` / `brew` / `apt`) to enable zero-touch Pull Request delivery in publish mode? (Yes / No)"*
 
    *End your turn here. Wait for the user's explicit response before proceeding to PHASE 3.*
 
 3. **Optional Plugin Installation**: For each selected plugin, copy or fetch its `SKILL.md` from `.agents/catalog/[plugin-name]/SKILL.md` (`https://raw.githubusercontent.com/albertmartorell1975/android-ai-workflow-foundation/develop/.agents/catalog/[plugin-name]/SKILL.md`) and write it to `.agents/skills/[plugin-name]/SKILL.md`. If the user answered "None", skip this step.
+4. **GitHub CLI Setup (If Requested)**: If the user answered "Yes" to Question 3, execute the platform-appropriate command (`winget install --id GitHub.cli` on Windows, `brew install gh` on macOS, `sudo apt install gh` on Linux). Once installed, instruct the user to run `gh auth login` in a new terminal to complete the one-time authentication.
 
 ### PHASE 3: Project Customization & Subagent Setup
 > [!IMPORTANT]
@@ -97,6 +105,7 @@ The Foundation uses opinionated, industry-standard engineering defaults (**MVVM 
 ## Actionable Checklist for Project Setup
 - [ ] Acknowledge mandatory foundation deployment and list active skills from `.agents/skills/README.md`.
 - [ ] Auto-detect Project Name and Module Topology from repository files.
+- [ ] Inspect GitHub CLI (`gh`) status and offer proactive installation if missing.
 - [ ] Stop execution turn and prompt user: confirm target AI Provider (`Gemini`, `Cursor`, `Claude Code`) and catalog plugins selection — NEVER assume.
 - [ ] Install selected **Optional Catalog Plugins** (if requested by user).
 - [ ] Materialize `AGENTS.md` from `references/AGENTS_TEMPLATE.md` with dynamic replacements.

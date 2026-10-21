@@ -21,7 +21,7 @@ These provide the mandatory core multi-agent workflow engine and the shared tech
 ### 1.1 Core Workflow Engine & Multi-Agent Pipeline
 The operational backbone responsible for project discovery, harness state, `git worktree` subagent orchestration, compilation, and governance.
 
-* **workflow-initializer**: Project bootstrapping, stack diagnosis, safety hooks, context exclusions, and provider-specific subagent setup (`.claude/agents/`, `.cursor/agents/`, Antigravity).
+* **workflow-initializer**: Project bootstrapping, stack diagnosis, GitHub CLI tooling inspection, safety hooks, context exclusions, and provider-specific subagent setup (`.claude/agents/`, `.cursor/agents/`, Antigravity).
 * **build-brief**: Guided product discovery for new apps, MVPs, or significant modules (`CONTEXT.md`, `docs/build-brief.md`, `docs/domain-model.md`, `DESIGN.md`).
 * **harness-starter**: Derives and maintains the project startup harness (`AGENTS.md`, `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json`, and `.github/workflows/gate.yml`) and unified feature folders (`docs/features/<feature-id>/`).
 * **workflow-orchestrator** (🟣): Master multi-agent orchestrator supporting **Standalone Feature Mode**, **Backlog Queue Mode (`feature_list.json`)**, and **GitHub Delivery across 3 modes (`plan`, `execute`, `publish`)**, coordinating isolated hydrated `git worktree` subagents, bounded repair loops (`MAX_REPAIR_ATTEMPTS = 2`) with a Human Decision Gate (`needs_human_review`), atomic `@git-governance` commits, and structured PR publication.
