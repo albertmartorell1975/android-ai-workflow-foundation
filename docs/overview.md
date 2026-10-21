@@ -1,334 +1,218 @@
 # Architecture Overview
 
-The **Android AI Workflow Foundation v1.0.0** is a modular framework designed to support different AI-assisted development methodologies on top of a shared engineering foundation.
+The **Android AI Workflow Foundation v2.0.0** is a unified multi-agent framework for Android development. It combines Clean Architecture engineering guardrails, persistent project harness state (`feature_list.json`, `PROGRESS.md`, `CONSTRAINTS.md`), and isolated **`git worktree`** subagents under human supervision.
 
-The Foundation separates three concerns:
+The Foundation structures development across three modular layers:
 
-1. Project initialization and configuration
-2. Feature development methodology
-3. Shared engineering guardrails and technical expertise
+1. **Project Initialization & Harness Setup** (`workflow-initializer`, `build-brief`, `harness-starter`)
+2. **Unified Multi-Agent Feature Pipeline** (`workflow-orchestrator`, `workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter`)
+3. **Shared Engineering Guardrails & Android Expertise** (`compiler`, `git-governance`, Clean Architecture, Hilt, Room, Firebase, Kotlin, and Jetpack Compose skills)
 
-This allows a project to choose how AI agents collaborate without changing the underlying engineering standards.
+---
 
-## High-Level Architecture
+### High-Level Architecture
 
 ```text
-[Foundation Installation]
-           │
-           ▼
-[workflow-initializer]
-           │
-           ▼
-[Project Customization]
-           │
-           ▼
-   {Workflow Selection}
-           │
-     ┌─────┴─────┐
-     │           │
-[Foundation]   [AI Expert]
-     │           │
-     ▼           ▼
-
-=== FOUNDATION WORKFLOW (Single Agent) ===
-
-  [workflow-feature]
-          │
-          ▼
- [WORKFLOW_FEATURE.md]
-          │
-          ▼
-[Feature Implementation]
-
-
-=== AI EXPERT WORKFLOW (Multi-Agent) ===
-
-    [build-brief]
-          │
-          ▼
-  [harness-starter]
-          │
-          ▼
-[Harness + feature_list]
-          │
-          ▼
-    [feature-flow]
-          │
-          ▼
- [Planner / feature-spec]
-          │
-          ▼
-     [Implementer]
-          │
-          ▼
-      [Validator]
-
-
-=== SHARED FOUNDATION SKILLS ===
-
-Both workflows consult the shared foundation:
-- Kotlin & Android Standards
-- Architecture Governance
-- Testing & Verification
-- Git Governance
-- Security & Other Expert Skills
-
-
-=== HUMAN SUPERVISION ===
-
-The human supervises both workflows.
+               PHASE 1: INITIALIZATION, DISCOVERY & HARNESS SETUP
+          ─────────────────────────────────────────────────────────────
+                            [Foundation Installation]
+                                       │
+                                       ▼
+                            [workflow-initializer]
+                                       │
+                   ┌───────────────────┴───────────────────┐
+                   │ (New Product / MVP / Epic)            │ (Existing Codebase)
+                   ▼                                       ▼
+             [@build-brief] (Product Discovery)            │
+                   │                                       │
+                   ▼                                       │
+             [@harness-starter] ◄──────────────────────────┘
+             (Creates AGENTS.md, PROGRESS.md, CONSTRAINTS.md, feature_list.json)
+                                       │
+                                       ▼
+                         PHASE 2: FEATURE EXECUTION MODES
+          ─────────────────────────────────────────────────────────────
+                   ┌───────────────────┴───────────────────┐
+                   │                                       │
+             [Mode A: Standalone Feature]            [Mode B: Backlog Queue Mode]
+             (Ad-hoc / Single Feature Run)           (Process feature_list.json queue)
+                   │                                       │
+                   └───────────────────┬───────────────────┘
+                                       │
+                                       ▼
+                      SHARED MULTI-AGENT WORKTREE PIPELINE
+          ─────────────────────────────────────────────────────────────
+                      [workflow-orchestrator] 🟣 (Queue & Worktrees)
+                                        │
+                                        ▼
+                       [workflow-planner] 🔵 (Generates spec.md) ◄────────────────┐
+                                        │                                         │
+                                        ▼                                         │ (3. Re-plan)
+                     [workflow-implementer] 🟡 (Code & Tests) ◄─────────┐         │
+                                        │                               │         │
+                                        ▼                               │         │
+                      [workflow-validator] 🟢/🔴 (Read-Only Audit)      │         │
+                        │                             │                 │         │
+               (ACCEPT) │                    (REVISE) │                 │         │
+                        │                             ▼                 │ (Auto   │
+                        │                  [Attempts <= MAX (2)?]       │  repair │
+                        │                    ├── Yes ───────────────────┤  pass)  │
+                        │                    │                          │         │
+                        │                    └── No (Limit reached)     │         │
+                        │                           │                   │         │
+                        │                           ▼                   │         │
+                        │              [🛑 Human Decision Gate]         │         │
+                        │                (needs_human_review)           │         │
+                        │ ◄────────────────├── 1. Override              │         │
+                        │                  ├── 2. Human Hint ───────────┘         │
+                        │                  ├── 3. Re-plan ────────────────────────┘
+                        │                  └── 4. Cancel ──► [Clean & Abort]
+                        │
+                        ▼
+                      [workflow-documenter] 🔷 (KDoc & spec.md [x])
+                                        │
+                                        ▼
+                       [@git-governance] (Atomic Layer Commits)
+                                         │
+                                         ▼
+                       [GitHub Delivery: publish] (Stage 6: PR + CI Gate)
 ```
 
 ---
 
-# The Modular Layers
+## Layer 1: Initialization, Discovery & Harness
 
-## 1. Foundation Core & Initialization
+### 1. `workflow-initializer`
+Bootstraps the project environment:
+* Performs Stack Auto-Inspection (Project Name, Module Topology [Layer-Based vs Feature-First], and confirms AI Provider). Standards (MVVM, Hilt, Room, Firebase) are active by default.
+* Materializes `AGENTS.md`.
+* Configures AI Context Exclusion (`ai-context-exclusion`), automatically excluding `.worktrees/`, `.gradle/`, and build outputs from the AI context.
+* Materializes provider-specific subagent definitions (`workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter` under `.claude/agents/`, `.cursor/agents/`, or native Antigravity `.agents/agents/` configuration) using **`SUBAGENT_SKILLS.json`** (plus any installed optional catalog plugins) for single-source-of-truth skill injection with `model: inherit`, and adds `.worktrees/` to `.gitignore`.
 
-Everything starts with the Foundation Core.
+#### 🛡 Automated AI Safety Hooks (`agent-safety-hooks`)
+During project initialization, the Foundation automatically installs lifecycle safety hooks tailored to the active AI provider (**Claude Code**, **Cursor**, or **Gemini / Antigravity**):
+* **Destructive Command Interception**: Intercepts shell commands before execution and strictly blocks catastrophic patterns such as `rm -rf`, `rmdir /s /q`, `Remove-Item -Recurse -Force`, `git clean -fdx`, `git reset --hard`, autonomous `gh pr merge` (ensuring PR merges are strictly human), and destructive force pushes.
+* **Provider Integration**:
+  * **Claude Code**: Registered as a `PreToolUse` hook in `.claude/settings.json` executing `block-rm-rf.js`.
+  * **Cursor**: Registered as a `beforeShellExecution` hook under `.cursor/hooks/`.
+  * **Gemini / Antigravity**: Registered via `.agents/hooks.json`.
+* **Why it matters**: Autonomous subagents execute terminal commands to run Gradle builds and tests inside isolated worktrees. This automated guardrail ensures that no agent can accidentally delete project files, Gradle caches, or repository assets.
 
-`workflow-initializer` is responsible for bootstrapping and customizing the project. It prepares the project-specific configuration, performs stack diagnosis, manages optional plugins, and lets the project select its development workflow.
-
-Typical responsibilities include:
-
-* **Stack Diagnosis:** Understanding the project's architecture, technologies, and existing conventions.
-* **Project Customization:** Generating or updating project-specific instructions and configuration.
-* **Workflow Selection:** Choosing the development methodology used by the project.
-* **Plugin Management:** Activating optional skills from the Foundation catalog.
-
-`workflow-initializer` is common to both workflows. It prepares the environment before feature development begins.
-
----
-
-# 2. Pluggable Development Methodology
-
-This layer defines **how feature work is organized and delegated**.
-
-The Foundation currently provides two methodologies.
-
-## A. Foundation Workflow
-
-### Single-agent, centralized workflow
-
-`workflow-feature` acts as the Foundation's native Workflow Architect.
-
-The same AI agent can:
-
-1. Analyze the feature and repository.
-2. Define the technical approach.
-3. Generate the implementation workflow.
-4. Guide the implementation.
-5. Apply the project's engineering and verification rules.
-
-The result is a persistent `WORKFLOW_FEATURE.md` roadmap that provides the implementation structure.
-
-**Main characteristic:** one agent maintains the feature context and owns the workflow end to end.
-
-This approach minimizes coordination and handoff overhead and works well when a single agent can effectively handle the complete feature lifecycle.
+### 2. `build-brief` & `harness-starter`
+* **`build-brief`**: Conducts a structured one-question-at-a-time discovery interview for new products or major modules, producing `CONTEXT.md`, `docs/build-brief.md`, `docs/domain-model.md`, and `DESIGN.md`.
+* **`harness-starter`**: Derives `AGENTS.md`, `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json`, and `.github/workflows/gate.yml` (plus `docs/features/<feature-id>/` directories), either from `build-brief` discovery docs or directly from an existing Android codebase.
 
 ---
 
-## B. AI Expert Workflow
+## Supported Modular Topologies (`module-architecture-governance`)
 
-### Project-centric, spec-driven, multi-agent workflow
+The Foundation supports two Clean Architecture module topologies depending on app scale:
 
-The AI Expert Workflow adds an explicit project setup and feature lifecycle on top of the shared Foundation.
+1. **Layer-Based Modular Topology (Small to Medium Apps)**:
+   * `:domain` — Pure Kotlin business entities, Repository interfaces & DomainError models.
+   * `:usecases` — Pure Kotlin single-responsibility interactors.
+   * `:data` — Repository implementations, Room DAOs, DataSources, Network DTO mappers.
+   * `:app` — Jetpack Compose UI, ViewModels, Navigation, and Dependency Injection graph.
 
-Its initial stages establish the project context:
-
-1. **build-brief** — clarifies the product, domain, users, workflows, constraints, MVP scope, and risks.
-2. **harness-starter** — turns the confirmed discovery into the minimal project harness and an initial feature backlog.
-3. **feature-flow** — orchestrates the lifecycle of individual features.
-
-For each feature, specialized agents handle separate responsibilities:
-
-1. **feature-spec** — produces an implementation-ready specification.
-2. **feature-implementer** — implements the approved specification.
-3. **feature-validator** — independently validates the result against the specification and project rules.
-
-**Main characteristic:** project setup, feature planning, implementation, and validation are explicitly separated between specialized roles.
-
-The workflow is **iterative and feature-driven**. It does not require every feature to be fully specified before implementation starts. Features can be specified and developed one at a time as the project evolves.
-
-This introduces additional coordination and handoff overhead, but provides stronger separation of responsibilities, persistent project state, explicit specifications, and independent validation.
+2. **Feature-First Modular Topology (Scalable & Multi-Team Apps)**:
+   * `:<feature>:domain` — Feature-scoped models, repository interfaces & use cases.
+   * `:<feature>:usecases` — Feature-specific interactors.
+   * `:<feature>:data` — Feature local/remote data sources & repository implementations.
+   * `:<feature>:presentation` — Feature Jetpack Compose UI screens & ViewModels.
+   * `:core:database`, `:core:network`, `:core:designsystem`, `:core:common` — Shared foundations.
+   * `:app` — Thin application shell, global NavHost & root DI container.
 
 ---
 
-# 3. Shared Expert Guardrails
+## Layer 2: Unified Multi-Agent Feature Pipeline
 
-Both workflows operate on top of the same Foundation Core.
+Whether a developer requests a **Standalone Feature (Mode A)** or processes a **Backlog Queue from `feature_list.json` (Mode B)**, every feature executes through five specialized roles identified by visual color badges:
 
-These shared skills define the technical standards and constraints that apply independently of the selected workflow.
+### 1. 🟣 Orchestrator (`workflow-orchestrator`)
+* Reads `feature_list.json` and `PROGRESS.md` (creating or appending the feature entry automatically in Standalone Mode).
+* Can run ready features sequentially or launch independent features (whose `depends_on` prerequisites are all `accepted`) in parallel worktrees.
+* Manages the `feature/<feature-id>` branch and temporary subagent worktrees (`.worktrees/impl-<id>`, `.worktrees/val-<id>`, `.worktrees/doc-<id>`).
+* Receives the read-only evaluation from `workflow-validator`, persists `docs/features/<feature-id>/validator/validation-report.md`, and bounds repair cycles to `MAX_REPAIR_ATTEMPTS = 2` (passing the `Implementation Repair Brief` directly to `workflow-implementer` on `revise` when attempts remain).
+* **Human-in-the-Loop Decision Gate**: When repair attempts exceed the limit without reaching `accept`, pauses looping immediately, preserves `.worktrees/impl-<feature-id>`, sets status to `needs_human_review`, and presents 4 resolution options (Manual Override, Human Guidance Hint, Re-plan `spec.md`, or Cancel/Defer). Once resolved to acceptance, seamlessly resumes Stage 4 (Documenter) and Stage 5 (Consolidation & Commits).
+* **Exclusively owns `@git-governance`**: Consolidates the final worktree after documentation completes, marks the feature `accepted` in `feature_list.json`, and creates atomic layer-specific Conventional Commits (`feat(domain)`, `feat(data)`, `feat(usecases)`, `feat(ui)`, `test`, `docs`).
 
-Examples include:
+### 2. 🔵 Planner (`workflow-planner`)
+* Spawns in a clean subagent context with edit permissions restricted strictly to specification files (`docs/features/<feature-id>/spec.md`, `feature_list.json`, `PROGRESS.md`), never modifying executable application code.
+* Inspects the repository and clarifies up to 3 blocking technical questions with the user.
+* Produces the unified feature contract at **`docs/features/<feature-id>/spec.md`**, combining:
+  - Idea Diagnosis & Assumptions
+  - Goal, Non-Goals & `Given / When / Then` Acceptance Scenarios
+  - Repository Research & Expected File Changes
+  - Android Layer Breakdown (`UI/UX` + `docs/features/<id>/ui/` asset rules, `API Design`, `Persistence`, `Durable Documentation Impact`)
+  - Granular Clean Architecture Checklist (`Database/Models -> Domain -> Data -> UseCase -> UI -> Testing -> @compiler`)
 
-* Kotlin and Android coding standards.
-* Architecture governance.
-* Dependency management.
-* Testing and verification.
-* Git governance.
-* Security, privacy rules, and AI lifecycle safety hooks (`agent-safety-hooks`, `hook-creator`).
-* Design system governance and graphic asset handling (UI reference mockups & optimized WebP conversion).
-* Project-specific expert skills.
+### 3. 🟡 Implementer (`workflow-implementer`)
+* Runs in an isolated `git worktree` (`.worktrees/impl-<feature-id>`) that is automatically hydrated with uncommitted local Android build files (`local.properties`, `.env`, `keystore.properties`, `app/google-services.json`).
+* Implements the feature (or executes the `Implementation Repair Brief` passed by `workflow-orchestrator` on a `REVISE` pass) across Layer-Based or Feature-First modules.
+* **Comprehensive Core & Stack Skills**: Uses Core Architecture, Compose, Kotlin, Hilt (`hilt`), Room (`room-schema-governance`), and Firebase (`firebase-*`) skills out of the box, plus any optional catalog plugins installed in `.agents/skills/`.
+* Converts raw graphic assets in `docs/features/<id>/ui/resources/` to `.webp` in `app/src/main/res/drawable/ic_<name>.webp` (or `:<feature>:presentation/src/main/res/drawable/`) while leaving screen mockups in `ui/screens/` untouched.
+* **Mandatory `@compiler` Self-Verification**: Runs `./gradlew assembleDebug`, `./gradlew lintDebug`, and `./gradlew testDebugUnitTest`, recording exact command outputs in `feature_list.json` (`status: "passing"`) and `PROGRESS.md` so the Validator does not need to rebuild the entire project from scratch unless necessary.
 
-The guardrails are **not a separate final validation stage**. They are shared constraints and technical knowledge consulted throughout the workflow.
+### 4. 🟢/🔴 Validator (`workflow-validator`)
+* Runs in an isolated `git worktree` (`.worktrees/val-<feature-id>`) as a **strictly read-only** code and runtime evaluator (`readonly: true` in Cursor, `disallowedTools: [Write, Edit]` in Claude Code).
+* Evaluates **4 validation levels**:
+  1. **Spec Contract & Acceptance Scenarios**: Verifies all `Given/When/Then` scenarios and UI states (`Loading`, `Error`, `Empty`, `Success`).
+  2. **Security & Scope Discipline Audit**: Audits `android-intent-security` (`AndroidManifest.xml` exported components, deep links, Intent Redirection) and strict `WIP=1` scope adherence (`CONSTRAINTS.md`).
+  3. **Compiler Evidence & Test Quality Audit (Worktree-Optimized)**: Audits unit and Compose UI test source code (`compose-ui-testing-patterns`) and verifies recorded `@compiler` evidence, re-running `./gradlew` only if evidence is missing, suspicious, or required for runtime installation.
+  4. **Runtime / Emulator Verification (`@android-cli`)**: Verifies the user flow on an active Android emulator/device when connected, or documents verification via Unit + Compose UI tests when headless.
+* Returns its Verdict (`accept`, `revise`, or `block`), severity-ranked Findings, and an executable **`Implementation Repair Brief`** directly in its response to **`workflow-orchestrator`** without modifying any repository files.
 
-This means:
-
-```text
-Foundation Workflow
-        │
-        └── Shared Foundation Guardrails
-
-AI Expert Workflow
-        │
-        └── Shared Foundation Guardrails
-```
-
-The selected workflow determines **how the work is organized**; the shared Foundation determines **the engineering standards under which the work must be performed**.
-
----
-
-# Single-Agent vs. Multi-Agent
-
-The key distinction between the two methodologies is the allocation of responsibility.
-
-## Foundation Workflow
-
-```text
-Human
-  │
-  ▼
-Single AI Agent
-  ├── Analyze
-  ├── Plan
-  ├── Implement
-  └── Verify
-  │
-  ▼
-Human Review
-```
-
-## AI Expert Workflow
-
-```text
-Human
-  │
-  ▼
-Workflow Orchestrator
-  ├── Planner
-  ├── Implementer
-  └── Validator
-  │
-  ▼
-Human Review
-```
-
-In both models, the human remains the highest-level supervisor and decision maker.
-
-The AI Expert Workflow adds another layer of automated orchestration between the human and the individual agents.
+### 5. 🔷 Documenter (`workflow-documenter`)
+* Runs in an isolated `git worktree` (`.worktrees/doc-<feature-id>`) **only after `workflow-validator` returns `accept`**.
+* Strict boundary: modifies **only** English KDoc comments (`/** ... */`) and Markdown documentation files—never executable Kotlin code.
+* Documents public classes across `Domain`, `Data`, `UseCases`, and `UI`, updates durable project docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `DESIGN.md`, `README.md`, `.agents/skills/README.md`), and marks `[x]` completed tasks in `docs/features/<feature-id>/spec.md`.
 
 ---
 
-# Choosing a Workflow
+## Feature Execution Modes (Phase 2 Comparison)
 
-The choice should not be based strictly on whether the project is new or existing.
+Once the project harness is ready, the developer selects how features are executed:
 
-Both methodologies can be used in either situation.
-
-A practical distinction is:
-
-### Use the Foundation Workflow when
-
-* One agent can effectively own the feature from analysis to implementation.
-* The project architecture and constraints are already reasonably understood.
-* A continuous workflow is more valuable than multiple handoffs.
-* Minimizing coordination overhead is important.
-
-### Use the AI Expert Workflow when
-
-* The project benefits from explicit project discovery and persistent feature tracking.
-* The work benefits from separating planning, implementation, and validation.
-* Independent validation is valuable.
-* Explicit specifications and handoffs are useful.
-* Several specialized agents can provide meaningful value over a single continuous agent.
-* The AI development process itself is part of the objective.
-
-The distinction is therefore not:
-
-> **New project vs. existing project**
-
-but:
-
-> **Single-agent execution vs. multi-agent specialization and structured project lifecycle.**
+| Aspect | Mode A: Standalone Feature Mode | Mode B: Backlog Queue Mode (`feature_list.json`) |
+| :--- | :--- | :--- |
+| **When to use** | Adding a specific feature, screen, or ad-hoc change on demand. | Processing a planned milestone, MVP release, or chained set of features. |
+| **Trigger** | User asks for a specific feature: *"Implement the User Profile screen"*. | User tells the orchestrator: *"Process the backlog"* or *"Run next features"*. |
+| **Harness Interaction** | `workflow-orchestrator` activates or appends the single feature in `feature_list.json` & `PROGRESS.md`. | `workflow-orchestrator` reads `feature_list.json` and evaluates `depends_on == "accepted"`. |
+| **Lifecycle** | Runs the 4-stage pipeline for that single feature and **stops** upon acceptance and commit. | Loops through ready features sequentially, or launches independent features in **parallel worktrees**. |
+| **Pipeline & Roles** | Identical: `Planner -> Implementer -> Validator -> Documenter` | Identical: `Planner -> Implementer -> Validator -> Documenter` |
 
 ---
 
-# Routing & Safety
+## Why Dedicated Worktree Subagents?
 
-The active workflow is stored in:
-
-```text
-.agents/workflow.json
-```
-
-For example:
-
-```json
-{
-  "activeWorkflow": "foundation"
-}
-```
-
-or:
-
-```json
-{
-  "activeWorkflow": "ai-expert-workflow"
-}
-```
-
-This configuration acts as a routing and safety boundary.
-
-```text
-activeWorkflow = foundation
-        │
-        └── workflow-feature ✅
-
-activeWorkflow = ai-expert-workflow
-        │
-        └── feature-flow ✅
-```
-
-The inactive workflow remains available where installed, but must not orchestrate feature work.
-
-This prevents mixing two different feature-development methodologies within the same active workflow.
+1. **Independent Validation Without Self-Confirmation Bias (`workflow-validator`)**:
+   An agent that writes code tends to assume its own implementation works. By launching 🟢 `workflow-validator` in a fresh context and isolated `git worktree` with strict read-only permissions, the validator objectively checks `docs/features/<id>/spec.md`, Clean Architecture rules, `android-intent-security`, and test assertions, returning an actionable `Implementation Repair Brief` to the orchestrator.
+2. **Zero-Wasted Documentation Effort (`workflow-documenter`)**:
+   Previously, implementers spent context window and tokens writing documentation for code that might later be rejected or refactored during validation. Now, 🔷 `workflow-documenter` runs **only after `workflow-validator` emits `accept`**, focusing exclusively on high-quality English KDoc (`kotlin-style`) and durable Markdown documentation (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`, `spec.md`) without touching executable code.
 
 ---
 
-# Architectural Principle
+## Evolution: How the Unification Works
 
-The Foundation is therefore not a single development workflow.
+| Dimension | Legacy v1 Foundation | Legacy v1 AI Expert | **Unified Foundation v2.0.0** |
+| :--- | :--- | :--- | :--- |
+| **Agent Model** | Single agent end-to-end | 3 agents (`planner`, `implementer`, `validator`) | **5 Specialized Roles** (`🟣 Orchestrator`, `🔵 Planner`, `🟡 Implementer`, `🟢 Validator`, `🔷 Documenter`) |
+| **Workspace Isolation** | Main working tree | Shared working tree | **Isolated `git worktree` per subagent** (`.worktrees/<role>-<feature-id>`) |
+| **Subagent Provisioning** | Manual setup required | IDE-specific | **Agnostic & Automated** (`SUBAGENT_SKILLS.json` injection for Gemini/Cursor/Claude via `workflow-initializer`) |
+| **Feature Contract** | `WORKFLOW_<NAME>.md` at root | `docs/specs/<feature-id>.md` | **Unified `docs/features/<feature-id>/spec.md`** (`Given/When/Then` + Android Clean Architecture layers) |
+| **Validation Output** | Inline chat only | Optional `docs/validations/<feature-id>.md` | **Read-only Validator response** persisted by Orchestrator to `docs/features/<feature-id>/validator/validation-report.md` with `Implementation Repair Brief` |
+| **Compiler Strategy** | Manual / end of flow | Re-run in both agents | **Worktree-optimized**: Implementer runs `@compiler` and records evidence; Validator audits code/tests and only re-runs `@compiler` when needed |
+| **Documentation** | Mixed into implementation | Mixed into implementation | **Dedicated `workflow-documenter` subagent** running after validation `accept` |
 
-It is a shared engineering foundation that allows different AI-assisted development methodologies to operate under the same technical standards.
+---
 
-```text
-             ANDROID AI WORKFLOW FOUNDATION
-                           │
-              ┌────────────┴────────────┐
-              │                         │
-      Foundation Workflow       AI Expert Workflow
-        Single Agent             Multi-Agent
-      Feature-centric          Project-centric
-              │                         │
-              └────────────┬────────────┘
-                           │
-                 Shared Foundation Core
-            Governance · Android · Testing
-              Git · Architecture · Security
-                           │
-                           ▼
-                    Human Supervision
-```
+## Layer 3: Shared Engineering Guardrails
 
-> **Same Foundation, different development methodology.**
+All agents share the same underlying technical guardrails in `.agents/skills/`:
+* **Architecture & Modules**: `module-architecture-governance`, `repository-pattern-governance`, `viewmodel-architecture-governance`, `design-system-governance`, `dependency-manager`.
+* **Stack Essentials (DI, Persistence & Cloud)**: `hilt`, `room-schema-governance`, `firebase-basics`, `firebase-auth-basics`, `firebase-remote-config-basics`.
+* **Kotlin & Concurrency**: `kotlin-style` (including function ownership & control flow rules), `kotlin-coroutines-structured-concurrency`, `kotlin-flow-state-event-modeling`.
+* **Jetpack Compose & Navigation**: `compose-state-authoring`, `compose-state-hoisting`, `compose-side-effects`, `compose-modifier-and-layout-style`, `compose-ui-testing-patterns`, `navigation-3`, `adaptive`, `edge-to-edge`.
+* **Security, Tooling & Quality**: `compiler`, `testing-setup`, `android-intent-security`, `android-cli`, `git-governance`, `agent-safety-hooks`, `ai-context-exclusion`, `foundation-evolve`.
+
+Additional specialized profiling, diagnostic, and library skills (`perfetto-trace-analysis`, `r8-analyzer`, `compose-recomposition-performance`, `compose-stability-diagnostics`, `compose-focus-navigation`, `camerax`, `wear-compose-m3`) are available on demand in `.agents/catalog/`.

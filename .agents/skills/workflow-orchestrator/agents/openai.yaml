@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workflow Orchestrator"
+  short_description: "Orchestrate planner, implementer, validator, and documenter in git worktrees."
+  default_prompt: "Use $workflow-orchestrator to run the feature pipeline for the next ready feature or a new feature request."

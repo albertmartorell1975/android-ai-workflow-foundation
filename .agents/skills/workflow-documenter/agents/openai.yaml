@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workflow Documenter"
+  short_description: "Add English KDoc and update durable project docs after validation acceptance."
+  default_prompt: "Use $workflow-documenter to document KDoc and durable docs for the accepted feature."

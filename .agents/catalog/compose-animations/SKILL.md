@@ -189,5 +189,5 @@ Load the official docs when one of these applies:
 
 ## When not to use this skill
 
-- **Side-effect timing** (`LaunchedEffect`, clicks launching work): use [`compose-side-effects`](../compose-side-effects/SKILL.md).
+- **Side-effect timing** (`LaunchedEffect`, clicks launching work): use [`compose-side-effects`](../../skills/compose-side-effects/SKILL.md).
 - **Deep performance tuning** of where snapshot state is read: use [`compose-state-deferred-reads`](../compose-state-deferred-reads/SKILL.md) as the primary reference.

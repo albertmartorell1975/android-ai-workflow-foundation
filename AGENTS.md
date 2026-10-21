@@ -4,24 +4,21 @@ This document defines the operating rules, repository structure, maintenance pro
 
 ## Project Overview
 
-The **Android AI Workflow Foundation** is a modular multi-workflow framework for Android development. This repository hosts the core workflow engine (`workflow-initializer`, `compiler`, `git-governance`, `foundation-evolve`), shared technical guardrails, optional catalog skills, and framework documentation.
+The **Android AI Workflow Foundation** is a unified multi-agent workflow framework for Android development. This repository hosts the core multi-agent workflow engine (`workflow-initializer`, `build-brief`, `harness-starter`, `workflow-orchestrator`, `workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter`, `compiler`, `git-governance`, `foundation-evolve`, `hook-creator`, `skill-creator`), shared technical guardrails, optional catalog skills, and framework documentation.
 
 ## Read First
 
 Before modifying skills, catalog plugins, templates, or documentation, consult:
 
-* `README.md` — Framework architecture, installation, workflow models, and skill management.
-* `docs/overview.md` — Architectural design, modular layers, and workflow routing model.
-* `docs/workflow comparison.md` — Detailed comparison between Foundation Workflow and AI Expert Workflow.
+* `README.md` — Framework architecture, installation, visual role badges, entry modes, and skill management.
+* `docs/overview.md` — Complete architectural design, modular layers, execution modes (Standalone vs Backlog), and the 5-role `git worktree` pipeline.
 * `.agents/skills/README.md` — Canonical index of Active Foundation Skills and Optional Catalog Skills.
-* `.agents/workflow.json` — Current workflow configuration for repository maintenance.
 
 ## Repository Structure & Modules
 
 - `.agents/skills/` — Active Foundation Skills (installed by default in consuming projects).
-- `.agents/catalog/` — Optional Catalog Skills and Workflow Plugins (available on demand).
-- `.agents/catalog/workflows/` — JSON manifests for complex workflow plugins (e.g. `ai-expert-workflow.json`).
-- `docs/` — Framework design, architecture overview, and methodology comparison documentation.
+- `.agents/catalog/` — Optional Catalog Skills (technology and planning plugins available on demand).
+- `docs/` — Framework design, architecture overview, and mode comparison documentation.
 - `package.json` — NPM package manifest and registry mapping for core skills (`agent-skills.skills`).
 
 ## Startup Workflow & Branching
@@ -41,7 +38,7 @@ Before modifying skills, catalog plugins, templates, or documentation, consult:
   1. Update the skill's `SKILL.md` (and optional `references/` or `agents/openai.yaml` subfolders).
   2. Update the Foundation's Skills Index at `.agents/skills/README.md`.
   3. If it is a **Core Skill** (installed by default), register it in `package.json` under `agent-skills.skills`.
-  4. If it affects project templates, synchronize the template section inside `workflow-initializer/SKILL.md`.
+  4. If it affects project templates, synchronize the template section inside `workflow-initializer/SKILL.md` (and `references/`).
 * **KISS & Truthfulness**: Prefer simple, modular solutions. Never invent non-existent APIs or unverified framework rules.
 
 ## Definition of Done (DoD)
@@ -49,7 +46,7 @@ Before modifying skills, catalog plugins, templates, or documentation, consult:
 A maintenance or feature task on the Foundation repository is complete only when:
 
 1. Target skill, manifest, or documentation changes are implemented following Foundation standards.
-2. All JSON/YAML files (`package.json`, `workflow.json`, `*.yaml`, `*.json`) pass syntax validation.
+2. All JSON/YAML files (`package.json`, `*.yaml`, `*.json`) pass syntax validation.
 3. `.agents/skills/README.md` and `workflow-initializer/SKILL.md` templates are synchronized if skills were modified.
 4. All file references and Markdown links across `docs/` and `README.md` are valid and resolvable.
 5. No unintended changes remain, and the working tree is ready for user review via `@git-governance`.

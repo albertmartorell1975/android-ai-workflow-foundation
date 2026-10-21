@@ -1,0 +1,43 @@
+{
+  "workflow-planner": [
+    "workflow-planner"
+  ],
+  "workflow-implementer": [
+    "workflow-implementer",
+    "compiler",
+    "kotlin-style",
+    "kotlin-coroutines-structured-concurrency",
+    "kotlin-flow-state-event-modeling",
+    "module-architecture-governance",
+    "repository-pattern-governance",
+    "viewmodel-architecture-governance",
+    "design-system-governance",
+    "dependency-manager",
+    "compose-state-authoring",
+    "compose-state-hoisting",
+    "compose-side-effects",
+    "compose-modifier-and-layout-style",
+    "compose-ui-testing-patterns",
+    "navigation-3",
+    "adaptive",
+    "edge-to-edge",
+    "testing-setup",
+    "android-intent-security",
+    "hilt",
+    "room-schema-governance",
+    "firebase-basics",
+    "firebase-auth-basics",
+    "firebase-remote-config-basics"
+  ],
+  "workflow-validator": [
+    "workflow-validator",
+    "compiler",
+    "android-intent-security",
+    "compose-ui-testing-patterns",
+    "android-cli"
+  ],
+  "workflow-documenter": [
+    "workflow-documenter",
+    "kotlin-style"
+  ]
+}

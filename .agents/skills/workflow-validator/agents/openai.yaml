@@ -1,0 +1,4 @@
+interface:
+  display_name: "Workflow Validator"
+  short_description: "Independently validate implemented features across 4 levels in an isolated worktree."
+  default_prompt: "Use $workflow-validator to validate the selected feature and write docs/features/<feature-id>/validator/validation-report.md."

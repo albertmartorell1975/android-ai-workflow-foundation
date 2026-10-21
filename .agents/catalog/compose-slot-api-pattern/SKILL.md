@@ -187,4 +187,4 @@ This matches Material 3's `ButtonDefaults`, `TopAppBarDefaults`, etc. — defaul
 
 ## Related
 
-- [`compose-modifier-and-layout-style`](../compose-modifier-and-layout-style/SKILL.md) — the modifier-parameter rule (§1–§3 there) travels with slot APIs. A reusable component takes a `modifier` parameter *and* slots its content; the caller owns both placement and what to place.
+- [`compose-modifier-and-layout-style`](../../skills/compose-modifier-and-layout-style/SKILL.md) — the modifier-parameter rule (§1–§3 there) travels with slot APIs. A reusable component takes a `modifier` parameter *and* slots its content; the caller owns both placement and what to place.
