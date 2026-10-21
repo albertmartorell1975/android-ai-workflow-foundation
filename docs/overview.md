@@ -169,6 +169,21 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
 
 ---
 
+### 6. 🚀 Delivery & CI Automation (`publish` Mode)
+* Consolidates atomic layer-specific commits via `@git-governance` (`feat(domain)`, `feat(data)`, `feat(usecases)`, `feat(ui)`, `test`, `docs`).
+* Once explicit user authorization is granted, pushes the branch (`feature/<feature-id>`) and automatically creates a Pull Request targeting `develop` with pre-filled validation evidence.
+* **Autonomous CI Quality Gate**: Triggers `.github/workflows/gate.yml` on GitHub Actions to run non-interactive `./gradlew testDebugUnitTest lintDebug`.
+
+> [!IMPORTANT]
+> **GitHub CLI (`gh`) Prerequisite for Automated PR Delivery**:
+> To enable automated Pull Request creation from within the AI chat session, the system must have the official GitHub CLI (`gh`) installed and authenticated (`gh auth login`).
+> - **Windows**: `winget install --id GitHub.cli`
+> - **macOS**: `brew install gh`
+> - **Linux**: `sudo apt install gh`
+> If `gh` is absent, the orchestrator safely falls back to pushing the branch via `git push` and generating a direct browser URL, requiring the developer to click and submit the PR on GitHub manually.
+
+---
+
 ## Feature Execution Modes (Phase 2 Comparison)
 
 Once the project harness is ready, the developer selects how features are executed:

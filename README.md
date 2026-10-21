@@ -119,6 +119,29 @@ docs/features/<feature-id>/
 
 ## 🛠 Installation & Setup
 
+### Prerequisites
+
+Before bootstrapping or publishing features with the Foundation, ensure your development environment has:
+
+* **JDK 17 or 21**: Mandatory baseline for Android Gradle Plugin (AGP) 8.x+ and Kotlin 2.0.
+* **Git 2.30+**: Required for `git worktree` isolation and atomic layer commits.
+* **GitHub CLI (`gh`)** *(Mandatory for automated PR delivery in `publish` mode)*:
+  ```bash
+  # Windows (via winget)
+  winget install --id GitHub.cli
+
+  # macOS (via Homebrew)
+  brew install gh
+
+  # Linux (Debian / Ubuntu)
+  sudo apt install gh
+
+  # Authenticate with your GitHub account (one-time setup):
+  gh auth login
+  ```
+  > [!IMPORTANT]
+  > When `@workflow-orchestrator` operates in **`publish` mode**, it uses `gh pr create` to publish feature branches and generate structured Pull Requests automatically. If `gh` is not installed or authenticated, the agent pushes the branch via `git push` and falls back to providing a manual browser link.
+
 ### Step 1: Install the Foundation
 
 Run the following command from your Android project's root directory:

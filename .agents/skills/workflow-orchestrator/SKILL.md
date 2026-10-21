@@ -152,9 +152,10 @@ When coordinating backlog features or delivering to GitHub, the orchestrator eva
 Triggered when the user requests `publish` mode or requests PR creation:
 1. **Gate Verification**: Ensure feature status is `"accepted"` in `feature_list.json` and explicit push permission is granted.
 2. **Push Branch**: Run `git push -u origin feature/<feature-id>`.
-3. **Idempotent PR Creation**:
-   - Check if PR already exists: `gh pr list --state all --head "feature/<feature-id>" --base <base_branch>`.
-   - If not present, create PR targeting `base_branch` (`develop`) using the structured evidence body template from `git-governance/references/github-delivery.md`.
+3. **Idempotent PR Creation via GitHub CLI (`gh`)**:
+   - Verify GitHub CLI: check `gh auth status`. If available, check if PR exists: `gh pr list --state all --head "feature/<feature-id>" --base <base_branch>`.
+   - If not present and `gh` is available: create PR with `gh pr create` targeting `base_branch` (`develop`) using the structured evidence body template from `git-governance/references/github-delivery.md`.
+   - If `gh` is missing or unauthenticated: notify the user and provide the direct browser URL (`https://github.com/<owner>/<repo>/pull/new/feature/<feature-id>`) with pre-filled PR title and markdown body for one-click manual creation.
 4. **Never Merge**: Report PR URL. CI executes `.github/workflows/gate.yml`. The human developer performs review and merge.
 
 ---
