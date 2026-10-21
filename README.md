@@ -124,10 +124,10 @@ docs/features/<feature-id>/
 Run the following command from your Android project's root directory:
 
 ```bash
-npx skills add albertmartorell1975/android-ai-workflow-foundation
+npx skills add albertmartorell1975/android-ai-workflow-foundation -y
 ```
 
-This installs the 37 active Foundation skills into `.agents/skills/`.
+This installs the 37 active Foundation skills into `.agents/skills/` cleanly without interactive CLI prompts.
 
 ### Step 2: Activate the Initializer
 
@@ -139,10 +139,10 @@ Activate workflow-initializer
 
 The initializer guides the project setup:
 
-1. **Stack Auto-Inspection & AI Provider Confirmation**:
+1. **Stack Auto-Inspection & Interactive Prompt (Hard Stopping Gate)**:
    - **Defaults**: Applies Foundation standards by default (MVVM with Hybrid UI State, Hilt, Room, and Firebase suite).
    - **Auto-Detection**: Infers Project Name and Module Topology (Layer-Based vs Feature-First) directly from Gradle files.
-   - **AI Provider**: Confirms active environment (Gemini / Antigravity, Claude Code, or Cursor).
+   - **Interactive Prompt**: Halts execution before file generation to prompt the user for the target AI Provider (`Gemini / Antigravity`, `Cursor`, or `Claude Code`) and Optional Catalog Plugins (`camerax`, `compose-animations`, `wear-compose-m3`, `to-plan`, etc.).
 2. **Automated Governance & Subagent Materialization**:
    - **`AGENTS.md`**: Materializes project-specific instructions and rules.
    - **Provider-Specific Subagents (`SUBAGENT_SKILLS.json` + `model: inherit` + `git worktree`)**:
@@ -159,8 +159,8 @@ The initializer guides the project setup:
    - **🛡 Automated AI Safety Hooks (`agent-safety-hooks`)**:
      * Installs provider-native lifecycle interception (`PreToolUse` in Claude Code / Antigravity, `beforeShellExecution` in Cursor) via `block-rm-rf.js`.
      * **Zero-Accident Guardrail**: Intercepts and blocks destructive terminal commands (such as `rm -rf`, `rmdir /s /q`, `git clean -f`, `git reset --hard`, autonomous `gh pr merge`, and force pushes) before execution, ensuring autonomous subagents running in worktrees cannot damage the project.
-3. **Optional Catalog Skills**:
-   Select optional technology and diagnostic plugins from `.agents/catalog/` (such as `camerax`, `wear-compose-m3`, `perfetto-trace-analysis`, `to-plan`, `using-chrisbanes-skills`).
+3. **Optional Catalog Skills Installation**:
+   Installs any selected optional plugins from `.agents/catalog/` (such as `camerax`, `wear-compose-m3`, `perfetto-trace-analysis`, `to-plan`, `using-chrisbanes-skills`, `compose-animations`) into `.agents/skills/` and binds them to `workflow-implementer`.
 
 ---
 

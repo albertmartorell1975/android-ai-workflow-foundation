@@ -84,7 +84,7 @@ The Foundation structures development across three modular layers:
 
 ### 1. `workflow-initializer`
 Bootstraps the project environment:
-* Performs Stack Auto-Inspection (Project Name, Module Topology [Layer-Based vs Feature-First], and confirms AI Provider). Standards (MVVM, Hilt, Room, Firebase) are active by default.
+* Performs Stack Auto-Inspection (Project Name, Module Topology) and executes a **Hard Stopping Gate** to prompt the developer for their target AI Provider (`Gemini / Antigravity`, `Cursor`, or `Claude Code`) and Optional Catalog Plugins before generating any project files. Standards (MVVM, Hilt, Room, Firebase) are active by default.
 * Materializes `AGENTS.md`.
 * Configures AI Context Exclusion (`ai-context-exclusion`), automatically excluding `.worktrees/`, `.gradle/`, and build outputs from the AI context.
 * Materializes provider-specific subagent definitions (`workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter` under `.claude/agents/`, `.cursor/agents/`, or native Antigravity `.agents/agents/` configuration) using **`SUBAGENT_SKILLS.json`** (plus any installed optional catalog plugins) for single-source-of-truth skill injection with `model: inherit`, and adds `.worktrees/` to `.gitignore`.
