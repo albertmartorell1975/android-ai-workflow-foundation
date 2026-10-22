@@ -22,11 +22,26 @@ Every agent in the pipeline identifies itself with its canonical color badge (se
 Because Git does not allow two worktrees to check out the exact same branch name simultaneously, and because subagents must operate without interfering with each other's execution context, the orchestrator and subagents follow this exact handoff protocol for `<feature-id>`:
 
 ### Step A: Prepare Feature Branch (Orchestrator)
-Before spawning subagents, ensure `feature/<feature-id>` exists from `develop` and contains the committed specification `docs/features/<feature-id>/spec.md`:
+Before spawning subagents, ensure `develop` is synchronized, explicit base branching is enforced, and `docs/features/<feature-id>/spec.md` is committed:
+
+#### 1. Sequential Mode (Root Workspace on Feature Branch)
 ```bash
-git checkout -B feature/<feature-id>
+# Sync base branch first
+git fetch origin develop --prune
+git checkout develop
+git pull --ff-only origin develop
+
+# Explicitly branch from develop (NEVER git checkout -B without start-point!)
+git checkout -B feature/<feature-id> develop
 git add docs/features/<feature-id>/ feature_list.json PROGRESS.md
 git commit -m "docs(spec): [<feature-id>] add unified feature specification"
+```
+
+#### 2. Parallel Wave Mode (Root Workspace Stays on `develop`)
+When running parallel wave features, the root workspace stays on `develop` to prevent branch collisions. Each parallel feature is instantiated in its own isolated worktree directly from `origin/develop`:
+```bash
+git fetch origin develop --prune
+git worktree add -B feature/<feature-id> .worktrees/<feature-id> origin/develop
 ```
 
 ### Step B: Implementer Worktree (`workflow-implementer`) & Android Environment Hydration

@@ -29,7 +29,8 @@ Agents must identify the correct parent branch based on the task type and the cu
 ## Operational Rules for Agents
 
 1. **Branch Creation & Synchronization**: Before starting a task, the agent must ensure the local repository is synchronized with the remote:
-   - **Fetch First**: Execute `git fetch origin [parent-branch]` to get the latest changes before branching.
+   - **Fetch & Fast-Forward First**: Execute `git fetch origin [parent-branch] --prune` to get the latest changes before branching. Ensure the local parent branch is fast-forwarded: `git checkout [parent-branch] && git pull --ff-only origin [parent-branch]`.
+   - **Explicit Base Branching**: Always specify the base branch explicitly (`git checkout -B feature/<feature-id> develop` or `origin/develop`). Never execute `git checkout -B` against an implicit `HEAD`.
    - **Contextual Branch Diagnosis**:
      - For **Hotfixes**: Always branch from `main`.
      - For **Features**: Always branch from `develop`.
@@ -66,7 +67,7 @@ Act as an expert DevOps and Git Flow Architect. Your goal is to manage repositor
 ### PHASE 1: REPOSITORY DIAGNOSIS
 Before any code change:
 1. Check the current branch (`git branch --show-current`).
-2. Verify the base branch (`develop` or `main`) is up to date.
+2. Verify and fast-forward the base branch (`develop` or `main`) from remote (`git fetch origin [base] --prune && git pull --ff-only origin [base]`).
 3. Propose the name of the new branch based on the task type (feature, bugfix, etc.).
 
 ---
@@ -92,6 +93,7 @@ Triggered **ONLY** when the user or `@workflow-orchestrator` explicitly requests
 2. **Structured Evidence PR**: Open the PR targeting `base_branch` (`develop`) using the structured evidence schema (`Closes #ID`, architecture layers, `@compiler` verification, and manual test steps).
 3. **Parallel Wave Rebase**: If a concurrent PR was merged into `develop`, rebase, reconcile `feature_list.json` / `PROGRESS.md`, verify via `@compiler`, and push with lease protection (`git push --force-with-lease`).
 4. **Never Merge**: Autonomous merging (`gh pr merge`) is strictly prohibited. Merging is 100% human-owned.
+5. **Return Root to Base**: Immediately check out `base_branch` (`git checkout develop`) after PR publication.
 
 > **See [GitHub Delivery & PR Guidelines](references/github-delivery.md)** for exact lookup commands, the complete PR body template, and parallel wave rebase instructions.
 

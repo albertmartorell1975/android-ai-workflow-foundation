@@ -74,3 +74,23 @@ When multiple features execute concurrently in parallel worktrees branching from
 
 - The agent **MUST NEVER** execute `gh pr merge` or enable auto-merge.
 - Merging to `develop` or `main` is strictly reserved for the human engineer after reviewing the diff, PR evidence, and green CI status.
+
+---
+
+## 5. Post-Merge Base Synchronization & Local Branch Pruning
+
+Once a PR is merged into `develop` by the human reviewer on GitHub (or upon starting the next feature/wave):
+
+1. **Synchronize Base**:
+   ```bash
+   git fetch origin develop --prune
+   git checkout develop
+   git pull --ff-only origin develop
+   ```
+2. **Prune Merged Local Branches**:
+   Identify local feature branches whose PRs are already merged into `origin/develop`:
+   ```bash
+   # Remove merged feature branches locally
+   git branch -D feature/<old-feature-id>
+   ```
+   This guarantees that the local repository stays 100% in sync with `origin/develop` and prevents stale branches from accumulating or causing divergent branching points.

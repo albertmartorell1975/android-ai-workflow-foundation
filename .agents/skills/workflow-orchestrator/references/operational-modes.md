@@ -16,7 +16,12 @@ Produces the diagnostic execution plan report with zero mutations:
 ### Mode: `execute` (executar) — Autonomous Local Pipeline
 Executes the feature pipeline through all roles until locally accepted:
 1. **Precondition Gate**: Must pass all 4 preconditions before mutating state.
-2. **Common Base SHA**: Fixes `base_sha = $(git rev-parse origin/<base_branch>)`. All concurrent worktrees branch from this exact commit.
+2. **Pre-flight Base Synchronization**:
+   - Executes `git fetch origin <base_branch> --prune`.
+   - Sequential execution: executes `git checkout <base_branch> && git pull --ff-only origin <base_branch>`.
+   - Parallel wave execution (root workspace stays on base): advances local ref via `git fetch origin <base_branch>:<base_branch>`.
+   - Detects local `feature/*` branches whose PRs are already merged and removes them (`git branch -D feature/<old-id>`).
+3. **Common Base SHA**: Fixes `base_sha = $(git rev-parse origin/<base_branch>)`. All concurrent worktrees branch from this exact commit.
 3. **GitHub Issue Sync**: Reuses existing issue or creates `[<feature-id>] <title>`.
 4. **Pipeline Execution**: Spawns hydrated worktree (`.worktrees/impl-<id>`) and runs the 5-stage loop (`workflow-planner -> workflow-implementer -> workflow-validator -> workflow-documenter -> Stage 5 local atomic commits`), honoring any `require_review_after` human checkpoints configured in `feature_list.json` (or requested via prompt) before proceeding to subsequent stages.
 5. **Issue Evidence**: Updates the issue body with verification evidence. Commits remain local.
@@ -27,6 +32,7 @@ Pushes validated commits and opens a Pull Request:
 2. **Push Gate**: Requires explicit push permission granted by the user in the current run (default is denied).
 3. **PR Publication**: Runs `git push -u origin feature/<feature-id>`, reuses or creates the PR targeting `base_branch` (`develop`), and formats the body with structured evidence per `@git-governance`.
 4. **Never Merge**: Autonomous merging (`gh pr merge`) is strictly prohibited.
+5. **Return Root Workspace to Base**: Immediately switches root workspace back to `<base_branch>` (`git checkout <base_branch>`).
 
 ---
 
@@ -35,7 +41,7 @@ Pushes validated commits and opens a Pull Request:
 Checked before `execute` or `publish` is allowed to mutate anything (`plan` evaluates these read-only):
 
 1. **Dependencies Accepted**: Every id in `depends_on` has `status === "accepted"` in `feature_list.json`.
-2. **Clean Base**: `git status --porcelain -uno` returns empty `""`, no merge or rebase in progress, and `base_branch` resolves.
+2. **Clean Base**: `git status --porcelain -uno` returns empty `""`, no merge or rebase in progress, and `base_branch` is fetched and fast-forwarded to match `origin/<base_branch>`.
 3. **Permissions**: `gh auth status` succeeds when targeting GitHub. Explicit push permission is required for `publish`.
 4. **Independent Hydrated Environments**: One worktree per feature, hydrated with `local.properties` (with `sdk.dir`), `.env`, and uncommitted properties.
 

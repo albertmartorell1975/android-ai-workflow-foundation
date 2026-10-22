@@ -54,6 +54,12 @@ Triggered when the user provides a concrete feature idea or request directly (e.
 
 #### Mode B: Project / Backlog Queue Mode (`feature_list.json`)
 Triggered when the user asks to continue the project backlog, run the next available feature, or parallelize ready features from `feature_list.json`:
+0. **Pre-flight Base Synchronization (Mandatory)**:
+   Before reading backlog state or selecting features:
+   - Verify working tree is clean: `git status --porcelain -uno` must return empty `""`.
+   - Fetch latest remote changes with prune: `git fetch origin develop --prune`.
+   - Fast-forward local `develop`: `git checkout develop && git pull --ff-only origin develop`.
+   - Prune merged local feature branches: detect local `feature/*` branches whose PR is already `MERGED` on GitHub or integrated into `origin/develop`, and remove them (`git branch -D feature/<old-feature-id>`).
 1. Read `AGENTS.md`, `PROGRESS.md`, `CONSTRAINTS.md`, and `feature_list.json`.
 2. Select target feature(s) in priority order:
    - Resuming any feature currently in `in_progress` or `passing`.
@@ -176,6 +182,7 @@ Triggered when the user requests `publish` mode or requests PR creation:
    - If not present and `gh` is available: create PR with `gh pr create` targeting `base_branch` (`develop`) using the structured evidence body template from `git-governance/references/github-delivery.md`.
    - If `gh` is missing or unauthenticated: notify the user and provide the direct browser URL (`https://github.com/<owner>/<repo>/pull/new/feature/<feature-id>`) with pre-filled PR title and markdown body for one-click manual creation.
 4. **Never Merge**: Report PR URL. CI executes `.github/workflows/gate.yml`. The human developer performs review and merge.
+5. **Return Root Workspace to Base Branch**: Immediately switch the root workspace back to `develop` (`git checkout develop`). The root workspace must never remain stranded on a published `feature/<feature-id>` branch.
 
 ---
 
