@@ -124,7 +124,7 @@ When coordinating backlog features or delivering to GitHub, the orchestrator eva
 [4. Documenter: workflow-documenter]
        │  (isolated worktree -> KDoc + durable docs + spec.md [x])
        ▼
-[5. Consolidation & Layer-Specific Commits: @git-governance]
+[5. Consolidation, Root Gradle Sync & Layer Commits: @git-governance]
        │  (atomic commits: Domain -> Data -> UseCases -> UI -> Docs)
        ▼
 [6. GitHub PR Delivery: publish mode]  (Optional / On Request)
@@ -156,9 +156,16 @@ When coordinating backlog features or delivering to GitHub, the orchestrator eva
 
 ### Stage 5: Worktree Consolidation & Layer Commits (`@git-governance`)
 1. Merge the validated & documented worktree state back into `feature/<feature-id>` and remove temporary worktrees (`git worktree remove` + physical filesystem cleanup of untracked caches + `git branch -d`).
-2. Update `feature_list.json` status to `"accepted"` and append evidence to `PROGRESS.md`.
-3. Create atomic Conventional Commits per **`git-governance`** (`Domain -> Data -> UseCases -> UI -> Docs`), formatted as `<type>(<scope>): [<feature-id>] <subject>`.
-4. If running in local `execute` mode, present the handoff summary.
+2. **Root Workspace Sync (Build Files Detection)**:
+   - Check if any build configuration files were modified in this feature (`gradle/libs.versions.toml`, `build.gradle.kts`, `settings.gradle.kts`, or `*/build.gradle.kts`).
+   - If modified, immediately execute the canonical Gradle model preparation task on the root workspace:
+     ```bash
+     ./gradlew prepareKotlinBuildScriptModel --build-cache
+     ```
+     This ensures the root project's Gradle dependency cache and Kotlin DSL build models are synchronized immediately after consolidation.
+3. Update `feature_list.json` status to `"accepted"` and append evidence to `PROGRESS.md`.
+4. Create atomic Conventional Commits per **`git-governance`** (`Domain -> Data -> UseCases -> UI -> Docs`), formatted as `<type>(<scope>): [<feature-id>] <subject>`.
+5. If running in local `execute` mode, present the handoff summary (including a reminder to tap "Sync Now" in Android Studio if the IDE displays its external file modification banner).
 
 ### Stage 6: GitHub Issue & PR Publication (`publish` Mode)
 Triggered when the user requests `publish` mode or requests PR creation:

@@ -116,7 +116,13 @@ Once `workflow-documenter` finishes:
    if ((Test-Path ".worktrees") -and ((Get-ChildItem ".worktrees" -Force | Measure-Object).Count -eq 0)) { Remove-Item ".worktrees" -Force }
    ```
 2. Bring the validated & documented changes onto `feature/<feature-id>` (either via `git merge --squash wt/doc-<feature-id>` followed by `git reset` to stage atomic commits per Clean Architecture layer per `git-governance`, or fast-forward merge).
-3. Delete the temporary `wt/*` branches:
+3. **Root Workspace Gradle Sync (Build Files Detection)**:
+   If the consolidated changes touch build configuration files (e.g., `gradle/libs.versions.toml`, `settings.gradle.kts`, or any module's `build.gradle.kts`), immediately trigger the canonical model preparation on the root workspace:
+   ```bash
+   ./gradlew prepareKotlinBuildScriptModel --build-cache
+   ```
+   This synchronizes dependencies and IDE build models in the root project so the active workspace stays consistent with the changes made in the worktrees. Remind the user in the handoff summary to tap "Sync Now" if Android Studio displays its external modification banner.
+4. Delete the temporary `wt/*` branches:
    ```bash
    git branch -D wt/impl-<feature-id> wt/val-<feature-id> wt/doc-<feature-id>
    ```
