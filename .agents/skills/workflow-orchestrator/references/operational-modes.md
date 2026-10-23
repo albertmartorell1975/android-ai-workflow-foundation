@@ -24,7 +24,7 @@ Executes the feature pipeline through all roles until locally accepted:
 3. **Common Base SHA**: Fixes `base_sha = $(git rev-parse origin/<base_branch>)`. All concurrent worktrees branch from this exact commit.
 3. **GitHub Issue Sync**: Reuses existing issue or creates `[<feature-id>] <title>`.
 4. **Pipeline Execution**: Spawns hydrated worktree (`.worktrees/impl-<id>`) and runs the 5-stage loop (`workflow-planner -> workflow-implementer -> workflow-validator -> workflow-documenter -> Stage 5 local atomic commits`), honoring any `require_review_after` human checkpoints configured in `feature_list.json` (or requested via prompt) before proceeding to subsequent stages.
-5. **Issue Evidence**: Updates the issue body with verification evidence. Commits remain local.
+5. **Issue Evidence & CI Delivery**: Updates the issue body with verification evidence. Automatically executes clean push `git push -u origin feature/<feature-id>` and opens the structured evidence PR targeting `base_branch` (`develop`) so that GitHub Actions CI runs immediately. Returns root workspace to `base_branch`. Merging is 100% human-owned.
 
 ### Mode: `publish` (publicar) — GitHub PR Delivery
 Pushes validated commits and opens a Pull Request:
@@ -42,7 +42,7 @@ Checked before `execute` or `publish` is allowed to mutate anything (`plan` eval
 
 1. **Dependencies Accepted**: Every id in `depends_on` has `status === "accepted"` in `feature_list.json`.
 2. **Clean Base**: `git status --porcelain -uno` returns empty `""`, no merge or rebase in progress, and `base_branch` is fetched and fast-forwarded to match `origin/<base_branch>`.
-3. **Permissions**: `gh auth status` succeeds when targeting GitHub. Explicit push permission is required for `publish`.
+3. **Permissions**: `gh auth status` succeeds when targeting GitHub. Push permission is granted for `accepted` feature branches; merging is strictly prohibited.
 4. **Independent Hydrated Environments**: One worktree per feature, hydrated with `local.properties` (with `sdk.dir`), `.env`, and uncommitted properties.
 
 ---

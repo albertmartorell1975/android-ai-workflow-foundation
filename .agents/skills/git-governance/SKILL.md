@@ -53,9 +53,10 @@ Agents must identify the correct parent branch based on the task type and the cu
    - Before completing any task or stage, the agent **MUST execute `git status`** to verify that no new or modified files remain unstaged.
 
 5. **Execution Boundary & Explicit Consent**:
-   - **Default Mode (Manual)**: By default, the agent diagnoses branches, stages files (`git add`), and generates Conventional Commit messages. The agent MUST present the proposed `git commit` command and wait for the user to execute it manually.
-   - **Override Mode (Autonomous)**: The agent IS AUTHORIZED to execute `git commit`, `git push`, or `git merge` autonomously via shell commands **ONLY IF** the user explicitly commands it (e.g., "commit and push this", "apply git-governance to push", or "publish this PR").
-   - Without explicit user authorization in the current prompt, autonomous commits and pushes remain strictly PROHIBITED.
+   - **Default Mode (Manual)**: By default outside the automated feature pipeline, the agent diagnoses branches, stages files (`git add`), and generates Conventional Commit messages. The agent MUST present the proposed `git commit` command and wait for the user to execute it manually.
+   - **Accepted Feature Delivery Authorization**: Once a feature completes validation (`workflow-validator` verdict `accept`) and documentation (`workflow-documenter`) and reaches `status: accepted`, the agent IS AUTHORIZED to execute clean push `git push -u origin feature/<feature-id>` (or `--force-with-lease` after parallel rebase; never destructive forced push) and create the Pull Request via `gh pr create` so that GitHub Actions CI runs immediately.
+   - **Override Mode (Autonomous)**: The agent IS AUTHORIZED to execute `git commit` or `git push` autonomously via shell commands whenever explicitly commanded by the user (e.g., "commit and push this", "apply git-governance to push", or "publish this PR").
+   - **Absolute Human Boundary (Never Merge)**: Autonomous merging of Pull Requests (`develop`, `main`) remains strictly PROHIBITED under all circumstances. PR review, approval, and merging are 100% human-owned.
 
 ## Workflow Patterns
 
@@ -88,11 +89,11 @@ Once the task is finished:
 ---
 
 ### PHASE 4: GITHUB DELIVERY & PULL REQUESTS (`gh` CLI)
-Triggered **ONLY** when the user or `@workflow-orchestrator` explicitly requests GitHub delivery or PR publication (`publish` mode). In standard feature development, execution stops at Phase 3 (commits stay local on `feature/<feature-id>`). When authorized:
+Triggered automatically when a feature pipeline reaches `accepted` state in `@workflow-orchestrator`, or when the user explicitly requests GitHub delivery (`publish` mode):
 1. **Idempotent Reuse**: Look up existing issues (`gh issue list`) and PRs (`gh pr list`) before creating any artifact to avoid duplication.
-2. **Structured Evidence PR**: Open the PR targeting `base_branch` (`develop`) using the structured evidence schema (`Closes #ID`, architecture layers, `@compiler` verification, and manual test steps).
-3. **Parallel Wave Rebase**: If a concurrent PR was merged into `develop`, rebase, reconcile `feature_list.json` / `PROGRESS.md`, verify via `@compiler`, and push with lease protection (`git push --force-with-lease`).
-4. **Never Merge**: Autonomous merging (`gh pr merge`) is strictly prohibited. Merging is 100% human-owned.
+2. **Clean Feature Push**: Execute clean push `git push -u origin feature/<feature-id>` (or `--force-with-lease` after parallel wave rebase).
+3. **Structured Evidence PR**: Open the PR targeting `base_branch` (`develop`) using the structured evidence schema (`Closes #ID`, architecture layers, `@compiler` verification, and manual test steps) to trigger GitHub Actions CI.
+4. **Never Merge**: Autonomous merging of Pull Requests is strictly prohibited. Merging is 100% human-owned.
 5. **Return Root to Base**: Immediately check out `base_branch` (`git checkout develop`) after PR publication.
 
 > **See [GitHub Delivery & PR Guidelines](references/github-delivery.md)** for exact lookup commands, the complete PR body template, and parallel wave rebase instructions.

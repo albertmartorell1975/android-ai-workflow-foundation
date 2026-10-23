@@ -72,8 +72,8 @@ Triggered when the user asks to continue the project backlog, run the next avail
 
 When coordinating backlog features or delivering to GitHub, the orchestrator evaluates the **4 Deterministic Preconditions** (dependencies accepted, clean base, permissions, hydrated environments) and executes in one of three modes:
 - **`plan` (planificar)**: Strictly read-only (zero git/GitHub mutations). Evaluates preconditions, resolves reuse targets, and produces the diagnostic Output Report.
-- **`execute` (executar)**: Autonomous pipeline to `accepted` state across isolated hydrated worktrees. Commits remain local.
-- **`publish` (publicar)**: Requires `accepted` status and explicit push permission. Pushes `feature/<id>` and creates the structured PR. Never merges.
+- **`execute` (executar)**: Autonomous pipeline to `accepted` state across isolated hydrated worktrees. Upon consolidation and reaching `status: accepted` at Stage 5, automatically executes Stage 6 (clean push to `origin feature/<id>` and opens the structured PR targeting `develop` so GitHub Actions CI runs). Merging remains 100% human-owned. Root workspace returns to `develop`.
+- **`publish` (publicar)**: Standalone/ad-hoc PR delivery for existing accepted features if not already published. Never merges.
 
 > **See [Operational Modes & Output Report](references/operational-modes.md)** for detailed mode specifications, precondition checks, and output schemas.
 
@@ -95,8 +95,8 @@ When coordinating backlog features or delivering to GitHub, the orchestrator eva
     4. **`[Abort / Defer]`**: Safely aborts or suspends feature processing, preserving worktree state.
   - **Permissive Evaluation**: Any unrecognized value or invalid stage name in `require_review_after` is treated permissively as `null` (the autonomous flow proceeds without stopping or failing).
 - **Worktree Hydration**: Always copy `local.properties` (with `sdk.dir`) and uncommitted environment files into new worktrees before running subagents so Gradle can compile.
-- **Never Push Without Authorization**: Do not execute `git push` unless running in authorized `publish` mode.
-- **Never Merge**: Never execute `gh pr merge` or enable auto-merge.
+- **Push Net on Accepted Feature Branches**: When a feature completes all validation and documentation gates and reaches `status: accepted`, the orchestrator automatically executes a clean push (`git push -u origin feature/<feature-id>`) and creates the Pull Request via `gh pr create` so that GitHub Actions CI executes. Destructive forced push and pushing unaccepted or in-progress code remain strictly prohibited.
+- **Never Merge**: Autonomous merging of Pull Requests is strictly prohibited. Merging into `develop` or `main` is 100% human-owned.
 
 ---
 
@@ -133,8 +133,8 @@ When coordinating backlog features or delivering to GitHub, the orchestrator eva
 [5. Consolidation, Root Gradle Sync & Layer Commits: @git-governance]
        │  (atomic commits: Domain -> Data -> UseCases -> UI -> Docs)
        ▼
-[6. GitHub PR Delivery: publish mode]  (Optional / On Request)
-       └── Push to remote + Structured Evidence PR (Closes #ID) -> Human Merge
+[6. GitHub PR Delivery: Automatic on Accepted]
+       └── Clean Push to remote + Structured Evidence PR (Closes #ID) -> CI runs -> Human Merge
 
 (*) Optional Human-in-the-Loop Checkpoint if configured in `require_review_after` ("planner", "implementer", "validator") or requested via prompt.
 ```
@@ -171,11 +171,11 @@ When coordinating backlog features or delivering to GitHub, the orchestrator eva
      This ensures the root project's Gradle dependency cache and Kotlin DSL build models are synchronized immediately after consolidation.
 3. Update `feature_list.json` status to `"accepted"` and append evidence to `PROGRESS.md`.
 4. Create atomic Conventional Commits per **`git-governance`** (`Domain -> Data -> UseCases -> UI -> Docs`), formatted as `<type>(<scope>): [<feature-id>] <subject>`.
-5. If running in local `execute` mode, present the handoff summary (including a reminder to tap "Sync Now" in Android Studio if the IDE displays its external file modification banner).
+5. If running in local `execute` mode, present the handoff summary (including a reminder to tap "Sync Now" in Android Studio if the IDE displays its external file modification banner) and proceed immediately to Stage 6.
 
-### Stage 6: GitHub Issue & PR Publication (`publish` Mode)
-Triggered when the user requests `publish` mode or requests PR creation:
-1. **Gate Verification**: Ensure feature status is `"accepted"` in `feature_list.json` and explicit push permission is granted.
+### Stage 6: GitHub Issue & PR Publication (Automatic on Accepted)
+Executes automatically when a feature pipeline reaches `status: "accepted"` (or when requested via `publish` mode):
+1. **Gate Verification**: Ensure feature status is `"accepted"` in `feature_list.json` and `validation-report.md` exists with verdict `accept`.
 2. **Push Branch**: Run `git push -u origin feature/<feature-id>`.
 3. **Idempotent PR Creation via GitHub CLI (`gh`)**:
    - Verify GitHub CLI: check `gh auth status`. If available, check if PR exists: `gh pr list --state all --head "feature/<feature-id>" --base <base_branch>`.
