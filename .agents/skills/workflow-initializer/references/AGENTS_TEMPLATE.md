@@ -46,4 +46,4 @@ Every agent and subagent MUST prefix its responses and `PROGRESS.md` entries wit
    - Run `@workflow-orchestrator` to execute the next ready feature (or parallelize independent ready features) from `feature_list.json`.
 2. **Standalone Feature Mode (Ad-hoc)**:
    - Request a feature directly via `@workflow-orchestrator` (or `@workflow-planner`).
-   - The orchestrator automatically registers the feature in `feature_list.json` and `PROGRESS.md`, generates `docs/features/<feature-id>/spec.md`, and launches the subagents (`implementer` -> `validator` -> `documenter`) in isolated `git worktree` instances with `model: inherit`.
+   - The orchestrator automatically registers the feature in `feature_list.json` and `PROGRESS.md`, generates `docs/features/<feature-id>/spec.md`, and launches the subagents (`planner` -> `implementer` -> `validator` -> `documenter`) in isolated `git worktree` instances with role-tuned model tiers (`pro` for planner/validator, `flash` for implementer/documenter).

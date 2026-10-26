@@ -23,7 +23,7 @@ This repository contains [one-sentence project summary].
 
 ## Unified Multi-Agent Workflow (`foundation`)
 
-Feature development is coordinated by **`workflow-orchestrator`** using isolated **`git worktree`** environments and `model: inherit` by default:
+Feature development is coordinated by **`workflow-orchestrator`** using isolated **`git worktree`** environments and role-tuned model tiers (`pro` for planner/validator, `flash` for implementer/documenter):
 
 1. 🟣 **Orchestrator (`workflow-orchestrator`)**: Selects a feature (either ad-hoc from the user or the next ready feature from `feature_list.json`), manages `git worktree` lifecycles, coordinates subagents, and performs final layer-specific Conventional Commits via `git-governance`.
 2. 🔵 **Planner (`workflow-planner`)**: Analyzes the feature and generates the unified contract at `docs/features/<feature-id>/spec.md`.

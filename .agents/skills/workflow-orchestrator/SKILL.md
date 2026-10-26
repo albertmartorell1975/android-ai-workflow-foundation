@@ -82,7 +82,7 @@ When coordinating backlog features or delivering to GitHub, the orchestrator eva
 ## 3. Hard Governance Rules
 
 - **Single Responsibility**: The orchestrator coordinates and commits; it never writes application code, tests, or KDoc directly while a subagent owns that role.
-- **Default Model Selection**: Always invoke subagents with **`model: inherit`** by default.
+- **Role-Tuned Model Selection**: Invoke subagents with their role-assigned model tier (`pro` for `workflow-planner` and `workflow-validator`; `flash` for `workflow-implementer` and `workflow-documenter` in Antigravity/Gemini — see `references/subagent-providers.md` for Claude Code and Cursor mappings).
 - **Bounded Repair Loop (`MAX_REPAIR_ATTEMPTS = 2`) & Human Decision Gate (`needs_human_review`)**:
   - The repair cycle between `workflow-implementer` and `workflow-validator` is strictly bounded to a maximum of 2 repair attempts.
   - If unresolved after 2 repairs, autonomous looping stops immediately, the worktree is preserved intact, status is set to `needs_human_review`, and the user is presented with 4 clear pathways (Manual Override, Human Hint, Re-plan `spec.md`, Cancel).

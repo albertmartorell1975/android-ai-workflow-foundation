@@ -1,6 +1,6 @@
 # Subagent Providers & Git Worktree Protocol
 
-This reference defines how `workflow-orchestrator` spawns isolated subagents (`workflow-implementer`, `workflow-validator`, `workflow-documenter`) across AI IDE providers while guaranteeing **`git worktree` isolation**, **scoped skills**, **visual color badges**, and **`model: inherit`** compatibility.
+This reference defines how `workflow-orchestrator` spawns isolated subagents (`workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter`) across AI IDE providers while guaranteeing **`git worktree` isolation**, **scoped skills**, **visual color badges**, and **role-tuned model tier assignment**.
 
 ---
 
@@ -146,23 +146,36 @@ Once `workflow-documenter` finishes:
 
 ---
 
-## 3. Provider-Specific Subagent Invocation
+## 3. Provider-Specific Subagent Invocation & Model Tier Matrix
+
+Each subagent is configured with a role-tuned model tier matching its cognitive requirements:
+
+| Subagent Role | Antigravity / Gemini | Claude Code | Cursor |
+| :--- | :--- | :--- | :--- |
+| 🔵 **`workflow-planner`** | `pro` | `opus` | `inherit` |
+| 🟡 **`workflow-implementer`** | `flash` | `sonnet` | `fast` |
+| 🟢 **`workflow-validator`** | `pro` | `opus` | `inherit` |
+| 🔷 **`workflow-documenter`** | `flash` | `haiku` | `fast` |
 
 ### A. Gemini / Google Antigravity
 In Antigravity, subagents are defined under `.agents/agents/` and invoked using the native `invoke_subagent` tool:
-* **`TypeName`**: `"self"` (or custom subagent defined via `define_subagent`)
-* **`Model`**: `"inherit"` (Default — ensures compatibility with the active Gemini model tier without quota or tier errors)
+* **`TypeName`**:
+  - Use `"self"` for write-capable subagents (`workflow-planner`, `workflow-implementer`, `workflow-documenter`) so they receive full file-editing and terminal execution tools in their worktree.
+  - Use `"workflow-validator"` (or custom read-only subagent with `EnableWriteTools: false`) for `workflow-validator` so it remains strictly read-only.
+* **`Model`**:
+  - `"pro"` for `workflow-planner` and `workflow-validator` (deep architectural reasoning and independent 4-level audit).
+  - `"flash"` for `workflow-implementer` and `workflow-documenter` (fast deterministic code/test generation and KDoc/Markdown synthesis).
 * **`Role`**:
   - `"🔵 Planner (workflow-planner)"`
   - `"🟡 Implementer (workflow-implementer)"`
   - `"🟢 Validator (workflow-validator)"` (set `EnableWriteTools: false` if defined via `define_subagent`)
   - `"🔷 Documenter (workflow-documenter)"`
 * **`Workspace`**: `"inherit"`
-* **`Prompt`**: Instruct the subagent to read its corresponding `.agents/agents/workflow-<role>.md` file (materialized by `workflow-initializer`) to acquire its skills and base instructions. Pass dynamic handoff payload (feature ID, spec path, repair brief on revise, or target questions).
+* **`Prompt`**: Instruct the subagent to read its corresponding `.agents/agents/workflow-<role>.md` file (materialized by `workflow-initializer`) to acquire its skills, scope boundaries, and base instructions. Pass dynamic handoff payload (feature ID, spec path, repair brief on revise, or target questions).
 
 ### B. Cursor (`.cursor/agents/`)
 Cursor loads subagent definitions from `.cursor/agents/<name>.md` (materialized by `workflow-initializer`):
-* `model: inherit`
+* `model`: `inherit` for `workflow-planner` and `workflow-validator`; `fast` for `workflow-implementer` and `workflow-documenter`.
 * Roles: `workflow-planner.md`, `workflow-implementer.md`, `workflow-validator.md`, `workflow-documenter.md`.
 * For `workflow-validator.md`: `readonly: true` ensures the evaluator cannot modify any files on disk.
 * For `workflow-planner.md`: writes strictly to `docs/features/<feature-id>/spec.md`, `feature_list.json`, and `PROGRESS.md`.
@@ -171,7 +184,7 @@ Cursor loads subagent definitions from `.cursor/agents/<name>.md` (materialized 
 ### C. Claude Code (`.claude/agents/`)
 Claude Code natively loads subagents from `.claude/agents/<name>.md` (materialized by `workflow-initializer`):
 * `name`: `workflow-planner` | `workflow-implementer` | `workflow-validator` | `workflow-documenter`
-* `model`: `inherit`
+* `model`: `opus` for `workflow-planner` and `workflow-validator`; `sonnet` for `workflow-implementer`; `haiku` for `workflow-documenter`.
 * `isolation`: `worktree` (for implementer, validator, documenter)
 * `color`: `blue` | `yellow` | `green` | `cyan`
 * `skills`: The explicit scoped list of Foundation skills for that specific role.

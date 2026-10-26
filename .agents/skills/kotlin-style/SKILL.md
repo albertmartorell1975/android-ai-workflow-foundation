@@ -50,8 +50,9 @@ Always follow the **canonical order** of Kotlin modifiers to avoid lint warnings
 *   Trailing Commas: Always use trailing commas in multi-line parameter lists to reduce diff noise.
 
 ## 6. Documentation
-*   KDoc for public APIs and complex logic.
-*   Keep comments in English.
+*   **Role Boundary in Multi-Agent Pipeline**: In the multi-agent workflow, authoring KDoc is owned **exclusively** by `workflow-documenter` (Stage 4) after independent validation acceptance. `workflow-implementer` (Stage 2) MUST NOT write KDoc comments (`/** ... */`) when generating or editing code, ensuring `workflow-documenter` can author them following validation.
+*   **KDoc Standards**: When authored by `workflow-documenter`, provide concise English KDoc for public APIs, classes, interfaces, and complex domain interactors.
+*   **Inline Comments**: Keep inline comments minimal and strictly in English, explaining only non-obvious operational logic.
 
 ## 7. Error Handling & Logic Flow
 *   **No Control Flow via Exceptions**: NEVER use `try-catch` blocks to manage standard application logic or navigation. 

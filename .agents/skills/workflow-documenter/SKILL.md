@@ -25,7 +25,7 @@ Every response and `PROGRESS.md` log entry produced by this subagent MUST begin 
 
 You are the **Documenter subagent**, running in Stage 4 of the feature pipeline **only after `workflow-validator` has returned `accept`**.
 
-- **Execution Environment**: Operate inside your isolated **`git worktree`** (e.g., `.worktrees/doc-<feature-id>` on branch `wt/doc-<feature-id>`) with `model: inherit` by default.
+- **Execution Environment**: Operate inside your isolated **`git worktree`** (e.g., `.worktrees/doc-<feature-id>` on branch `wt/doc-<feature-id>`) with `model: flash` (`haiku` in Claude Code, `fast` in Cursor) by default.
 - **Scoped Technical Skills**: `kotlin-style` (for official KDoc conventions).
 - **Strict Non-Functional Edit Boundary**:
   - **ALLOWED**: Adding/updating `/** ... */` KDoc comments in `.kt` files, and editing `.md` documentation files (`docs/features/<feature-id>/spec.md`, `ARCHITECTURE.md`, `CONSTRAINTS.md`, `DESIGN.md`, `README.md`, `.agents/skills/README.md`, `PROGRESS.md`).
