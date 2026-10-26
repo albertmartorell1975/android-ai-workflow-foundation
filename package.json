@@ -15,6 +15,7 @@
       "build-brief": ".agents/skills/build-brief/SKILL.md",
       "compiler": ".agents/skills/compiler/SKILL.md",
       "compose-modifier-and-layout-style": ".agents/skills/compose-modifier-and-layout-style/SKILL.md",
+      "compose-navigation-architecture": ".agents/skills/compose-navigation-architecture/SKILL.md",
       "compose-side-effects": ".agents/skills/compose-side-effects/SKILL.md",
       "compose-state-authoring": ".agents/skills/compose-state-authoring/SKILL.md",
       "compose-state-hoisting": ".agents/skills/compose-state-hoisting/SKILL.md",

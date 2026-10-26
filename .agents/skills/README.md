@@ -53,6 +53,7 @@ Active technical knowledge for Android, Kotlin, Compose, and platform-specific e
 * **android-cli**: Android CLI commands, SDK management, emulators, and related tooling.
 * **android-intent-security**: Secure communication between Android components and Intent Redirection prevention.
 * **compose-modifier-and-layout-style**: Compose layout APIs, modifier chains, and custom layout decisions.
+* **compose-navigation-architecture**: AppState and Destinations pattern for Jetpack Compose Navigation.
 * **compose-side-effects**: Safe handling of Compose side effects.
 * **compose-state-authoring**: Patterns for creating and managing Compose state.
 * **compose-state-hoisting**: State ownership and coordination patterns.
