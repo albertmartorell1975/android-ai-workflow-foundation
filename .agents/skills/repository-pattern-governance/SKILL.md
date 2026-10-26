@@ -42,3 +42,7 @@ When generating or refactoring a Repository or Data Layer, you MUST follow these
    - Coordinate the Single Source of Truth (SSOT).
    - Never leak DTOs, Room Entities, or Retrofit annotations into the Domain Layer.
    - **Read:** `references/repository-implementation.md` for the concrete SSOT repository implementation.
+
+5. **Strict Default-Free & Non-Nullable Models (Mappers as Sole Authority)**:
+   - Network DTOs, Local Entities, and Domain Models MUST NOT declare default parameter values (`= ...`) or nullable fields (`?`) unless nullability represents a genuine domain state explicitly required by business rules.
+   - Mappers (`Dto -> Entity -> Domain`) are the sole authority for data normalization, formatting, and fallback resolution, ensuring compile-time fail-fast safety whenever a model changes.

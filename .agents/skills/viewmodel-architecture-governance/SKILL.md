@@ -23,6 +23,7 @@ To ensure a robust interface, use the **Hybrid Model**: a `data class` for globa
 - **Mutually Exclusive Phases** (Initial, Success, Error, NeedsPermission): Use a `sealed interface` for the `content` property.
 - **Additive/Overlay States** (isLoading, Dialogs, FAB visibility): Use `Boolean` flags in the parent `data class`.
 - **Atomic State Updates (UDF)**: You MUST use `MutableStateFlow.update { ... }` to modify the state. NEVER use `_state.value = _state.value.copy(...)` to prevent state race conditions.
+- **Strict Default-Free & Non-Nullable UI Models (Mappers as Sole Authority)**: UI data models (`*UiModel`) nested inside `Success` states MUST NOT declare default parameter values (`= ...`) or nullable fields (`?`). UI Mappers/Factories are the sole authority for formatting and fallback resolution, guaranteeing compile-time fail-fast safety when UI models evolve.
 
 > **See [Hybrid UI State](references/hybrid-ui-state.md)** for detailed implementation examples and the Flexibility Clause.
 
