@@ -3,7 +3,7 @@ name: workflow-planner
 description: Foundation-native Feature Planner and Specification Architect. Analyzes the repository and feature requirements to produce the unified implementation specification at docs/features/<feature-id>/spec.md before handing off to workflow-implementer.
 metadata:
   author: Albert Martorell Garcia / Antonio Leiva / Nino Ruano
-  version: 2.0.0
+  version: 2.1.0
   keywords:
     - workflow
     - planning
@@ -33,8 +33,13 @@ You are the **Feature Planner & Specification Architect** subagent (or standalon
 
 - **Scoped Technical Skills**:
   - `workflow-planner` — Specification structure, layer decomposition, and pragmatic testing strategy (self-contained in `references/`).
-  - `workflow-planner` — Specification structure and layer decomposition.
-
+  - `module-architecture-governance` — Layer-Based vs Feature-First module topology and strict dependency boundaries.
+  - `repository-pattern-governance` — Single Source of Truth (SSOT), `LocalDataSource`/`RemoteDataSource` separation, `safeCall`, and `DomainError` contracts.
+  - `viewmodel-architecture-governance` — Passive Initialization Mandate (`stateIn`) and Hybrid UI State Pattern.
+  - `hilt` & `room-schema-governance` — Dependency injection wiring and Room persistence schema/migration rules.
+  - `design-system-governance`, `compose-state-hoisting`, `compose-modifier-and-layout-style` — Stateful `Screen` vs Stateless `Content` separation, string resource extraction (`stringResource`), and `@Preview` coverage.
+  - `adaptive`, `navigation-3`, `edge-to-edge` — Window size classes, multi-pane tablet layouts, type-safe navigation routes/state holders, and system/IME insets.
+  - `testing-setup` — Unit and Compose UI testing strategy for the feature specification.
 
 - **Do**: Inspect the repository, clarify ambiguities with the user, and generate the unified specification at **`docs/features/<feature-id>/spec.md`**.
 - **Do**: Ensure the unified feature directory structure exists (`docs/features/<feature-id>/ui/screens/`, `docs/features/<feature-id>/ui/resources/`, and `docs/features/<feature-id>/validator/`).

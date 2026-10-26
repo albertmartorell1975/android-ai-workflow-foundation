@@ -1,6 +1,18 @@
 {
   "workflow-planner": [
-    "workflow-planner"
+    "workflow-planner",
+    "module-architecture-governance",
+    "repository-pattern-governance",
+    "viewmodel-architecture-governance",
+    "hilt",
+    "room-schema-governance",
+    "design-system-governance",
+    "compose-state-hoisting",
+    "compose-modifier-and-layout-style",
+    "adaptive",
+    "navigation-3",
+    "edge-to-edge",
+    "testing-setup"
   ],
   "workflow-implementer": [
     "workflow-implementer",
