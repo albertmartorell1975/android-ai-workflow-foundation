@@ -21,6 +21,7 @@ This skill ensures that any AI agent or developer modifying the UI adheres to th
 
 ## 2. Accessibility (A11y), Adaptive & Scaling
 - **Universal RTL**: Use `start/end` exclusively. No `left/right`. Directional icons MUST be mirrored.
+- **Minimum Font Size**: The minimum allowed font size for any text, label, pill, badge, or caption is **`12.sp`**. Font sizes below 12sp (e.g., 10sp, 11sp) are strictly forbidden to ensure legibility and accessibility across tablet and high-density screens.
 - **Scaling**: Support 200% font scaling via `sp`. Use `wrapContentHeight()` or `minHeight` in containers.
 - **Touch Targets**: Minimum 48x48dp via `Modifier.minimumInteractiveComponentSize()`.
 - **Adaptive Navigation**: Use `NavigationSuiteScaffold` to handle Bar/Rail transitions based on Window Size Classes.
