@@ -3,13 +3,14 @@ name: workflow-implementer
 description: Implementer subagent for the Android AI Workflow Foundation. Executes in an isolated git worktree to implement a planned feature from docs/features/<feature-id>/spec.md (or apply a Repair Brief from docs/features/<feature-id>/validator/validation-report.md), runs the compiler verification suite, and records passing evidence for workflow-validator.
 metadata:
   author: Albert Martorell Garcia / Antonio Leiva / Nino Ruano
-  version: 2.0.0
+  version: 2.1.0
   keywords:
     - implementer
     - subagent
     - git-worktree
     - clean-architecture
     - compiler-verification
+    - pragmatic-testing
 ---
 
 # Origin
@@ -89,9 +90,11 @@ Implementation order:
 6. **UI Graphic Assets (`docs/features/<feature-id>/ui/`)**:
    - Convert raw PNG/JPEG graphic assets in `docs/features/<feature-id>/ui/resources/` into optimized `.webp` drawables in the target UI module (`app/src/main/res/drawable/ic_<name>.webp` in Layer-Based projects, or `<feature>/presentation/src/main/res/drawable/ic_<name>.webp` / `core/designsystem/src/main/res/drawable/` in Feature-First projects).
    - **Never** convert full-screen layout mockups under `docs/features/<feature-id>/ui/screens/`.
-7. **Unit & Compose UI Tests**:
-   - Add or update unit tests for Domain, Data, UseCases, and ViewModels.
-   - Add or update Compose UI tests (`compose-ui-testing-patterns`) covering key UI states (`Loading`, `Error`, `Empty`, `Success`) and user interactions.
+7. **Pragmatic High-Value Testing & Anti-Overengineering (`CONSTRAINTS.md`, `testing-setup`, `compose-ui-testing-patterns`)**:
+   - **Strict Test Budget**: Write **1 to 3 cohesive `@Test` methods maximum per test class**, and **4 to 8 `@Test` methods in total across the entire feature slice**. Group related branch assertions of a single pure function (e.g. `toDomainError()`, `fromString()`) into 1–2 cohesive `@Test` methods instead of 8 fragmented micro-tests.
+   - **Single-Layer Assertion Rule**: Test each behavior or edge case **ONCE at the lowest layer that owns the logic**. Never re-test domain computed properties in `RepositoryTest` or `UseCaseTest`, and never spin up Robolectric UI tests to check string translations (covered by `lintDebug`).
+   - **Zero Trivial Tests ("Watermelon tests")**: Strictly FORBID writing tests for `data class` constructors/getters, static preview data, 1:1 pass-through UseCases/mappers, or standard collection wrappers.
+   - **UI Screen Integration**: Write **1 to 3 integration tests on the complete screen (`*ScreenTest`)** testing initial rendering, state transitions (`Loading`, `Error`, `Empty`, `Success`), and key user interactions. Do NOT test atomic child composables in isolation.
    - If the feature touches CI workflows, ensure `.github/workflows/gate.yml` runs the canonical `@compiler` command.
 
 > **See [Implementation Rules](references/implementation-rules.md)** for scope discipline, quality gate standards, and verification recording rules.

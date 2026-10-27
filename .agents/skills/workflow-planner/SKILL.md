@@ -39,7 +39,7 @@ You are the **Feature Planner & Specification Architect** subagent (or standalon
   - `hilt` & `room-schema-governance` — Dependency injection wiring and Room persistence schema/migration rules.
   - `design-system-governance`, `compose-state-hoisting`, `compose-modifier-and-layout-style` — Stateful `Screen` vs Stateless `Content` separation, string resource extraction (`stringResource`), and `@Preview` coverage.
   - `adaptive`, `navigation-3`, `edge-to-edge` — Window size classes, multi-pane tablet layouts, type-safe navigation routes/state holders, and system/IME insets.
-  - `testing-setup` — Unit and Compose UI testing strategy for the feature specification.
+  - `testing-setup` — Pragmatic unit and Compose UI testing strategy and strict test budgets.
 
 - **Do**: Inspect the repository, clarify ambiguities with the user, and generate the unified specification at **`docs/features/<feature-id>/spec.md`**.
 - **Do**: Ensure the unified feature directory structure exists (`docs/features/<feature-id>/ui/screens/`, `docs/features/<feature-id>/ui/resources/`, and `docs/features/<feature-id>/validator/`).
@@ -73,7 +73,11 @@ When planning a feature (either invoked by **`workflow-orchestrator`** or direct
   - Formulate up to 3 targeted **Necessary Questions** if critical requirements are ambiguous. Wait for user clarification before locking the spec if blocking questions exist.
 * **PHASE 2: Repository-Aware Architecture & Scenario Design**
   - Define `Goal`, `Non-Goals`, and `Given / When / Then` **Acceptance Scenarios**.
-  - Architect the **Android Layer Breakdown** (`UI/UX`, `API Design`, `Persistence`, `Durable Documentation Impact`) and the **Actionable Clean Architecture Checklist** (`Database/Models -> Domain -> Data -> UseCase -> UI -> Testing`).
+  - Architect the **Android Layer Breakdown** (`UI/UX`, `API Design`, `Persistence`, `Durable Documentation Impact`) and the **Actionable Clean Architecture Checklist** (`Database/Models -> Domain -> Data -> UseCase -> UI -> Pragmatic High-Value Testing`).
+  - **Pragmatic High-Value Testing & Strict Test Budget**: Consult `references/testing.md` and enforce:
+    1. **Strict Test Budget**: Plan **at most 1 to 3 cohesive `@Test` methods per test class**, and **4 to 8 `@Test` methods in total across the entire feature slice**.
+    2. **Single-Layer Assertion Rule**: Each rule or edge case MUST be tested at the lowest layer that owns it and never duplicated across higher layers.
+    3. **Zero Trivial Tests**: Never list test files in `Expected File Changes` for pure `data class` models, 1:1 pass-through UseCases, static preview data, 1:1 mappers, or simple collection wrappers.
 * **PHASE 3: Unified Spec Output (`docs/features/<feature-id>/spec.md`)**
   - Save the specification at **`docs/features/<feature-id>/spec.md`** following the mandatory template in [Workflow Phases & Unified Spec Template](references/workflow-phases-template.md).
   - Ensure `docs/features/<feature-id>/ui/screens/`, `docs/features/<feature-id>/ui/resources/`, and `docs/features/<feature-id>/validator/` exist.
@@ -82,4 +86,4 @@ When planning a feature (either invoked by **`workflow-orchestrator`** or direct
 > **See [Workflow Phases & Unified Spec Template](references/workflow-phases-template.md)** for the exact layer breakdown rules and the Markdown template for `docs/features/<feature-id>/spec.md`.
 
 ---
-*(Note: The references `interact.md`, `journeys.md`, and `testing.md` found in the references folder are supplementary guides for feature interaction, user journeys, and pragmatic testing).*
+*(Note: The references `interact.md` and `journeys.md` found in the references folder are supplementary guides for feature interaction and user journeys. `references/testing.md` is normative for feature test specification).*

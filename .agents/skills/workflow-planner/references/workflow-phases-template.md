@@ -50,7 +50,7 @@ Explicitly specify which durable documents **`workflow-documenter`** will need t
 
 ### 2.7 Granular Actionable Clean Architecture Checklist (For `workflow-implementer`)
 Create an ordered step-by-step checklist following the project's Clean Architecture layers (adapting module names to either `Layer-Based` or `Feature-First` topology per `module-architecture-governance`):
-`Database / Models → Domain (:domain or :<feature>:domain) → Data (:data or :<feature>:data) → UseCase (:usecases or :<feature>:usecases) → UI / Presentation (:app or :<feature>:presentation + :app wiring) → UI Design Assets → Testing & Integration → Compiler Self-Verification`
+`Database / Models → Domain (:domain or :<feature>:domain) → Data (:data or :<feature>:data) → UseCase (:usecases or :<feature>:usecases) → UI / Presentation (:app or :<feature>:presentation + :app wiring) → UI Design Assets → Pragmatic High-Value Testing (Max 4-8 tests total) → Compiler Self-Verification`
 
 ---
 
@@ -145,7 +145,7 @@ so I can [expected outcome].
 - [ ] **UseCase (`:usecases` or `:<feature>:usecases`):** ...
 - [ ] **UI / Presentation (`:app` or `:<feature>:presentation` + `:app` NavHost/DI wiring):** ...
 - [ ] **UI Design Assets & Folders:** Convert raw graphic assets in `docs/features/<feature-id>/ui/resources/` (PNG/JPEG) to `.webp` in the target UI module (`app/src/main/res/drawable/ic_<name>.webp` or `<feature>/presentation/src/main/res/drawable/ic_<name>.webp`; mockups in `ui/screens/` excluded).
-- [ ] **Testing & Integration:** [Unit tests for Domain/Data/UseCase/ViewModel + Compose UI tests where applicable]
+- [ ] **Testing & Integration (Pragmatic High-Value Testing & Budget Rule):** [Max 1-3 `@Test` per class and 4-8 `@Test` total across the feature. Strictly target high-value logic (math calculations, error mapping, multi-source orchestration fallbacks, and 1-3 screen-level Compose tests). Zero cross-layer duplication and zero trivial tests (no data class constructors, 1:1 pass-through UseCases, static preview data, or trivial mappers)].
 - [ ] **Compiler Self-Verification (MANDATORY):** Execute the `compiler` skill verification suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`) and record evidence in `PROGRESS.md` and `feature_list.json` (`status: "passing"`).
 
 ## 7. Validator Checklist (For `workflow-validator`)
@@ -153,6 +153,6 @@ so I can [expected outcome].
 - [ ] Implementation stays strictly within `<feature-id>` scope (`WIP=1`) and `CONSTRAINTS.md`.
 - [ ] All Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior (no fake/hardcoded stubs).
 - [ ] Security rules (`android-intent-security`) are respected across `AndroidManifest.xml`, deep links, and incoming Intents.
-- [ ] `@compiler` verification evidence is present and valid; unit and Compose UI tests (`compose-ui-testing-patterns`) verify real behavior.
+- [ ] `@compiler` verification evidence is present and valid; unit and Compose UI tests (`compose-ui-testing-patterns`) verify real behavior within the strict Test Budget (1-3 tests/class, 4-8 tests/feature, zero cross-layer duplication, zero trivial/watermelon tests).
 - [ ] Structured validation report written to `docs/features/<feature-id>/validator/validation-report.md`.
 ```
