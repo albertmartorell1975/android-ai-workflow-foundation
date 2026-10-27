@@ -54,6 +54,10 @@ You are the **Implementer / Generator subagent**, not the planner, not the indep
 6. **If running a `REVISE` repair iteration**: **`docs/features/<feature-id>/validator/validation-report.md`** (focus specifically on the `Implementation Repair Brief` and listed findings).
 7. `DESIGN.md` (when the feature involves UI or visual behavior).
 8. Existing application files named in the spec's `Repository Research` and `Expected File Changes`.
+9. **Layer-Gated Skill Loading (Context Window Discipline)**: Do **NOT** read all skills listed in Section 1, and do **NOT** rely on generic pre-trained Kotlin habits that might violate project guardrails. Instead, inspect the layers touched in `docs/features/<feature-id>/spec.md` and read **only the 1 to 3 core governance `SKILL.md` files** that directly govern the code you are about to write:
+   - Touching `:domain` or `:data` -> read `repository-pattern-governance` (plus `room-schema-governance` only if modifying Room entities/DAOs).
+   - Touching `ViewModel` -> read `viewmodel-architecture-governance`.
+   - Touching Compose UI / Navigation -> read `compose-modifier-and-layout-style` and `compose-state-hoisting` (plus `compose-ui-testing-patterns` when writing UI tests).
 
 ---
 
@@ -68,7 +72,13 @@ You are the **Implementer / Generator subagent**, not the planner, not the indep
 - Do not mark anything `"passing"` until `@compiler` verification evidence is captured.
 
 ### Step 3: Implement Clean Architecture Layers (`WIP=1`)
-Follow the ordered checklist in `docs/features/<feature-id>/spec.md` and respect the active **Module Topology** (`Layer-Based` vs `Feature-First`, governed by `module-architecture-governance`):
+Follow the ordered checklist in `docs/features/<feature-id>/spec.md`, respect the active **Module Topology** (`Layer-Based` vs `Feature-First`, governed by `module-architecture-governance`), and strictly enforce these **Non-Negotiable Harness Invariants** (never invent alternative patterns):
+- **ViewModel Invariant (`viewmodel-architecture-governance`)**: Zero `init {}` blocks launching coroutines or triggering data loads (*Passive Initialization Mandate*). Expose reactive state via `stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ...)` using the *Hybrid UI State* pattern.
+- **Repository & Error Invariant (`repository-pattern-governance`)**: `:domain` interfaces expose only pure domain models and typed `DomainError` hierarchies (never leak Room `@Entity`, network DTOs, or raw `Throwable` across module boundaries).
+- **Hilt DI Invariant (`hilt`)**: Prefer abstract `@Binds` over `@Provides` when binding interfaces to `@Inject`-constructed implementations; keep DI modules in the wiring layer (`:app` or `:data` / `:<feature>:data`).
+- **Compose & UI Invariant (`compose-state-hoisting`, `compose-modifier-and-layout-style`)**: Split Stateful `Screen` (wires ViewModel) from Stateless `Content` (takes plain state + event lambdas and includes `@Preview`). `Modifier` MUST be the first optional parameter with default `Modifier`. Zero hardcoded UI strings (always use `stringResource`) and zero unnecessary `testTag` modifiers in production code.
+
+Implementation order:
 1. **Database / Models & Persistence** (when required in `:data` or `:core:database` / `:<feature>:data`).
 2. **Domain Layer (`:domain` or `:<feature>:domain`)**: Pure Kotlin models, repository interfaces, and typed `DomainError` hierarchies (`repository-pattern-governance`; in Feature-First, connects only to `:core:common`).
 3. **Data Layer (`:data` or `:<feature>:data`)**: Repository implementations, SSOT coordination, data sources, and exception-to-`DomainError` mappers (in Feature-First, connects to `:<feature>:domain` and `:core:network` / `:core:database`).
@@ -89,9 +99,9 @@ Follow the ordered checklist in `docs/features/<feature-id>/spec.md` and respect
 ### Step 4: Mandatory Self-Verification (`@compiler` Suite)
 Because **`workflow-validator`** runs in a separate worktree and relies on your recorded compilation evidence to avoid redundant full Gradle rebuilds when possible, you **MUST** execute the `@compiler` skill verification suite before finishing:
 1. Run Gradle Sync / Build check (`./gradlew assembleDebug`).
-2. Run Lint check (`./gradlew lintDebug`).
+2. Run Lint check (`./gradlew lintDebug`). **CRITICAL**: Inspect the output for Warnings, not just Errors. You MUST fix warnings like `ModifierParameter` (Modifier must be the first optional parameter), hardcoded strings, and unnecessary `testTags`.
 3. Run Unit Tests (`./gradlew testDebugUnitTest`).
-4. Capture the exact commands executed and their pass/fail results. If any check fails, fix the issue before finishing.
+4. Capture the exact commands executed and their pass/fail results. If any check fails (or if Lint throws warnings), fix the issue before finishing.
 
 ### Step 5: Update Harness State & Checkpoint Worktree
 Once all checks pass:
