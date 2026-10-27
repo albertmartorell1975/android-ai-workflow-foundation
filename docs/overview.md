@@ -148,12 +148,14 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
   - Goal, Non-Goals & `Given / When / Then` Acceptance Scenarios
   - Repository Research & Expected File Changes
   - Android Layer Breakdown (`UI/UX` + `docs/features/<id>/ui/` asset rules, `API Design`, `Persistence`, `Durable Documentation Impact`)
-  - Granular Clean Architecture Checklist (`Database/Models -> Domain -> Data -> UseCase -> UI -> Testing -> @compiler`)
+  - Granular Clean Architecture Checklist (`Database/Models -> Domain -> Data -> UseCase -> UI -> Pragmatic Testing -> @compiler`)
+  - **Pragmatic Testing Plan (`testing-setup`)**: Enforces the Strict Test Budget (1–3 focused tests per class, 4–8 tests total per feature slice) avoiding redundant or trivial getter/setter tests.
 
 ### 3. 🟡 Implementer (`workflow-implementer`)
 * Runs in an isolated `git worktree` (`.worktrees/impl-<feature-id>`) that is automatically hydrated with uncommitted local Android build files (`local.properties`, `.env`, `keystore.properties`, `app/google-services.json`).
 * Implements the feature (or executes the `Implementation Repair Brief` passed by `workflow-orchestrator` on a `REVISE` pass) across Layer-Based or Feature-First modules.
 * **Comprehensive Core & Stack Skills**: Uses Core Architecture, Compose, Kotlin, Hilt (`hilt`), Room (`room-schema-governance`), and Firebase (`firebase-*`) skills out of the box, plus any optional catalog plugins installed in `.agents/skills/`.
+* **Pragmatic High-Value Testing & Anti-Overengineering**: Strictly follows the test budget (1–3 cohesive `@Test` methods per test class, 4–8 tests per feature slice) applying the Single-Layer Assertion Rule (no cross-layer duplication). Trivial tests are strictly avoided.
 * Converts raw graphic assets in `docs/features/<id>/ui/resources/` to `.webp` in `app/src/main/res/drawable/ic_<name>.webp` (or `:<feature>:presentation/src/main/res/drawable/`) while leaving screen mockups in `ui/screens/` untouched.
 * **Mandatory `@compiler` Self-Verification**: Runs `./gradlew assembleDebug`, `./gradlew lintDebug`, and `./gradlew testDebugUnitTest`, recording exact command outputs in `feature_list.json` (`status: "passing"`) and `PROGRESS.md` so the Validator does not need to rebuild the entire project from scratch unless necessary.
 
@@ -162,9 +164,9 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
 * Evaluates **4 validation levels**:
   1. **Spec Contract & Acceptance Scenarios**: Verifies all `Given/When/Then` scenarios and UI states (`Loading`, `Error`, `Empty`, `Success`).
   2. **Security & Scope Discipline Audit**: Audits `android-intent-security` (`AndroidManifest.xml` exported components, deep links, Intent Redirection) and strict `WIP=1` scope adherence (`CONSTRAINTS.md`).
-  3. **Compiler Evidence & Test Quality Audit (Worktree-Optimized)**: Audits unit and Compose UI test source code (`compose-ui-testing-patterns`) and verifies recorded `@compiler` evidence, re-running `./gradlew` only if evidence is missing, suspicious, or required for runtime installation.
+  3. **Compiler Evidence & Pragmatic Test Quality Audit (Worktree-Optimized)**: Audits unit and Compose UI test source code (`compose-ui-testing-patterns`), enforces the strict test budget (fails with `revise` on watermelon tests or test overengineering), and verifies recorded `@compiler` evidence, re-running `./gradlew` only if evidence is missing, suspicious, or required for runtime installation.
   4. **Runtime / Emulator Verification (`@android-cli`)**: Verifies the user flow on an active Android emulator/device when connected, or documents verification via Unit + Compose UI tests when headless.
-* Returns its Verdict (`accept`, `revise`, or `block`), severity-ranked Findings, and an executable **`Implementation Repair Brief`** directly in its response to **`workflow-orchestrator`** without modifying any repository files.
+* **Verdict & Repair Loop**: Returns its Verdict (`accept`, `revise`, or `block`), severity-ranked Findings, and an executable **`Implementation Repair Brief`** directly in its response to **`workflow-orchestrator`** without modifying any repository files. On `revise` (when `repair_attempts < MAX_REPAIR_ATTEMPTS = 2`), the orchestrator routes the repair brief back to `workflow-implementer`. Once the implementer repairs the code and verifies `@compiler`, the orchestrator immediately hands the worktree back to `workflow-validator` for re-audit. Only upon `accept` does the pipeline advance to `workflow-documenter`. If 2 repair attempts fail, it halts at the **Human Decision Gate** (`needs_human_review`).
 
 ### 5. 🔷 Documenter (`workflow-documenter`)
 * Runs in an isolated `git worktree` (`.worktrees/doc-<feature-id>`) **only after `workflow-validator` returns `accept`**.
