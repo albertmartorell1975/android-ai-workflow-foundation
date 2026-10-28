@@ -24,8 +24,13 @@ To ensure a robust interface, use the **Hybrid Model**: a `data class` for globa
 - **Additive/Overlay States** (isLoading, Dialogs, FAB visibility): Use `Boolean` flags in the parent `data class`.
 - **Atomic State Updates (UDF)**: You MUST use `MutableStateFlow.update { ... }` to modify the state. NEVER use `_state.value = _state.value.copy(...)` to prevent state race conditions.
 - **Strict Default-Free & Non-Nullable UI Models (Mappers as Sole Authority)**: UI data models (`*UiModel`) nested inside `Success` states MUST NOT declare default parameter values (`= ...`) or nullable fields (`?`). UI Mappers/Factories are the sole authority for formatting and fallback resolution, guaranteeing compile-time fail-fast safety when UI models evolve.
+- **Zero Hardcoded Strings & Resource Isolation in ViewModels (`DomainError` + `UiText` Mandate)**:
+  - ViewModels MUST NOT contain hardcoded error message strings nor import `R.string` to handle domain failures.
+  - The `Error` branch inside the mutually exclusive `content` sealed interface MUST expose the typed `DomainError` (`data class Error(val error: DomainError)`) for primary content load failures, or use `UiText` for transient/overlay UI feedback (e.g., Snackbars/Toasts).
+  - Translating `DomainError` into human-readable localized or dynamic text is the **exclusive responsibility of the UI layer** via `UiText` (`DynamicString` and `StringResource`) and a UI extension function `fun DomainError.toUiText(): UiText`.
 
 > **See [Hybrid UI State](references/hybrid-ui-state.md)** for detailed implementation examples and the Flexibility Clause.
+> **See [UiText & DomainError Mapping](references/ui-text-error-mapping.md)** for the canonical `UiText` contract and UI-layer error translation.
 
 ## 3. UI Actions & Coroutine Management
 

@@ -61,7 +61,7 @@ sealed interface MainContent {
     data object Initial : MainContent
     data object NeedsLocation : MainContent
     data class Success(val data: DomainModel) : MainContent
-    data class Error(val type: CustomError) : MainContent
+    data class Error(val error: DomainError) : MainContent
 }
 ```
 
@@ -82,7 +82,7 @@ fun CityWeatherContent(state: ScreenUiState) {
         when (val content = state.content) {
             is MainContent.Loading -> CircularProgressIndicator()
             is MainContent.Success -> WeatherDetails(content.city)
-            is MainContent.Error -> ErrorView(content.type)
+            is MainContent.Error -> ErrorView(message = content.error.toUiText())
         }
 
         // 2. Overlap additive elements based on independent flags
