@@ -38,7 +38,7 @@ name: workflow-planner
 description: Feature Planner and Specification Architect subagent for the Android AI Workflow Foundation. Analyzes repository architecture and feature requirements in a clean context to produce the unified implementation specification at docs/features/<feature-id>/spec.md without modifying executable code.
 subagent: true
 mainAgent: false
-model: pro
+model: inherit
 skills:
 [INJECT_PLANNER_SKILLS]
 ---
@@ -79,7 +79,7 @@ name: workflow-validator
 description: Strictly read-only independent Validator subagent for the Android AI Workflow Foundation. Audits implemented features across 4 levels (Spec Contract, Clean Architecture & Security, Compiler/Test Evidence, Runtime) in an isolated git worktree without modifying any repository files and returns an accept/revise/block verdict with an Implementation Repair Brief to workflow-orchestrator.
 subagent: true
 mainAgent: false
-model: pro
+model: inherit
 skills:
 [INJECT_VALIDATOR_SKILLS]
 ---

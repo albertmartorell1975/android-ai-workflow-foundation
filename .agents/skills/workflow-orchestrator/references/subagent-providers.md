@@ -152,9 +152,9 @@ Each subagent is configured with a role-tuned model tier matching its cognitive 
 
 | Subagent Role | Antigravity / Gemini | Claude Code | Cursor |
 | :--- | :--- | :--- | :--- |
-| 🔵 **`workflow-planner`** | `pro` | `opus` | `inherit` |
+| 🔵 **`workflow-planner`** | `inherit` | `opus` | `inherit` |
 | 🟡 **`workflow-implementer`** | `flash` | `sonnet` | `fast` |
-| 🟢 **`workflow-validator`** | `pro` | `opus` | `inherit` |
+| 🟢 **`workflow-validator`** | `inherit` | `opus` | `inherit` |
 | 🔷 **`workflow-documenter`** | `flash` | `haiku` | `fast` |
 
 ### A. Gemini / Google Antigravity
@@ -163,7 +163,7 @@ In Antigravity, subagents are defined under `.agents/agents/` and invoked using 
   - Use `"self"` for write-capable subagents (`workflow-planner`, `workflow-implementer`, `workflow-documenter`) so they receive full file-editing and terminal execution tools in their worktree.
   - Use `"workflow-validator"` (or custom read-only subagent with `EnableWriteTools: false`) for `workflow-validator` so it remains strictly read-only.
 * **`Model`**:
-  - `"pro"` for `workflow-planner` and `workflow-validator` (deep architectural reasoning and independent 4-level audit).
+  - `"inherit"` for `workflow-planner` and `workflow-validator` (inherits active UI model, e.g. Gemini 4 Argon, for deep architectural reasoning and independent 4-level audit without requiring manual model dropdown switching).
   - `"flash"` for `workflow-implementer` and `workflow-documenter` (fast deterministic code/test generation and KDoc/Markdown synthesis).
 * **`Role`**:
   - `"🔵 Planner (workflow-planner)"`

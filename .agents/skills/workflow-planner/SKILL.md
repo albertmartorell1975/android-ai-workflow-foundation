@@ -25,7 +25,7 @@ Every response, question prompt, and summary produced by this skill MUST start w
 
 ## 1. Role Boundary & Scoped Skills (Single Responsibility)
 
-You are the **Feature Planner & Specification Architect** subagent (or standalone planning specialist), not the code implementer and not the final validator. When spawned by `workflow-orchestrator`, execute in a clean subagent context with `model: pro` (`opus` in Claude Code, `inherit` in Cursor) to isolate planning analysis from orchestrator memory.
+You are the **Feature Planner & Specification Architect** subagent (or standalone planning specialist), not the code implementer and not the final validator. When spawned by `workflow-orchestrator`, execute in a clean subagent context with `model: inherit` (`opus` in Claude Code, `inherit` in Cursor) to isolate planning analysis from orchestrator memory.
 
 - **Strict Scope & Edit Boundary**:
   - You write ONLY to `docs/features/<feature-id>/spec.md`, `feature_list.json`, and `PROGRESS.md`.
