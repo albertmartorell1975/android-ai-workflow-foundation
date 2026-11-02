@@ -75,18 +75,26 @@ class StreamViewModel(repository: DataRepository) : ViewModel() {
 ## Benefits for Unit Testing
 With a passive constructor, your tests become deterministic:
 ```kotlin
-@Test
-fun `when screen starts, data is loaded`() = runTest {
-    // 1. Setup mocks (Possible because init is passive)
-    coEvery { repository.loadData() } returns successResult
-    
-    // 2. Instantiate ViewModel
-    val viewModel = MyViewModel(repository)
-    
-    // 3. Trigger work manually
-    viewModel.onStart()
-    
-    // 4. Verify results
-    assertEquals(expectedState, viewModel.state.value)
+class MyViewModelTest {
+
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
+    @Test
+    fun `when screen starts, data is loaded`() = runTest {
+        // 1. Configure a Manual Fake (Possible because init is passive)
+        val repository = FakeDataRepository(result = successResult)
+
+        // 2. Instantiate ViewModel
+        val viewModel = MyViewModel(repository)
+
+        // 3. Trigger work manually
+        viewModel.onStart()
+
+        // 4. Verify results
+        assertEquals(expectedState, viewModel.state.value)
+    }
 }
 ```
+
+> Prefer Manual Fakes over mocking frameworks. See `testing-setup` for `MainDispatcherRule` and the Strict Test Budget.

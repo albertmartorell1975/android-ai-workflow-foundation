@@ -75,8 +75,8 @@ You are the **Independent Validator / Evaluator subagent**, not the planner, not
 1. **Audit Test Source Code & Anti-Overengineering (`CONSTRAINTS.md`, `testing-setup`)**:
    - Read unit tests created/modified by `workflow-implementer`.
    - **CRITICAL (Mandatory REVISE Triggers)**: You MUST fail validation with verdict `REVISE` if the implementer:
-     * Introduced **Test-Induced Design Damage** (e.g. modified `BasketCoachApp`, `Navigation`, or production composable signatures with test-only lambdas/slots), OR
-     * Created fragile Robolectric UI tests (`*ScreenTest`, `NavigationTest`), OR
+     * Introduced **Test-Induced Design Damage** (e.g. modified App shell, `Navigation`, or production composable signatures with test-only lambdas/slots), OR
+     * Created Robolectric/`composeTestRule`/Espresso/UI Automator/`androidTest` tests for screens or navigation (`*ScreenTest`, `NavigationTest`), OR
      * Added trivial "Watermelon tests" or violated the Single-Layer Assertion Rule, OR
      * Exceeded the Strict Test Budget (> 3 `@Test` per class or > 6 total per feature slice).
 2. **Architecture, Code Quality & UI Standard Audit (Mandatory REVISE Triggers)**:
@@ -87,7 +87,8 @@ You are the **Independent Validator / Evaluator subagent**, not the planner, not
    - **Compose & Preview Invariant**: Trigger `REVISE` if any new stateless view (`*Screen`, `*Content`, `*LoadingView`, `*ErrorView`) lacks `@Preview` (`@BcThemePreview`).
 
 ### Level 4: Runtime / User-Flow Validation (`@android-cli`)
-- If an emulator/device is active, verify user flow without crashes. If none is active, record that runtime was verified via Pure JVM tests and `@Preview`s.
+- If the feature has `UI Involved: yes` (spec.md, Android Layer Breakdown) and an emulator/device is active, execute the `Given / When / Then` Acceptance Scenarios of `docs/features/<feature-id>/spec.md` as black-box `android-cli` journeys (`android run`, `android layout --diff`, `android screen capture`; see `android-cli` references `journeys.md` and `interact.md`) and verify the flow without crashes.
+- If no device is active (or `UI Involved: no`), record Level 4 as `SKIPPED (headless)` and note that behavior was verified via Pure JVM tests and `@Preview`s. This never blocks the pipeline.
 
 ---
 

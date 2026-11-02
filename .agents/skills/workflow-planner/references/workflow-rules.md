@@ -10,7 +10,7 @@ Prefer:
 * existing ViewModel passive initialization and hybrid UI state patterns (`viewmodel-architecture-governance`),
 * existing naming and Kotlin conventions (`kotlin-style`),
 * existing dependency injection patterns,
-* existing testing seams (`testing-setup`, `compose-ui-testing-patterns`),
+* existing testing seams (`testing-setup`),
 * existing design-system components (`design-system-governance`),
 * and adjacent feature implementations.
 
@@ -38,8 +38,8 @@ If a requested feature is too broad to complete in one focused pipeline pass (e.
 Every `docs/features/<feature-id>/spec.md` must specify how **`workflow-implementer`** and **`workflow-validator`** will verify the feature:
 1. **Static & Architecture Audit**: Clean Architecture layer boundaries, Compose stability/modifier rules, and Android Intent security.
 2. **Compiler & Unit Tests (`@compiler`)**: `./gradlew assembleDebug`, `./gradlew lintDebug`, and `./gradlew testDebugUnitTest`.
-3. **Compose UI Tests**: Verification of UI states (`Loading`, `Error`, `Empty`, `Success`) and user interactions via `compose-ui-testing-patterns`.
-4. **Runtime / Emulator Verification (`@android-cli`)**: Concrete user journey steps to verify on an active Android emulator/device when available.
+3. **Visual Validation**: UI states (`Loading`, `Error`, `Empty`, `Success`) covered by stateless `@Preview`s (`testing-setup` §3.6). No Compose UI tests for screens.
+4. **Runtime / Emulator Verification (`@android-cli`)**: When `UI Involved: yes`, the `Given / When / Then` Acceptance Scenarios are executed by `workflow-validator` (Level 4) as `@android-cli` journeys on an active emulator/device (`SKIPPED` when headless).
 
 ---
 

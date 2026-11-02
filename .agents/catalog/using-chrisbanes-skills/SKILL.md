@@ -34,7 +34,7 @@ Router only. Inspect the Kotlin code and task, choose the smallest relevant focu
 | Reusable Compose component API with variable visual content, primitive content params, optional content params, or boolean shape flags | [`compose-slot-api-pattern`](../compose-slot-api-pattern/SKILL.md) |
 | Compose visibility, value, color, size, transition, content swap, or choosing an animation API | [`compose-animations`](../compose-animations/SKILL.md) |
 | Keyboard, TV, desktop, D-pad, `FocusRequester`, `focusProperties`, key events, or initial focus behavior | [`compose-focus-navigation`](../compose-focus-navigation/SKILL.md) |
-| Compose UI tests, screenshot tests, previews, semantics, fake image loading, keyboard input, focus assertions, or interaction state tests | [`compose-ui-testing-patterns`](../../skills/compose-ui-testing-patterns/SKILL.md) |
+| Compose UI tests, screenshot tests, previews, semantics, fake image loading, keyboard input, focus assertions, or interaction state tests | [`testing-setup`](../../skills/testing-setup/SKILL.md) |
 | Coroutine scope ownership, `init { launch }`, non-suspending APIs that launch work, `runBlocking`, or cancellation handling | [`kotlin-coroutines-structured-concurrency`](../../skills/kotlin-coroutines-structured-concurrency/SKILL.md) |
 | Kotlin branching, `when` expressions, guard conditions, sealed type exhaustiveness, smart casts, nullable branching, or complex `if`/`else` chains | [`kotlin-control-flow`](../kotlin-control-flow/SKILL.md) |
 | `StateFlow`, `SharedFlow`, `Channel`, `stateIn`, `SharingStarted`, `.value`, one-shot events, sentinel initial values, or expensive `update` blocks | [`kotlin-flow-state-event-modeling`](../../skills/kotlin-flow-state-event-modeling/SKILL.md) |
@@ -50,5 +50,5 @@ Router only. Inspect the Kotlin code and task, choose the smallest relevant focu
 - For performance work, start with [`compose-recomposition-performance`](../compose-recomposition-performance/SKILL.md). It routes deeper to stability or deferred-read fixes.
 - For animations triggered by state, use [`compose-animations`](../compose-animations/SKILL.md); add [`compose-state-hoisting`](../../skills/compose-state-hoisting/SKILL.md) when state ownership changes, and [`compose-state-deferred-reads`](../compose-state-deferred-reads/SKILL.md) for frame-rate-driven values.
 - For reusable UI components, pair [`compose-modifier-and-layout-style`](../../skills/compose-modifier-and-layout-style/SKILL.md) with [`compose-slot-api-pattern`](../compose-slot-api-pattern/SKILL.md) when both placement and content flexibility are in play.
-- For tests around focus behavior, use [`compose-focus-navigation`](../compose-focus-navigation/SKILL.md) first, then [`compose-ui-testing-patterns`](../../skills/compose-ui-testing-patterns/SKILL.md) for test shape.
+- For tests around focus behavior, use [`compose-focus-navigation`](../compose-focus-navigation/SKILL.md) first, then [`testing-setup`](../../skills/testing-setup/SKILL.md) for test shape.
 - For Kotlin state or platform-boundary work that also changes branching shape, combine the domain skill with [`kotlin-control-flow`](../kotlin-control-flow/SKILL.md).

@@ -210,5 +210,5 @@ For each scenario, establish RED by omitting or reverting the relevant rule, the
 - [`compose-state-authoring`](../compose-state-authoring/SKILL.md) — correct local `remember` and mutable state authoring.
 - [`compose-side-effects`](../compose-side-effects/SKILL.md) — choose effect APIs and composition-scoped coroutine boundaries.
 - [`compose-focus-navigation`](../../catalog/compose-focus-navigation/SKILL.md) — focus state, requesters, and keyboard/D-pad behavior.
-- [`compose-ui-testing-patterns`](../compose-ui-testing-patterns/SKILL.md) — test plain state-driven UI without constructing the full app graph.
+- [`testing-setup`](../testing-setup/SKILL.md) - project testing strategy (pure JVM tests, `@Preview`s, black-box validation via `android-cli`).
 - [`kotlin-multiplatform-expect-actual`](../../catalog/kotlin-multiplatform-expect-actual/SKILL.md) — keep shared UI plain while platform services stay behind semantic boundaries.

@@ -40,10 +40,16 @@ Focus the 2–6 tests per feature strictly on components with high regression ri
    - UseCases that coordinate multiple data sources and provide graceful fallbacks.
 4. **Complex Parsing & Serialization**:
    - JSON deserialization with optional/nullable fields, markdown code fence stripping.
-5. **ViewModel & Presentation Logic (Pure JVM)**:
-   - ViewModel passive lifecycle, atomic state emissions (`Loading`, `Error(DomainError)`, `Success`), and retry recovery (`*ViewModelTest`).
+5. **ViewModel & Presentation Logic (Pure JVM with Manual Fakes)**:
+   - ViewModel passive lifecycle, atomic state emissions (`Loading`, `Error(DomainError)`, `Success`), and retry recovery (`*ViewModelTest`) using a reusable `MainDispatcherRule` and hand-written `Fake*` implementations (prefer Manual Fakes over MockK/Mockito).
    - Mathematical / algorithmic UI mapper transformations (`*UiMapperTest`).
 
 ## 5. Zero Test-Induced Design Damage
 
 Production signatures of application Composables (such as the main App shell or Navigation NavHost) MUST NEVER be modified, polluted with screen-slot lambdas, or compromised solely to accommodate testing harnesses.
+
+## 6. UI Visual Validation & Black-Box E2E (`@Preview`, Roborazzi & `@android-cli`)
+
+- **Feature Screens (`:app` / `:<feature>:presentation`)**: Verified via mandatory stateless `@Preview`s (`@<Prefix>ThemePreview` + `@<Prefix>DevicePreview`) and `./gradlew assembleDebug lintDebug`. Never plan golden PNG screenshot tests for regular feature screens.
+- **Design System (`:design-system`)**: Isolated widgets may use Roborazzi JVM snapshots and widget-only `composeTestRule` / `MutableInteractionSource` checks (`testing-setup/references/compose-design-system-testing.md`).
+- **Complete Flows & Real Navigation (Black-Box E2E)**: Never plan `androidTest`, Espresso, `composeTestRule`, UI Automator, or Maestro suites for feature screens. When `UI Involved: yes`, the **Acceptance Scenarios (`Given / When / Then`)** in `docs/features/<feature-id>/spec.md` serve directly as the journey specification that `workflow-validator` (Level 4) executes on an active emulator/device via `@android-cli`.

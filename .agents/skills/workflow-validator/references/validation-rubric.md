@@ -11,8 +11,8 @@ Use this rubric during independent validation and return the structured evaluati
 | **Level 1: Spec & Correctness** | Does the implementation match `docs/features/<feature-id>/spec.md`? | All `Given/When/Then` scenarios and UI states (`Loading`, `Error`, `Empty`, `Success`) are implemented with real logic. | Behavior missing, stubbed with `TODO`/hardcoded fakes, or materially different from the spec. |
 | **Level 2: Scope & Assets** | Did implementation stay inside `<feature-id>` (`WIP=1`) and follow asset rules? | Only relevant files changed; `ui/resources/` PNG/JPEGs converted to `.webp`; `ui/screens/` mockups untouched. | Adjacent features implemented opportunistically, or screen mockups converted to drawables. |
 | **Level 2: Security** | Does the diff avoid Android and API security regressions? | Exported components guarded (`android-intent-security`), no hardcoded secrets, boundary inputs validated. | Unprotected exported components, Intent redirection risk, secrets committed, private data logged. |
-| **Level 3: Tests & Compiler Evidence** | Are unit and Compose UI tests meaningful, and did `@compiler` pass? | Exact `@compiler` (`assembleDebug`, `lintDebug`, `testDebugUnitTest`) evidence recorded; unit & Compose UI tests assert real behavior. | Missing compiler evidence, failing checks hidden, or empty/trivial test assertions. |
-| **Level 4: Runtime / User-Flow** | Was runtime behavior verified when an emulator/device is active? | Verified via `@android-cli` on active device, or explicitly documented as verified via Unit + Compose UI tests when headless. | Crash on launch or broken navigation flow on active emulator. |
+| **Level 3: Tests & Compiler Evidence** | Are pure JVM unit tests meaningful, and did `@compiler` pass? | Exact `@compiler` (`assembleDebug`, `lintDebug`, `testDebugUnitTest`) evidence recorded; pure JVM unit tests assert real behavior within the Strict Test Budget. | Missing compiler evidence, failing checks hidden, or empty/trivial test assertions. |
+| **Level 4: Runtime / User-Flow** | Was runtime behavior verified when an emulator/device is active? | Acceptance Scenarios executed via `@android-cli` journeys on active device, or recorded as `SKIPPED (headless)` and verified via pure JVM tests + `@Preview`s. | Crash on launch or broken navigation flow on active emulator. |
 | **Handoff Readiness** | Is the worktree state clean for `workflow-documenter`? | `feature_list.json` (`passing`) and `PROGRESS.md` match reality; no temporary build junk tracked. | State files contradict the diff or omit blockers. |
 
 > **Important Note on Documentation**: Do NOT raise `revise` findings for missing KDoc or un-updated `ARCHITECTURE.md` / `README.md` / `spec.md` checkboxes. Those tasks belong exclusively to **`workflow-documenter`**, which runs *after* your `accept` verdict.
@@ -92,7 +92,7 @@ Always format your validation response using this exact structure so **`workflow
 ### Do (Ordered Steps for `workflow-implementer`)
 1. **[File/Module]**: <Exact change to make>
 2. **[File/Module]**: <Exact change to make>
-3. **[Tests]**: <Exact unit or Compose UI test to add or update>
+3. **[Tests]**: <Exact pure JVM unit test to add or update>
 
 ### Do Not
 * Do not modify unrelated features or expand scope beyond `<feature-id>`.

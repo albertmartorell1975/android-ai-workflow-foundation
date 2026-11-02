@@ -19,7 +19,6 @@
       "compose-side-effects": ".agents/skills/compose-side-effects/SKILL.md",
       "compose-state-authoring": ".agents/skills/compose-state-authoring/SKILL.md",
       "compose-state-hoisting": ".agents/skills/compose-state-hoisting/SKILL.md",
-      "compose-ui-testing-patterns": ".agents/skills/compose-ui-testing-patterns/SKILL.md",
       "dependency-manager": ".agents/skills/dependency-manager/SKILL.md",
       "design-system-governance": ".agents/skills/design-system-governance/SKILL.md",
       "edge-to-edge": ".agents/skills/edge-to-edge/SKILL.md",

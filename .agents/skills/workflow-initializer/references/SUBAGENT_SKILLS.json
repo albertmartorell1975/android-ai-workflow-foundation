@@ -29,7 +29,6 @@
     "compose-state-hoisting",
     "compose-side-effects",
     "compose-modifier-and-layout-style",
-    "compose-ui-testing-patterns",
     "navigation-3",
     "adaptive",
     "edge-to-edge",
@@ -45,7 +44,6 @@
     "workflow-validator",
     "compiler",
     "android-intent-security",
-    "compose-ui-testing-patterns",
     "android-cli"
   ],
   "workflow-documenter": [

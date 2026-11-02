@@ -139,7 +139,7 @@ composeTestRule.onNodeWithTag("play-button").assertIsFocused()
 
 Prefer asserting focused semantics over visual styling. Use screenshot tests only for focus appearance, not for deterministic focus ownership.
 
-Broader test-shape choices (plain UI vs integration, semantics-first): [`compose-ui-testing-patterns`](../../skills/compose-ui-testing-patterns/SKILL.md).
+Broader test-shape choices (plain UI vs integration, semantics-first): [`testing-setup`](../../skills/testing-setup/SKILL.md).
 
 ## Red flags during review
 
