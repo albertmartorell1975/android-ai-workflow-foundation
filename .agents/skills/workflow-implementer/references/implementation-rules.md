@@ -4,7 +4,7 @@
 
 In the unified Foundation pipeline, implementation and documentation are separated across dedicated subagents:
 
-- **`workflow-implementer` (🟡)** focuses 100% on Clean Architecture code, graphic asset conversion, unit/UI tests, `@compiler` verification, and updating `feature_list.json` (`passing`) + `PROGRESS.md`.
+- **`workflow-implementer` (🟡)** focuses 100% on Clean Architecture code, graphic asset conversion, pure JVM unit tests, `@compiler` verification, and updating `feature_list.json` (`passing`) + `PROGRESS.md`.
 - **`workflow-documenter` (🔷)** runs after independent validation (`accept`) to author English KDoc, update `ARCHITECTURE.md` / `README.md`, and check off `[x]` items in `docs/features/<feature-id>/spec.md`.
 
 **Exception (`CONSTRAINTS.md` & `spec.md`)**:

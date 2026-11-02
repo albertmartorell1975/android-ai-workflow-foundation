@@ -23,7 +23,7 @@ Use this rubric during independent validation and return the structured evaluati
 
 ### Severity Levels
 - **Critical**: Unsafe, data-loss, security vulnerability, project does not compile, or feature is fundamentally wrong.
-- **High**: An acceptance scenario fails, required unit/UI tests are missing/broken, or scope discipline is violated.
+- **High**: An acceptance scenario fails, required pure JVM unit tests are missing/broken, or scope discipline is violated.
 - **Medium**: Maintainability or edge-case gap likely to cause bugs or hurt future sessions.
 - **Low**: Minor polish or non-blocking note.
 
@@ -54,7 +54,7 @@ Always format your validation response using this exact structure so **`workflow
 | :--- | :--- | :--- |
 | **1. Spec Contract & Acceptance Scenarios** | `PASS` / `FAIL` | <Summary of Given/When/Then scenarios and UI asset checks> |
 | **2. Security & Scope Discipline** | `PASS` / `FAIL` | <Summary of `android-intent-security`, secrets, boundary inputs, and `WIP=1` scope check> |
-| **3. Compiler Evidence & Test Quality** | `PASS` / `FAIL` | <Verified recorded `@compiler` evidence / Rerunnable checks & Unit/Compose UI test review> |
+| **3. Compiler Evidence & Test Quality** | `PASS` / `FAIL` | <Verified recorded `@compiler` evidence / Rerunnable checks & Pure JVM unit test review> |
 | **4. Runtime / Emulator Flow (`@android-cli`)** | `PASS` / `SKIPPED` / `FAIL` | <Emulator verification result or note that no active device was connected> |
 
 ---

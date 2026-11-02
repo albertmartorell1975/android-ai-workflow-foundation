@@ -25,7 +25,7 @@ To make agent activity immediately recognizable in the chat and logs, every agen
 
 * 🟣 **`[ORCHESTRATOR · workflow-orchestrator]`** — Pipeline coordination, `feature_list.json`, `git worktree` management, and final `@git-governance` commits/PRs.
 * 🔵 **`[PLANNER · workflow-planner]`** — Technical diagnosis and specification at `docs/features/<feature-id>/spec.md`.
-* 🟡 **`[IMPLEMENTER · workflow-implementer]`** — Clean Architecture code, unit/UI tests, and `@compiler` verification in an isolated worktree.
+* 🟡 **`[IMPLEMENTER · workflow-implementer]`** — Clean Architecture code, pure JVM unit tests, and `@compiler` verification in an isolated worktree.
 * 🟢 **`[VALIDATOR · workflow-validator]`** *(or 🔴 on `REVISE` / `BLOCK`)* — Strictly read-only 4-level independent audit (Spec Contract, Clean Architecture & Security, Test/Compiler Evidence, Runtime) returning an `accept` / `revise` / `block` verdict with an `Implementation Repair Brief` in its response.
 * 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc, durable documentation sync, and checklist completion in an isolated worktree.
 

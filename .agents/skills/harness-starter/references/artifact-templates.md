@@ -156,7 +156,7 @@ Schema:
     "validation_path": "docs/features/short-kebab-case-id/validator/validation-report.md",
     "verification": [
       "./gradlew testDebugUnitTest lintDebug --parallel --build-cache --configuration-cache",
-      "Concrete acceptance or Compose UI test verification step."
+      "Concrete acceptance or pure JVM unit test verification step."
     ],
     "evidence": [],
     "notes": "Relevant constraints, source docs, dependencies, or known risks."
