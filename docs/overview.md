@@ -149,13 +149,13 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
   - Repository Research & Expected File Changes
   - Android Layer Breakdown (`UI/UX` + `docs/features/<id>/ui/` asset rules, `API Design`, `Persistence`, `Durable Documentation Impact`)
   - Granular Clean Architecture Checklist (`Database/Models -> Domain -> Data -> UseCase -> UI -> Pragmatic Testing -> @compiler`)
-  - **Pragmatic Testing Plan (`testing-setup`)**: Enforces the Strict Test Budget (1–3 focused tests per class, 4–8 tests total per feature slice) avoiding redundant or trivial getter/setter tests.
+  - **Pragmatic Testing Plan (`testing-setup`)**: Enforces the Strict Test Budget (1–3 focused tests per class, 2–6 tests total per feature slice) avoiding redundant or trivial getter/setter tests.
 
 ### 3. 🟡 Implementer (`workflow-implementer`)
 * Runs in an isolated `git worktree` (`.worktrees/impl-<feature-id>`) that is automatically hydrated with uncommitted local Android build files (`local.properties`, `.env`, `keystore.properties`, `app/google-services.json`).
 * Implements the feature (or executes the `Implementation Repair Brief` passed by `workflow-orchestrator` on a `REVISE` pass) across Layer-Based or Feature-First modules.
 * **Comprehensive Core & Stack Skills**: Uses Core Architecture, Compose, Kotlin, Hilt (`hilt`), Room (`room-schema-governance`), and Firebase (`firebase-*`) skills out of the box, plus any optional catalog plugins installed in `.agents/skills/`.
-* **Pragmatic High-Value Testing & Anti-Overengineering**: Strictly follows the test budget (1–3 cohesive `@Test` methods per test class, 4–8 tests per feature slice) applying the Single-Layer Assertion Rule (no cross-layer duplication). Trivial tests are strictly avoided.
+* **Pragmatic High-Value Testing & Anti-Overengineering**: Strictly follows the test budget (1–3 cohesive `@Test` methods per test class, 2–6 tests per feature slice) applying the Single-Layer Assertion Rule (no cross-layer duplication). Trivial tests are strictly avoided.
 * Converts raw graphic assets in `docs/features/<id>/ui/resources/` to `.webp` in `app/src/main/res/drawable/ic_<name>.webp` (or `:<feature>:presentation/src/main/res/drawable/`) while leaving screen mockups in `ui/screens/` untouched.
 * **Mandatory `@compiler` Self-Verification**: Runs `./gradlew assembleDebug`, `./gradlew lintDebug`, and `./gradlew testDebugUnitTest`, recording exact command outputs in `feature_list.json` (`status: "passing"`) and `PROGRESS.md` so the Validator does not need to rebuild the entire project from scratch unless necessary.
 
@@ -224,6 +224,35 @@ Once the project harness is ready, the developer selects how features are execut
 | **Validation Output** | Inline chat only | Optional `docs/validations/<feature-id>.md` | **Read-only Validator response** persisted by Orchestrator to `docs/features/<feature-id>/validator/validation-report.md` with `Implementation Repair Brief` |
 | **Compiler Strategy** | Manual / end of flow | Re-run in both agents | **Worktree-optimized**: Implementer runs `@compiler` and records evidence; Validator audits code/tests and only re-runs `@compiler` when needed |
 | **Documentation** | Mixed into implementation | Mixed into implementation | **Dedicated `workflow-documenter` subagent** running after validation `accept` |
+
+---
+
+## Pragmatic Testing Strategy & Tooling Governance
+
+The Foundation enforces a **pragmatic, high-value testing strategy** (`@testing-setup`) designed to prevent test bloat, brittle suites, and "Watermelon tests" (green on the outside, empty on the inside).
+
+### Tooling Matrix by Testing Layer
+
+| Testing Scope | Approved Tooling | Excluded / Forbidden Tooling | Core Rationale & Decisive Advantages |
+| :--- | :--- | :--- | :--- |
+| **Domain & Math Logic** (`:domain`) | **JUnit 4/5** + Kotlin assertions / Truth | Instrumented tests, Mocking libraries | **Pure JVM execution in milliseconds**. Tests pure calculations, ranking algorithms, and boundary conditions without Android framework dependencies or bytecode manipulation. |
+| **Data & Serialization** (`:data`) | **JUnit 4/5** + **Manual Fakes** | MockK, Mockito, Real network/DB calls | **Zero reflection & zero bytecode instrumentation overhead**. Manual in-memory Fakes (`Fake*Repository`, `Fake*DataSource`) provide deterministic state and avoid brittle implementation coupling (`verify`-style assertions). |
+| **UseCase Orchestration** (`:usecases`) | **JUnit 4/5** + **Manual Fakes** | MockK, Mockito | Evaluates multi-source fallback and error translation logic using fast in-memory Fakes. 1:1 pass-through UseCases are strictly forbidden from having tests. |
+| **Presentation & ViewModels** (`:app` / `:<feature>:presentation`) | **JUnit** + `MainDispatcherRule` + **Turbine** (`app.cash.turbine`) | **Robolectric**, `composeTestRule`, Espresso, UI Automator | **Pure JVM reactive testing**. ViewModels and `*UiMapper` classes are verified deterministically with `UnconfinedTestDispatcher` and Turbine. Forbidding Robolectric screen tests eliminates slow shadow-class loading, fragile text/tag matching, and Test-Induced Design Damage. |
+| **Visual Screen Correctness** | **Stateless `@Preview`** + `@compiler` (`lintDebug`) | Paparazzi, Committed golden PNGs for screens | Lightweight visual inspection via `@<Prefix>ThemePreview` / `@<Prefix>DevicePreview` without bloating git storage with binary screen snapshots or dealing with unstable AGP screenshot plugins. |
+| **Design System Components** (`:design-system`) | **Roborazzi** (on JVM) | Paparazzi, `com.android.compose.screenshot` (Alpha) | Roborazzi captures existing `@Preview` composables on the JVM using stable tooling compatible with JDK 21 and modern AGP without runtime device overhead. |
+| **Real Flows & E2E Journeys** | **`@android-cli`** (Black-Box on emulator/device) | Espresso, `createAndroidComposeRule`, UI Automator, Maestro in repo | **Zero repo bloat & zero test harness pollution**. The feature's `Given / When / Then` Acceptance Scenarios are verified as black-box user journeys directly on active devices via `android` CLI commands (`android run`, `android layout --diff`, `android screen capture`). Skips cleanly (`SKIPPED (headless)`) in CI when no emulator is present. |
+
+### Core Testing Invariants
+
+1. **Pure JVM Presentation Testing**: Tests in `:app` or presentation modules are strictly limited to ViewModels (`*ViewModelTest`) and complex UI mappers (`*UiMapperTest`). No functional Robolectric tests of screens or navigation are permitted.
+2. **Manual Fakes First**: Hand-crafted in-memory fakes are used for all domain interfaces. Mocking frameworks (MockK / Mockito) are strictly reserved for final platform types that cannot be faked.
+3. **Strict Test Budget (Hard Caps)**:
+   - **Per Class**: 1 to 3 cohesive `@Test` methods maximum per test class.
+   - **Per Feature**: 2 to 6 `@Test` methods in total across all layers for a standard feature slice.
+4. **Single-Layer Assertion Rule**: Every business rule or computation is tested **once** at the lowest owning layer and never re-tested higher up.
+5. **Zero Trivial Tests Mandate**: Strictly forbids tests for `data class` constructors, getters/setters, static preview data, 1:1 pass-through UseCases, or trivial mappers.
+6. **Zero Test-Induced Design Damage**: Production Composable signatures must never accept test-only lambdas, test tags, or slots solely to accommodate automated test harnesses.
 
 ---
 
