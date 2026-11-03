@@ -160,15 +160,14 @@ Each subagent is configured with a role-tuned model tier matching its cognitive 
 ### A. Gemini / Google Antigravity
 In Antigravity, subagents are defined under `.agents/agents/` and invoked using the native `invoke_subagent` tool:
 * **`TypeName`**:
-  - Use `"self"` for write-capable subagents (`workflow-planner`, `workflow-implementer`, `workflow-documenter`) so they receive full file-editing and terminal execution tools in their worktree.
-  - Use `"workflow-validator"` (or custom read-only subagent with `EnableWriteTools: false`) for `workflow-validator` so it remains strictly read-only.
+  - Use `"self"` for ALL subagents (`workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter`). In Antigravity, subagents defined via custom markdown without `EnableWriteTools` lack access to `run_command` (terminal shell). Since `workflow-validator` strictly requires shell execution for `git diff --name-only`, running the `@compiler` suite (`./gradlew`), and `@android-cli` Level 4 verification, it MUST be invoked with `TypeName: "self"`. Its read-only boundary is strictly enforced via its prompt instructions and isolated `git worktree` lifecycle.
 * **`Model`**:
-  - `"inherit"` for `workflow-planner` and `workflow-validator` (inherits active UI model, e.g. Gemini 4 Argon, for deep architectural reasoning and independent 4-level audit without requiring manual model dropdown switching).
+  - `"inherit"` for `workflow-planner` and `workflow-validator` (inherits active UI model, e.g. Gemini / Claude / GPT, for deep architectural reasoning and independent 4-level audit without requiring manual model dropdown switching).
   - `"flash"` for `workflow-implementer` and `workflow-documenter` (fast deterministic code/test generation and KDoc/Markdown synthesis).
 * **`Role`**:
   - `"🔵 Planner (workflow-planner)"`
   - `"🟡 Implementer (workflow-implementer)"`
-  - `"🟢 Validator (workflow-validator)"` (set `EnableWriteTools: false` if defined via `define_subagent`)
+  - `"🟢 Validator (workflow-validator)"`
   - `"🔷 Documenter (workflow-documenter)"`
 * **`Workspace`**: `"inherit"`
 * **`Prompt`**: Instruct the subagent to read its corresponding `.agents/agents/workflow-<role>.md` file (materialized by `workflow-initializer`) to acquire its skills, scope boundaries, and base instructions. Pass dynamic handoff payload (feature ID, spec path, repair brief on revise, or target questions).

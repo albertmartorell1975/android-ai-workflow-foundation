@@ -44,7 +44,12 @@
     "workflow-validator",
     "compiler",
     "android-intent-security",
-    "android-cli"
+    "android-cli",
+    "viewmodel-architecture-governance",
+    "repository-pattern-governance",
+    "hilt",
+    "compose-modifier-and-layout-style",
+    "testing-setup"
   ],
   "workflow-documenter": [
     "workflow-documenter",
