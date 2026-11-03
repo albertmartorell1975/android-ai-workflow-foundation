@@ -31,6 +31,10 @@ this skill establishes an unbreakable protocol to ensure the compatibility and m
 9. **Stable Versions Policy**: PROHIBITED from updating or proposing unstable pre-release versions (Alpha, Beta, RC, Dev, Snapshot) unless explicitly requested by the user.
 10. **Atomic Update & Mandatory Sync (STRICT)**: Every dependency or plugin change must be performed as an atomic operation. Whenever `libs.versions.toml` or `build.gradle.kts` is modified, you MUST immediately perform a Gradle Sync and a module build verification before proceeding with any other modifications or tasks.
 11. **Logical Grouping and Organization**: Maintain clean organization in `libs.versions.toml` by grouping related dependencies/plugins together or following alphabetical order within sections (`[versions]`, `[libraries]`, `[plugins]`, `[bundles]`).
+12. **Declarative Secret & BuildConfig Provisioning (STRICT)**:
+    - **No Imperative Script I/O**: PROHIBITED from parsing `local.properties` via `java.util.Properties`, `File.inputStream()`, or manually escaping quotes inside `buildConfigField` calls in `build.gradle.kts`.
+    - **Official Plugin Adoption**: Use Google's official **`secrets-gradle-plugin`** (`com.google.android.libraries.mapsplatform.secrets-gradle-plugin`) registered in `libs.versions.toml`.
+    - **Mandatory Default Properties**: Pair the secrets plugin with a committed `local.defaults.properties` file at the root containing non-empty placeholder defaults (e.g. `KEY=DEFAULT_KEY`) so that generated `BuildConfig.java` syntax remains valid on CI systems (e.g., GitHub Actions) or fresh developer clones where `local.properties` is absent.
 
 ## Update Protocols
 
