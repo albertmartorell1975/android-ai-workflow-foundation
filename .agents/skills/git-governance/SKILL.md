@@ -90,9 +90,14 @@ Once the task is finished:
 
 ### PHASE 4: GITHUB DELIVERY & PULL REQUESTS (`gh` CLI)
 Triggered automatically when a feature pipeline reaches `accepted` state in `@workflow-orchestrator`, or when the user explicitly requests GitHub delivery (`publish` mode):
-1. **Idempotent Reuse**: Look up existing issues (`gh issue list`) and PRs (`gh pr list`) before creating any artifact to avoid duplication.
-2. **Clean Feature Push**: Execute clean push `git push -u origin feature/<feature-id>` (or `--force-with-lease` after parallel wave rebase).
-3. **Structured Evidence PR**: Open the PR targeting `base_branch` (`develop`) using the structured evidence schema (`Closes #ID`, architecture layers, `@compiler` verification, and manual test steps) to trigger GitHub Actions CI.
+
+> [!IMPORTANT]
+> **Sandbox Boundary & Network Access**: All remote commands interacting with GitHub (`git push`, `git fetch`, `gh auth status`, `gh issue`, `gh pr`) require network and system credentials and **MUST run outside the sandbox (`BypassSandbox: true`)**.
+> If any command fails with network, permissions, or auth errors, **immediately retry with `BypassSandbox: true`** before falling back to manual URLs.
+
+1. **Idempotent Reuse**: Look up existing issues (`gh issue list`) and PRs (`gh pr list`) before creating any artifact to avoid duplication (always `BypassSandbox: true`).
+2. **Clean Feature Push**: Execute clean push `git push -u origin feature/<feature-id>` (or `--force-with-lease` after parallel wave rebase) with `BypassSandbox: true`.
+3. **Structured Evidence PR**: Open the PR targeting `base_branch` (`develop`) using the structured evidence schema (`Closes #ID`, architecture layers, `@compiler` verification, and manual test steps) via `gh pr create` (`BypassSandbox: true`) to trigger GitHub Actions CI.
 4. **Never Merge**: Autonomous merging of Pull Requests is strictly prohibited. Merging is 100% human-owned.
 5. **Return Root to Base**: Immediately check out `base_branch` (`git checkout develop`) after PR publication.
 

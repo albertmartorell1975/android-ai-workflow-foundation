@@ -2,6 +2,10 @@
 
 This document defines the deterministic GitHub integration rules for `@git-governance` when publishing feature branches to GitHub as Pull Requests.
 
+> [!IMPORTANT]
+> **Sandbox Boundary & Network Mandate**: All GitHub CLI (`gh`) and remote Git commands (`push`, `fetch`) require network access and OS keychain credentials and **MUST be executed outside the sandbox (`BypassSandbox: true`)**.
+> If any command fails due to network isolation or unauthenticated status inside the sandbox, **immediately retry with `BypassSandbox: true`** before falling back to manual browser URLs.
+
 ## 1. Deterministic Identities & Idempotent Reuse Lookups (Read-Only)
 
 Before creating any GitHub artifact, the agent MUST run read-only lookups to prevent duplicates:

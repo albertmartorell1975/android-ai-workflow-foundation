@@ -95,7 +95,7 @@ When coordinating backlog features or delivering to GitHub, the orchestrator eva
     4. **`[Abort / Defer]`**: Safely aborts or suspends feature processing, preserving worktree state.
   - **Permissive Evaluation**: Any unrecognized value or invalid stage name in `require_review_after` is treated permissively as `null` (the autonomous flow proceeds without stopping or failing).
 - **Worktree Hydration**: Always copy `local.properties` (with `sdk.dir`) and uncommitted environment files into new worktrees before running subagents so Gradle can compile.
-- **Push Net on Accepted Feature Branches**: When a feature completes all validation and documentation gates and reaches `status: accepted`, the orchestrator automatically executes a clean push (`git push -u origin feature/<feature-id>`) and creates the Pull Request via `gh pr create` so that GitHub Actions CI executes. Destructive forced push and pushing unaccepted or in-progress code remain strictly prohibited.
+- **Push Net on Accepted Feature Branches**: When a feature completes all validation and documentation gates and reaches `status: accepted`, the orchestrator automatically executes a clean push (`git push -u origin feature/<feature-id>`) and creates the Pull Request via `gh pr create` so that GitHub Actions CI executes. Destructive forced push and pushing unaccepted or in-progress code remain strictly prohibited. All remote git and `gh` CLI commands in Stage 6 MUST run outside the sandbox (`BypassSandbox: true`).
 - **Never Merge**: Autonomous merging of Pull Requests is strictly prohibited. Merging into `develop` or `main` is 100% human-owned.
 
 ---
@@ -175,12 +175,17 @@ When coordinating backlog features or delivering to GitHub, the orchestrator eva
 
 ### Stage 6: GitHub Issue & PR Publication (Automatic on Accepted)
 Executes automatically when a feature pipeline reaches `status: "accepted"` (or when requested via `publish` mode):
+
+> [!IMPORTANT]
+> **Sandbox Boundary & Network Mandate**: All Stage 6 remote operations (`git push`, `gh auth status`, `gh pr list`, `gh pr create`) require external network access and OS credentials and **MUST run outside the sandbox (`BypassSandbox: true`)**.
+> If any `gh` or `git push` command fails due to network, permissions, or auth errors (especially if attempted inside the standard sandbox), the orchestrator **MUST immediately retry with `BypassSandbox: true`** before ever resorting to manual browser fallback URLs. Only if `gh` remains unauthenticated or unavailable after the bypass retry should the manual URL fallback be presented.
+
 1. **Gate Verification**: Ensure feature status is `"accepted"` in `feature_list.json` and `validation-report.md` exists with verdict `accept`.
-2. **Push Branch**: Run `git push -u origin feature/<feature-id>`.
+2. **Push Branch**: Run `git push -u origin feature/<feature-id>` with `BypassSandbox: true`.
 3. **Idempotent PR Creation via GitHub CLI (`gh`)**:
-   - Verify GitHub CLI: check `gh auth status`. If available, check if PR exists: `gh pr list --state all --head "feature/<feature-id>" --base <base_branch>`.
-   - If not present and `gh` is available: create PR with `gh pr create` targeting `base_branch` (`develop`) using the structured evidence body template from `git-governance/references/github-delivery.md`.
-   - If `gh` is missing or unauthenticated: notify the user and provide the direct browser URL (`https://github.com/<owner>/<repo>/pull/new/feature/<feature-id>`) with pre-filled PR title and markdown body for one-click manual creation.
+   - Verify GitHub CLI outside sandbox: check `gh auth status` (`BypassSandbox: true`). If available, check if PR exists: `gh pr list --state all --head "feature/<feature-id>" --base <base_branch>`.
+   - If not present and `gh` is available: create PR with `gh pr create` targeting `base_branch` (`develop`) using the structured evidence body template from `git-governance/references/github-delivery.md` (`BypassSandbox: true`).
+   - If `gh` fails or returns network/auth errors, re-execute immediately with `BypassSandbox: true`. Only if `gh` is strictly missing or unauthenticated after bypass retry: notify the user and provide the direct browser URL (`https://github.com/<owner>/<repo>/pull/new/feature/<feature-id>`) with pre-filled PR title and markdown body for one-click manual creation.
 4. **Never Merge**: Report PR URL. CI executes `.github/workflows/gate.yml`. The human developer performs review and merge.
 5. **Return Root Workspace to Base Branch**: Immediately switch the root workspace back to `develop` (`git checkout develop`). The root workspace must never remain stranded on a published `feature/<feature-id>` branch.
 
