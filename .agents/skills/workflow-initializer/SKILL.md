@@ -83,7 +83,10 @@ The Foundation uses opinionated, industry-standard engineering defaults (**MVVM 
 2. **Materialize Subagents & `.worktrees/` Ignore Rule**:
    - Ensure `.worktrees/` is added to the project's `.gitignore`.
    - Read the Single Source of Truth for skills from `.agents/skills/workflow-initializer/references/SUBAGENT_SKILLS.json`.
-   - Read `.agents/skills/workflow-initializer/references/SUBAGENTS_TEMPLATE.md`.
+   - Read the subagents template matching the selected AI Provider:
+     * For **Gemini / Antigravity**: `.agents/skills/workflow-initializer/references/subagents/gemini.md`
+     * For **Cursor**: `.agents/skills/workflow-initializer/references/subagents/cursor.md`
+     * For **Claude Code**: `.agents/skills/workflow-initializer/references/subagents/claude.md`
    - Determine the active skills for subagents:
      * For each subagent (`workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter`), take the baseline list from `SUBAGENT_SKILLS.json`.
      * For `workflow-implementer`, append any optional catalog plugins installed into `.agents/skills/` during Phase 2.
@@ -109,7 +112,7 @@ The Foundation uses opinionated, industry-standard engineering defaults (**MVVM 
 - [ ] Stop execution turn and prompt user: confirm target AI Provider (`Gemini`, `Cursor`, `Claude Code`) and catalog plugins selection — NEVER assume.
 - [ ] Install selected **Optional Catalog Plugins** (if requested by user).
 - [ ] Materialize `AGENTS.md` from `references/AGENTS_TEMPLATE.md` with dynamic replacements.
-- [ ] Add `.worktrees/` to `.gitignore` and materialize provider-specific subagents from `references/SUBAGENTS_TEMPLATE.md` using `SUBAGENT_SKILLS.json` + installed catalog plugins.
+- [ ] Add `.worktrees/` to `.gitignore` and materialize provider-specific subagents from `references/subagents/<provider>.md` using `SUBAGENT_SKILLS.json` + installed catalog plugins.
 - [ ] Delegate AI context exclusion creation to `ai-context-exclusion` with user-selected AI Provider.
 - [ ] Delegate safety hooks creation to `agent-safety-hooks` with user-selected AI Provider.
 - [ ] Verify Git baseline (`main` / `develop`) per `git-governance`.
