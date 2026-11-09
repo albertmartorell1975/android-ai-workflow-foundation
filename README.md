@@ -70,6 +70,13 @@ When driving a multi-feature milestone, MVP release, or chained set of features:
 3. The orchestrator executes ready features sequentially—or parallelizes independent features whose `depends_on` prerequisites are `accepted` across separate `git worktree` instances.
 4. Continues until the queue is finished or a blocking issue requires developer intervention.
 
+### Mode C: Post-PR Review & Feedback Loop (`review-fix` — Multi-Round)
+When the developer conducts code review on an open Pull Request on GitHub (across 1 or $N$ review rounds) and requests code quality, Clean Architecture, or SOLID improvements:
+1. Provide the review comments or requested refactors to **`@workflow-orchestrator`**.
+2. The orchestrator records a numbered `## PR Review Round #N` (`PR Review Repair Brief`) in `docs/features/<feature-id>/validator/pr-review.md` on `feature/<feature-id>`.
+3. Rehydrates isolated worktrees (`wt/impl-<id>` -> `wt/val-<id>` -> `wt/doc-<id>`) starting from the tip of `feature/<feature-id>`, and runs `workflow-implementer` ⇄ `workflow-validator` -> `workflow-documenter`.
+4. Consolidates the Round `#N` delta via atomic layer commits, pushes cleanly to `origin/feature/<feature-id>`, and automatically updates the existing PR and CI gate.
+
 ### 🛡 Human-in-the-Loop Governance
 The Foundation guarantees developer control without sacrificing autonomous pipeline speed:
 * **Proactive Checkpoints (`require_review_after`)**: Features in `feature_list.json` can declare optional pause points (`"planner"`, `"implementer"`, `"validator"`, or array) to pause for developer review on critical workflows (e.g. auth, payments, core architecture), while routine features execute fully autonomously (`null`).

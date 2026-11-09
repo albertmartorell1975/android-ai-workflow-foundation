@@ -76,6 +76,29 @@ The Foundation structures development across three modular layers:
                                          │
                                          ▼
                        [GitHub Delivery: publish] (Stage 6: PR + CI Gate)
+                                         │
+                                         ▼
+                       [PR Code Review & Feedback Loop] (Stage 7: Round #1..#N) ◄──┐
+                                         │ (Persists PR Review Brief in pr-review.md│
+                                         │  & rehydrates Worktree wt/impl-<id>)    │
+                                         ▼                                         │
+                              [workflow-implementer] 🟡 ◄─────────────┐            │
+                                         │ (Refactors code & tests    │            │
+                                         │  + runs @compiler)         │ (Auto      │
+                                         ▼                            │  repair    │
+                               [workflow-validator] 🟢/🔴             │  <= 2)     │
+                                         │                            │            │
+                                (ACCEPT) ├─── (REVISE) ───────────────┘            │
+                                         ▼                                         │
+                              [workflow-documenter] 🔷                             │
+                                         │ (Updates KDoc & syncs spec.md/docs)     │
+                                         ▼                                         │
+                                [@git-governance]                                  │
+                                         │ (Consolidates delta & pushes to PR)     │
+                                         └─────────────────────────────────────────┘
+                                         │ (PR Approved by Human)
+                                         ▼
+                                 [🛑 Human Merge]
 
 (*) Optional Human-in-the-Loop Checkpoint if configured in `require_review_after` ("planner", "implementer", "validator") or requested via prompt.
 ```
@@ -187,6 +210,22 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
 > - **macOS**: `brew install gh`
 > - **Linux**: `sudo apt install gh`
 > If `gh` is absent, the orchestrator safely falls back to pushing the branch via `git push` and generating a direct browser URL, requiring the developer to click and submit the PR on GitHub manually.
+
+---
+
+### 7. 🔄 Post-PR Code Review & Feedback Loop (`review-fix` / PR Feedback — Multi-Round)
+When the developer conducts human code review on an open Pull Request (across 1 or $N$ review rounds) and requests code quality, Clean Architecture, or SOLID improvements, the changes must **NEVER** be hacked directly into the root workspace. Instead, each review round re-enters the pipeline just like a Validator `REVISE` cycle with complete worktree isolation:
+* **Round Tracking (`docs/features/<feature-id>/validator/pr-review.md`)**:
+  - The orchestrator checks out `feature/<feature-id>`, appends a numbered section (`## PR Review Round #N`) with the structured **`PR Review Repair Brief`** to `docs/features/<feature-id>/validator/pr-review.md`, resets `feature_list.json` status to `"in_progress"` (`repair_attempts = 0`), and commits the brief to `feature/<feature-id>`.
+* **Rehydrated Isolated Worktrees (`wt/impl-<id>` -> `wt/val-<id>` -> `wt/doc-<id>`)**:
+  - Re-spawns `.worktrees/impl-<feature-id>` directly from the latest tip of `feature/<feature-id>` (which already contains all commits from initial implementation and any previous review rounds $1 \dots N-1$) and re-hydrates `local.properties`, `.env`, etc.
+  - 🟡 `workflow-implementer` executes the `PR Review Repair Brief` for Round `#N`, runs `@compiler` (`assembleDebug`, `lintDebug`, `testDebugUnitTest`), and commits to `wt/impl-<feature-id>`.
+  - 🟢 `workflow-validator` spawns in `.worktrees/val-<feature-id>` and verifies both: (a) the round delta (`git diff feature/<feature-id>...wt/val-<feature-id>`) against `PR Review Round #N`, and (b) the full feature diff (`git diff develop...wt/val-<feature-id>`) against `spec.md` and Clean Architecture rules (treating explicit `pr-review.md` refactorings as authorized overrides to `spec.md` signatures). Bounded repair loop (`MAX_REPAIR_ATTEMPTS = 2`) applies.
+  - 🔷 `workflow-documenter` updates KDoc and synchronizes `spec.md` / `ARCHITECTURE.md` in `.worktrees/doc-<feature-id>`.
+* **Incremental Delta Consolidation & PR Push**:
+  - The orchestrator consolidates only the verified Round `#N` delta onto `feature/<feature-id>` via atomic commits per layer (`refactor(domain)`, `fix(ui)`, `docs`).
+  - Pushes to `origin feature/<feature-id>` with `BypassSandbox: true` so the existing PR and GitHub Actions CI gate update automatically without `--force`.
+  - Removes temporary worktrees/branches (`wt/*`) and returns the root workspace to `develop`. Repeatable for as many code review rounds as needed until human merge.
 
 ---
 
