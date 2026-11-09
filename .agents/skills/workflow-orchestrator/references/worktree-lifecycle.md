@@ -35,38 +35,64 @@ Create an isolated worktree on temporary branch `wt/impl-<feature-id>` branched 
 git worktree add -B wt/impl-<feature-id> .worktrees/impl-<feature-id> feature/<feature-id>
 ```
 
-### 🛡 Android Environment Hydration (Crucial)
-Git worktrees only check out tracked files. Git-ignored files containing local SDK paths, build environment properties, or local credentials do not travel with the worktree. Immediately after creating any worktree, hydrate it from the repository root:
+### 🛡 Android Environment Hydration (Reusable for `impl` & `val` Worktrees)
+Git worktrees only check out tracked files. Git-ignored files containing local SDK paths, build environment properties, or local credentials do not travel with the worktree. Immediately after creating `.worktrees/impl-<feature-id>` (or `.worktrees/val-<feature-id>` in Step C), hydrate it from the repository root (`<wt>` = `impl-<feature-id>` or `val-<feature-id>`):
 ```bash
 # Bash / macOS / Linux
-cp -n local.properties .worktrees/impl-<feature-id>/ 2>/dev/null || true
-cp -n .env .worktrees/impl-<feature-id>/ 2>/dev/null || true
-cp -n keystore.properties .worktrees/impl-<feature-id>/ 2>/dev/null || true
+cp -n local.properties .worktrees/<wt>/ 2>/dev/null || true
+cp -n .env .worktrees/<wt>/ 2>/dev/null || true
+cp -n keystore.properties .worktrees/<wt>/ 2>/dev/null || true
 if [ -f app/google-services.json ]; then
-  mkdir -p .worktrees/impl-<feature-id>/app
-  cp -n app/google-services.json .worktrees/impl-<feature-id>/app/ 2>/dev/null || true
+  mkdir -p .worktrees/<wt>/app
+  cp -n app/google-services.json .worktrees/<wt>/app/ 2>/dev/null || true
 fi
 
 # PowerShell / Windows
-if (Test-Path "local.properties") { Copy-Item "local.properties" ".worktrees/impl-<feature-id>/" -Force }
-if (Test-Path ".env") { Copy-Item ".env" ".worktrees/impl-<feature-id>/" -Force }
-if (Test-Path "keystore.properties") { Copy-Item "keystore.properties" ".worktrees/impl-<feature-id>/" -Force }
+if (Test-Path "local.properties") { Copy-Item "local.properties" ".worktrees/<wt>/" -Force }
+if (Test-Path ".env") { Copy-Item ".env" ".worktrees/<wt>/" -Force }
+if (Test-Path "keystore.properties") { Copy-Item "keystore.properties" ".worktrees/<wt>/" -Force }
 if (Test-Path "app/google-services.json") {
-  New-Item -ItemType Directory -Path ".worktrees/impl-<feature-id>/app" -Force | Out-Null
-  Copy-Item "app/google-services.json" ".worktrees/impl-<feature-id>/app/" -Force
+  New-Item -ItemType Directory -Path ".worktrees/<wt>/app" -Force | Out-Null
+  Copy-Item "app/google-services.json" ".worktrees/<wt>/app/" -Force
 }
 ```
 * Inside `.worktrees/impl-<feature-id>`, the Implementer writes code, runs `@compiler`, updates `feature_list.json` (`passing`) and `PROGRESS.md`, and stages + commits its work to `wt/impl-<feature-id>`.
 
 ---
 
-## 3. Step C: Validator Evaluation (`workflow-validator`)
+## 3. Step C: Validator Evaluation (`workflow-validator`) & APK Artifact Hydration
 Create an isolated worktree on temporary branch `wt/val-<feature-id>` starting from `wt/impl-<feature-id>`:
 ```bash
 git worktree add -B wt/val-<feature-id> .worktrees/val-<feature-id> wt/impl-<feature-id>
 ```
-* Inside `.worktrees/val-<feature-id>`, the Validator operates as a **strictly read-only evaluator**:
+
+### 🛡 APK Artifact Transfer & Emulator Pre-Install
+1. Run the **Android Environment Hydration** from Step B with `<wt> = val-<feature-id>`.
+2. Transfer the compiled APK artifacts from `.worktrees/impl-<feature-id>` and pre-install onto any active emulator/device (if `adb` commands fail inside the sandbox due to local TCP `:5037` restrictions, re-run the `adb` step with `BypassSandbox: true`):
+```bash
+# Bash / macOS / Linux: Transfer APK & pre-install on active emulator
+if [ -d .worktrees/impl-<feature-id>/app/build/outputs/apk ]; then
+  mkdir -p .worktrees/val-<feature-id>/app/build/outputs/apk
+  cp -R .worktrees/impl-<feature-id>/app/build/outputs/apk/* .worktrees/val-<feature-id>/app/build/outputs/apk/ 2>/dev/null || true
+fi
+APK_FILE=$(find .worktrees/val-<feature-id>/app/build/outputs/apk -name "*.apk" ! -name "*androidTest*" 2>/dev/null | head -n 1)
+if [ -n "$APK_FILE" ] && command -v adb >/dev/null 2>&1 && adb get-state >/dev/null 2>&1; then
+  adb install -r "$APK_FILE" 2>/dev/null || true
+fi
+
+# PowerShell / Windows: Transfer APK & pre-install on active emulator
+if (Test-Path ".worktrees/impl-<feature-id>/app/build/outputs/apk") {
+  New-Item -ItemType Directory -Path ".worktrees/val-<feature-id>/app/build/outputs/apk" -Force | Out-Null
+  Copy-Item -Path ".worktrees/impl-<feature-id>/app/build/outputs/apk/*" -Destination ".worktrees/val-<feature-id>/app/build/outputs/apk/" -Recurse -Force
+}
+$apk = Get-ChildItem -Path ".worktrees/val-<feature-id>/app/build/outputs/apk" -Filter "*.apk" -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -notmatch "androidTest" } | Select-Object -First 1
+if ($apk -and (Get-Command "adb" -ErrorAction SilentlyContinue)) {
+  if ((adb get-state 2>$null) -eq "device") { adb install -r $apk.FullName 2>$null }
+}
+```
+* Inside `.worktrees/val-<feature-id>`, the Validator operates as a **strictly read-only evaluator for repository source code**:
   - Audits the spec contract, diff, test implementations, Clean Architecture/SOLID rules, and recorded compiler evidence.
+  - Can execute `@android-cli` or `adb` journeys on the active emulator against the pre-installed application or deploy the hydrated APK artifact (`app/build/outputs/apk/...`).
   - Returns its verdict (`accept`, `revise`, or `block`), findings, and `Implementation Repair Brief` directly in its output summary to `workflow-orchestrator`.
 * **Handoff & Worktree State Transitions**:
   - Persist report: Orchestrator saves `docs/features/<feature-id>/validator/validation-report.md`.
@@ -134,7 +160,7 @@ When the developer conducts code review on an open PR (across 1 or $N$ review ro
    Hydrate local files (`local.properties`, `.env`, `keystore.properties`, `app/google-services.json`).
 3. **Subagent Execution Chain**:
    - 🟡 **Implementer**: Applies fixes from `pr-review.md` (`PR Review Round #N`), verifies `@compiler`, and commits to `wt/impl-<feature-id>`.
-   - 🟢 **Validator**: Evaluates changes in `.worktrees/val-<feature-id>` branched from `wt/impl-<feature-id>`, auditing both the Round `#N` delta and cumulative feature state. Bounded repair loop applies (`MAX_REPAIR_ATTEMPTS = 2`).
+   - 🟢 **Validator**: Evaluates changes in `.worktrees/val-<feature-id>` branched from `wt/impl-<feature-id>` (with environment and compiled APK hydration + emulator pre-install per Step C), auditing both the Round `#N` delta and cumulative feature state. Bounded repair loop applies (`MAX_REPAIR_ATTEMPTS = 2`).
    - 🔷 **Documenter**: Enriches KDoc and synchronizes `spec.md` / `ARCHITECTURE.md` in `.worktrees/doc-<feature-id>`.
 4. **Incremental Consolidation & PR Update**:
    - Merge `wt/doc-<feature-id>` into `feature/<feature-id>` applying **only the Round `#N` delta** via atomic layer commits (`refactor(domain)`, `refactor(data)`, `fix(ui)`, `docs`).
