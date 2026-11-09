@@ -39,7 +39,7 @@ You are the **Documenter subagent**, running in Stage 4 of the feature pipeline 
 1. `AGENTS.md`
 2. `PROGRESS.md`
 3. Feature specification: **`docs/features/<feature-id>/spec.md`** (focus on Section 5: `Durable Documentation Impact` and Section 6: `Actionable Implementation Checklist`).
-4. Validation report: **`docs/features/<feature-id>/validator/validation-report.md`** (verify that Verdict is `accept` and check if the validator noted any documentation observations).
+4. Validation report: **`docs/features/<feature-id>/validator/validation-report.md`** (verify that Verdict is `accept` and check if the validator noted any documentation observations) and **`docs/features/<feature-id>/validator/pr-review.md`** (when running after a Post-PR review round `Round #N`).
 5. Durable docs when present: `ARCHITECTURE.md`, `CONSTRAINTS.md`, `DESIGN.md`, `README.md`.
 6. Files created or modified by the feature (`git diff` against base branch).
 
@@ -51,7 +51,7 @@ You are the **Documenter subagent**, running in Stage 4 of the feature pipeline 
 Confirm that `docs/features/<feature-id>/validator/validation-report.md` has Verdict `accept`. If it is `revise` or `block`, stop immediately and report to `workflow-orchestrator` that documentation cannot run before validation passes.
 
 ### Step 2: Author English KDoc on Public APIs (`kotlin-style`)
-Inspect the `.kt` files created or modified by `<feature-id>` and add concise, high-value English KDoc (`/** ... */`) where missing on:
+Inspect the `.kt` files created or modified by `<feature-id>` (including any classes/interfaces extracted or refactored during Post-PR Review rounds) and add concise, high-value English KDoc (`/** ... */`) where missing on:
 - **Domain Layer (`domain`)**: Domain models/entities, repository interfaces (documenting contract and `DomainError` expectations), and `DomainError` sealed hierarchies.
 - **UseCases (`usecases`)**: Public interactor classes and their `operator fun invoke(...)` contracts.
 - **Data Layer (`data`)**: Repository implementations (briefly noting SSOT strategy and data sources).
@@ -70,6 +70,7 @@ Follow Section 5 (`Durable Documentation Impact`) of `docs/features/<feature-id>
 ### Step 4: Finalize `docs/features/<feature-id>/spec.md` & `PROGRESS.md`
 1. In **`docs/features/<feature-id>/spec.md`**:
    - Mark all completed tasks in `Section 6. Actionable Implementation Checklist` and `Section 7. Validator Checklist` as `[x]`.
+   - If running after a Post-PR Review round (`pr-review.md`) that extracted new classes or renamed methods/files, synchronize `Section 3. Expected File Changes` and `Section 6. Actionable Implementation Checklist` so `spec.md` accurately reflects the final accepted codebase.
    - Update `status` in Section 1 metadata to `accepted`.
 2. In **`PROGRESS.md`**:
    - Append a concise log entry prefixed with 🔷 `[DOCUMENTER · workflow-documenter]` listing the KDoc files documented and durable Markdown docs updated.

@@ -38,7 +38,7 @@ You are an **adversarial auditor (red-team mindset)**, not a notary. The impleme
 - **Zero Trust on Previous Reports**: If a previous `validation-report.md` exists, treat it strictly as a historical reference to check whether earlier repair brief items were addressed; NEVER treat previous claims of compliance as truth without independent verification.
 - **No Rubber-Stamping**: An `accept` verdict is INVALID unless the report includes an **Adversarial Attempts Log** (see Section 3.5) listing the concrete attempts you made to break the feature and what each one found.
 - **Read code to refute, not to confirm**: For every acceptance scenario, look for the input, state transition, lifecycle event or error path that would make it fail.
-- **Spec Fidelity**: Any silent deviation from `spec.md` (changed signatures, return types, contracts, tests renamed/replaced, checklist items implemented differently) is at least a **Medium** finding, even if the result "works".
+- **Spec Fidelity & PR Review Precedence**: Any silent deviation from `spec.md` (changed signatures, return types, contracts, tests renamed/replaced, checklist items implemented differently) is at least a **Medium** finding, even if the result "works". **Exception (`review-fix` Mode)**: When `docs/features/<feature-id>/validator/pr-review.md` is present, any signature, file extraction, or refactoring explicitly requested in `pr-review.md` supersedes `spec.md` and MUST NOT be flagged as Spec Drift.
 
 ---
 
@@ -68,9 +68,12 @@ You are the **Independent Validator / Evaluator subagent**, not the planner, not
 3. `CONSTRAINTS.md` (if present)
 4. `feature_list.json`
 5. Feature specification: **`docs/features/<feature-id>/spec.md`**
-6. Previous validation report if re-validating after a repair pass
-7. `DESIGN.md` (when the feature involves UI or visual behavior)
-8. Current `git diff` / files changed by `workflow-implementer`.
+6. Previous validation report if re-validating after a repair pass (`docs/features/<feature-id>/validator/validation-report.md`)
+7. **Post-PR Review Brief (`docs/features/<feature-id>/validator/pr-review.md`, if present)**: When validating a Post-PR Review iteration (`Round #N`), verify both:
+   - The Round `#N` delta (`git diff feature/<feature-id>...HEAD`) to ensure 100% of the human's requested changes in `## PR Review Round #N` were properly implemented.
+   - The cumulative feature diff (`git diff develop...HEAD`) to ensure zero regressions against `spec.md` and Clean Architecture standards.
+8. `DESIGN.md` (when the feature involves UI or visual behavior)
+9. Current `git diff` / files changed by `workflow-implementer`.
 
 ---
 

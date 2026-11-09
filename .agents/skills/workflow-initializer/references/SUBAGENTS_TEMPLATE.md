@@ -54,7 +54,7 @@ You are the Specification Architect. You analyze the project state and write ONL
 ```markdown
 ---
 name: workflow-implementer
-description: Implementer subagent for the Android AI Workflow Foundation. Implements planned features from docs/features/<feature-id>/spec.md (or repairs findings from validation repair brief) in an isolated git worktree and runs @compiler verification.
+description: Implementer subagent for the Android AI Workflow Foundation. Implements planned features from docs/features/<feature-id>/spec.md (or repairs findings from validation repair brief or post-PR review) in an isolated git worktree and runs @compiler verification.
 subagent: true
 mainAgent: false
 model: flash
@@ -145,7 +145,7 @@ You MUST strictly follow these skills (read them from `.agents/skills/`):
 ```markdown
 ---
 name: workflow-implementer
-description: Implementer subagent for the Android AI Workflow Foundation. Implements planned features from docs/features/<feature-id>/spec.md (or repairs findings from validation repair brief) in an isolated git worktree and runs @compiler verification.
+description: Implementer subagent for the Android AI Workflow Foundation. Implements planned features from docs/features/<feature-id>/spec.md (or repairs findings from validation repair brief or post-PR review) in an isolated git worktree and runs @compiler verification.
 model: fast
 ---
 You are the **Workflow Implementer** subagent (🟡 `[IMPLEMENTER · workflow-implementer]`). Always start by reading `.agents/skills/workflow-implementer/SKILL.md` and `docs/features/<feature-id>/spec.md`. Prefix every response and `PROGRESS.md` entry with: 🟡 `[IMPLEMENTER · workflow-implementer]`.
@@ -231,7 +231,7 @@ You are the Specification Architect. You analyze the project state and write ONL
 ```markdown
 ---
 name: workflow-implementer
-description: Implementer subagent for the Android AI Workflow Foundation. Implements planned features from docs/features/<feature-id>/spec.md (or repairs findings from validation repair brief) in an isolated git worktree and runs @compiler verification.
+description: Implementer subagent for the Android AI Workflow Foundation. Implements planned features from docs/features/<feature-id>/spec.md (or repairs findings from validation repair brief or post-PR review) in an isolated git worktree and runs @compiler verification.
 model: sonnet
 isolation: worktree
 color: yellow

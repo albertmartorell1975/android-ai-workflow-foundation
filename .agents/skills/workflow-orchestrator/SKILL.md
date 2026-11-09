@@ -68,12 +68,13 @@ Triggered when the user asks to continue the project backlog, run the next avail
 
 ---
 
-### Three Operational Modes (`plan` | `execute` | `publish`)
+### Operational Modes (`plan` | `execute` | `publish` | `review-fix`)
 
-When coordinating backlog features or delivering to GitHub, the orchestrator evaluates the **4 Deterministic Preconditions** (dependencies accepted, clean base, permissions, hydrated environments) and executes in one of three modes:
+When coordinating backlog features, delivering to GitHub, or processing PR review feedback, the orchestrator evaluates the **4 Deterministic Preconditions** (dependencies accepted, clean base, permissions, hydrated environments) and executes in one of four modes:
 - **`plan` (planificar)**: Strictly read-only (zero git/GitHub mutations). Evaluates preconditions, resolves reuse targets, and produces the diagnostic Output Report.
 - **`execute` (executar)**: Autonomous pipeline to `accepted` state across isolated hydrated worktrees. Upon consolidation and reaching `status: accepted` at Stage 5, automatically executes Stage 6 (clean push to `origin feature/<id>` and opens the structured PR targeting `develop` so GitHub Actions CI runs). Merging remains 100% human-owned. Root workspace returns to `develop`.
 - **`publish` (publicar)**: Standalone/ad-hoc PR delivery for existing accepted features if not already published. Never merges.
+- **`review-fix` (revisar-corregir)**: Post-PR review feedback loop. Rehydrates isolated worktrees from `feature/<feature-id>`, runs implementer/validator/documenter on requested PR changes, and pushes the updated delta back to the open PR. Never merges.
 
 > **See [Operational Modes & Output Report](references/operational-modes.md)** for detailed mode specifications, precondition checks, and output schemas.
 
@@ -100,7 +101,7 @@ When coordinating backlog features or delivering to GitHub, the orchestrator eva
 
 ---
 
-## 4. The 6-Stage Feature Pipeline
+## 4. The 7-Stage Feature Pipeline
 
 ```text
 [1. Planner: workflow-planner] ◄────────────────────────────────┐
@@ -134,7 +135,28 @@ When coordinating backlog features or delivering to GitHub, the orchestrator eva
        │  (atomic commits: Domain -> Data -> UseCases -> UI -> Docs)
        ▼
 [6. GitHub PR Delivery: Automatic on Accepted]
-       └── Clean Push to remote + Structured Evidence PR (Closes #ID) -> CI runs -> Human Merge
+       │  (Clean Push to remote + Structured Evidence PR -> CI runs)
+       ▼
+[7. Post-PR Code Review & Feedback Loop (Round #1..#N)] ◄────────┐
+       │  (Persists PR Review Brief in pr-review.md              │
+       │   & rehydrates Worktree wt/impl-<feature-id>)           │
+       ▼                                                         │
+[workflow-implementer] 🟡 ◄──────────────────────────┐           │
+       │  (Applies PR Review Brief + runs @compiler) │           │
+       ▼                                             │ (Auto     │
+[workflow-validator] 🟢/🔴                           │  repair   │
+       │                                             │  <= 2)    │
+(ACCEPT) ├── (REVISE) ───────────────────────────────┘           │
+       ▼                                                         │
+[workflow-documenter] 🔷                                         │
+       │  (Updates KDoc + syncs spec.md/docs)                    │
+       ▼                                                         │
+[@git-governance]                                                │
+       │  (Consolidates Round #N delta & pushes to open PR)      │
+       └─────────────────────────────────────────────────────────┘
+       │ (PR Approved by Human)
+       ▼
+[🛑 Human Merge]
 
 (*) Optional Human-in-the-Loop Checkpoint if configured in `require_review_after` ("planner", "implementer", "validator") or requested via prompt.
 ```
@@ -188,6 +210,28 @@ Executes automatically when a feature pipeline reaches `status: "accepted"` (or 
    - If `gh` fails or returns network/auth errors, re-execute immediately with `BypassSandbox: true`. Only if `gh` is strictly missing or unauthenticated after bypass retry: notify the user and provide the direct browser URL (`https://github.com/<owner>/<repo>/pull/new/feature/<feature-id>`) with pre-filled PR title and markdown body for one-click manual creation.
 4. **Never Merge**: Report PR URL. CI executes `.github/workflows/gate.yml`. The human developer performs review and merge.
 5. **Return Root Workspace to Base Branch**: Immediately switch the root workspace back to `develop` (`git checkout develop`). The root workspace must never remain stranded on a published `feature/<feature-id>` branch.
+
+### Stage 7: Post-PR Code Review & Feedback Loop (`review-fix` Mode — Multi-Round)
+Triggered when the developer reviews an open Pull Request on GitHub (across 1 or $N$ review rounds) and provides code quality, Clean Architecture, SOLID, or bugfix feedback. Changes are treated exactly like a Validator `REVISE` cycle and must **NEVER** be edited directly in the root workspace:
+
+1. **Persist PR Review Round Brief (`docs/features/<feature-id>/validator/pr-review.md`)**:
+   - Check out the existing feature branch (`git fetch origin feature/<feature-id> && git checkout feature/<feature-id>`).
+   - Append a numbered section **`## PR Review Round #N`** to `docs/features/<feature-id>/validator/pr-review.md` containing the structured **`PR Review Repair Brief`** (mapping each human review comment to target files and expected Clean Architecture/SOLID fixes).
+   - Reset `feature_list.json` status for `<feature-id>` from `"accepted"` to `"in_progress"` (`repair_attempts = 0`) and commit the brief to `feature/<feature-id>`.
+2. **Rehydrate Isolated Worktree (`.worktrees/impl-<feature-id>`)**:
+   - Recreate the implementer worktree starting from the tip of `feature/<feature-id>` (which already includes all commits from initial development and any prior review rounds $1 \dots N-1$):
+     ```bash
+     git worktree add -B wt/impl-<feature-id> .worktrees/impl-<feature-id> feature/<feature-id>
+     ```
+   - Hydrate local Android build files (`local.properties`, `.env`, `keystore.properties`, `app/google-services.json`).
+3. **Execution, Verification & Audit Loop (`Implementer ⇄ Validator -> Documenter`)**:
+   - 🟡 **`workflow-implementer`** applies the `PR Review Repair Brief` (`Round #N`) in `.worktrees/impl-<feature-id>`, runs the `@compiler` verification suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`), updates `feature_list.json` (`"passing"`), and commits to `wt/impl-<feature-id>`.
+   - 🟢 **`workflow-validator`** spawns in `.worktrees/val-<feature-id>` from `wt/impl-<feature-id>` to audit both the Round `#N` delta (`git diff feature/<feature-id>...wt/val-<feature-id>`) against `PR Review Round #N` and the cumulative feature diff (`git diff develop...wt/val-<feature-id>`) against `spec.md` and Clean Architecture standards (explicit refactorings in `pr-review.md` supersede `spec.md` signatures and are never flagged as Spec Drift). If findings exist (`revise`), the bounded repair loop (`MAX_REPAIR_ATTEMPTS = 2`) applies.
+   - 🔷 **`workflow-documenter`** spawns in `.worktrees/doc-<feature-id>` upon validator `accept` to update KDoc comments and synchronize `spec.md` / `ARCHITECTURE.md` if class or method names were refactored.
+4. **Incremental Delta Consolidation & PR Push**:
+   - Consolidates only the verified Round `#N` delta back onto `feature/<feature-id>` via atomic layer commits (`refactor(domain)`, `refactor(data)`, `fix(ui)`, `docs`) and sets `feature_list.json` status to `"accepted"`.
+   - Pushes to remote (`git push origin feature/<feature-id>`) with `BypassSandbox: true` so the open Pull Request updates and GitHub Actions CI triggers automatically without `--force`.
+   - Cleans up temporary worktrees/branches (`wt/*`) and restores the root workspace to `develop`. Repeatable across as many PR review rounds as needed.
 
 ---
 

@@ -40,10 +40,13 @@ Every agent and subagent MUST prefix its responses and `PROGRESS.md` entries wit
 * 🟢 **`[VALIDATOR · workflow-validator]`** *(or 🔴 on `revise` / `block`)* — Independent 4-level validation and `docs/features/<feature-id>/validator/validation-report.md` in an isolated `git worktree`. Bounded to `MAX_REPAIR_ATTEMPTS = 2` before triggering the Human Decision Gate (`needs_human_review`).
 * 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc and durable Markdown documentation in an isolated `git worktree`. Runs upon validator acceptance or human override.
 
-### Two Ways to Run Work
+### How to Run Work
 1. **Project / Backlog Mode**:
    - Use `@build-brief` (for product discovery) and `@harness-starter` (to derive `feature_list.json`, `PROGRESS.md`, and `.github/workflows/gate.yml`).
    - Run `@workflow-orchestrator` to execute the next ready feature (or parallelize independent ready features) from `feature_list.json`.
 2. **Standalone Feature Mode (Ad-hoc)**:
    - Request a feature directly via `@workflow-orchestrator` (or `@workflow-planner`).
    - The orchestrator automatically registers the feature in `feature_list.json` and `PROGRESS.md`, generates `docs/features/<feature-id>/spec.md`, and launches the subagents (`planner` -> `implementer` -> `validator` -> `documenter`) in isolated `git worktree` instances with role-tuned model tiers (`pro` for planner/validator, `flash` for implementer/documenter).
+3. **Post-PR Review & Feedback Loop (`review-fix`)**:
+   - When the developer provides code review comments on an open PR, invoke `@workflow-orchestrator` with the feedback.
+   - The orchestrator rehydrates isolated worktrees on `feature/<feature-id>`, runs implementer, validator, and documenter, and pushes the updated delta cleanly to the existing PR without touching the root workspace.

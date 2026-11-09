@@ -1,10 +1,10 @@
 # Operational Modes & Standardized Output Report
 
-This document defines the 3 execution modes, precondition gates, and report schemas for `@workflow-orchestrator`.
+This document defines the 4 execution modes, precondition gates, and report schemas for `@workflow-orchestrator`.
 
-## 1. Three Operational Modes (`plan` | `execute` | `publish`)
+## 1. Four Operational Modes (`plan` | `execute` | `publish` | `review-fix`)
 
-When managing backlog features or delivering to GitHub, `@workflow-orchestrator` operates in one of three deterministic modes:
+When managing backlog features, delivering to GitHub, or resolving PR code reviews, `@workflow-orchestrator` operates in one of four deterministic modes:
 
 ### Mode: `plan` (planificar) — Strictly Read-Only
 Produces the diagnostic execution plan report with zero mutations:
@@ -33,6 +33,14 @@ Pushes validated commits and opens a Pull Request:
 3. **PR Publication**: Runs `git push -u origin feature/<feature-id>`, reuses or creates the PR targeting `base_branch` (`develop`), and formats the body with structured evidence per `@git-governance`.
 4. **Never Merge**: Autonomous merging (`gh pr merge`) is strictly prohibited.
 5. **Return Root Workspace to Base**: Immediately switches root workspace back to `<base_branch>` (`git checkout <base_branch>`).
+
+### Mode: `review-fix` (revisar-corregir) — Post-PR Review Feedback Loop (Multi-Round)
+Processes developer review comments on an open Pull Request across 1 or $N$ review rounds without polluting the root workspace:
+1. **Target Feature & PR Check**: Verifies that `feature/<feature-id>` exists locally or on remote, and that an open PR exists targeting `base_branch` (`develop`).
+2. **Persist PR Review Brief**: Checks out `feature/<feature-id>`, appends `## PR Review Round #N` with the structured `PR Review Repair Brief` to `docs/features/<feature-id>/validator/pr-review.md`, sets `feature_list.json` status to `"in_progress"` (`repair_attempts = 0`), and commits the brief.
+3. **Worktree Rehydration**: Recreates `.worktrees/impl-<feature-id>` directly from the latest tip of `feature/<feature-id>` and hydrates local Android build properties.
+4. **Iterative Audit & Document**: Runs `workflow-implementer` -> `@compiler` -> `workflow-validator` (`attempts <= 2`, auditing both `git diff feature/<feature-id>...wt/val-<feature-id>` and `git diff develop...wt/val-<feature-id>`) -> `workflow-documenter`.
+5. **Delta Update & Push**: Consolidates the Round `#N` delta onto `feature/<feature-id>` via atomic layer commits, runs `git push origin feature/<feature-id>` (with `BypassSandbox: true`), updates `feature_list.json` to `"accepted"`, cleans worktrees, and returns the root workspace to `develop`. Merging remains 100% human-owned.
 
 ---
 

@@ -142,6 +142,32 @@ Once `workflow-documenter` finishes:
    git branch -D wt/impl-<feature-id> wt/val-<feature-id> wt/doc-<feature-id>
    ```
 
+### Step F: Post-PR Review Worktree Lifecycle (`review-fix` Mode — Multi-Round)
+When the developer conducts code review on an open PR (across 1 or $N$ review rounds) and requests revisions:
+1. **Never edit application code in the root workspace**. Check out `feature/<feature-id>`, append `## PR Review Round #N` with the structured `PR Review Repair Brief` to `docs/features/<feature-id>/validator/pr-review.md`, set `feature_list.json` status to `"in_progress"` (`repair_attempts = 0`), and commit the brief to `feature/<feature-id>`.
+2. **Re-spawn Implementer Worktree**:
+   ```bash
+   # Rehydrate worktree starting from the latest commit of feature/<feature-id>
+   git fetch origin feature/<feature-id>
+   git worktree add -B wt/impl-<feature-id> .worktrees/impl-<feature-id> feature/<feature-id>
+   ```
+   Hydrate local files (`local.properties`, `.env`, `keystore.properties`, `app/google-services.json`).
+3. **Subagent Execution Chain**:
+   - 🟡 **Implementer**: Applies fixes from `docs/features/<feature-id>/validator/pr-review.md` (`PR Review Round #N`), verifies `@compiler`, and commits to `wt/impl-<feature-id>`.
+   - 🟢 **Validator**: Evaluates changes in `.worktrees/val-<feature-id>` branched from `wt/impl-<feature-id>`, auditing both the Round `#N` delta (`git diff feature/<feature-id>...wt/val-<feature-id>`) and the cumulative feature state (`git diff develop...wt/val-<feature-id>`). Bounded repair loop applies (`MAX_REPAIR_ATTEMPTS = 2`).
+   - 🔷 **Documenter**: Enriches KDoc and synchronizes `spec.md` / `ARCHITECTURE.md` in `.worktrees/doc-<feature-id>`.
+4. **Incremental Consolidation & PR Update**:
+   - Merge `wt/doc-<feature-id>` into `feature/<feature-id>` (`git merge --squash wt/doc-<feature-id>` followed by `git reset`) applying **only the Round `#N` delta** via atomic layer commits (`refactor(domain)`, `refactor(data)`, `fix(ui)`, `docs`).
+   - Push delta to remote: `git push origin feature/<feature-id>` (outside sandbox, `BypassSandbox: true`). The open GitHub PR and CI gate update automatically without needing `--force`.
+   - Remove temporary worktrees, delete `wt/*` branches, and return the root workspace to `develop`:
+     ```bash
+     git worktree remove .worktrees/impl-<feature-id> --force
+     git worktree remove .worktrees/val-<feature-id> --force 2>/dev/null || true
+     git worktree remove .worktrees/doc-<feature-id> --force
+     git branch -D wt/impl-<feature-id> wt/val-<feature-id> wt/doc-<feature-id>
+     git checkout develop
+     ```
+
 > **Note for `.gitignore` / AI Context Exclusion**: `.worktrees/` must always be ignored by Git (`.gitignore`) so temporary worktree folders are never accidentally tracked.
 
 ---

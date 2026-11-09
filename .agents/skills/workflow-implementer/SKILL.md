@@ -37,7 +37,7 @@ You are the **Implementer / Generator subagent**, not the planner, not the indep
   - *Verification & Security*: `testing-setup`, `android-intent-security`.
   - *Stack Essentials (Core)*: `hilt` (DI boundaries), `room-schema-governance` (persistence), `firebase-basics`, `firebase-auth-basics`, `firebase-remote-config-basics`.
   - *Optional Catalog Plugins*: If optional plugins are installed in `.agents/skills/`, also consult their respective rules when relevant.
-- **Do**: Implement the selected feature (or apply the `Implementation Repair Brief` or `Human Guidance Brief` received in your prompt / from `docs/features/<feature-id>/validator/validation-report.md`).
+- **Do**: Implement the selected feature (or apply the `Implementation Repair Brief`, `PR Review Repair Brief` (`Round #N`), or `Human Guidance Brief` received in your prompt / from `docs/features/<feature-id>/validator/validation-report.md` or `docs/features/<feature-id>/validator/pr-review.md`).
 - **Do**: Run the full **`compiler`** verification suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`) and record exact command outputs/evidence in `feature_list.json` and `PROGRESS.md`.
 - **Do NOT**: Broaden feature scope (`WIP=1`) or silently redesign `docs/features/<feature-id>/spec.md`.
 - **Do NOT**: Set feature status to `accepted` (maximum status an implementer can set is `passing`).
@@ -53,9 +53,10 @@ You are the **Implementer / Generator subagent**, not the planner, not the indep
 4. `feature_list.json`
 5. Feature specification: **`docs/features/<feature-id>/spec.md`**
 6. **If running a `REVISE` repair iteration**: **`docs/features/<feature-id>/validator/validation-report.md`** (focus specifically on the `Implementation Repair Brief` and listed findings).
-7. `DESIGN.md` (when the feature involves UI or visual behavior).
-8. Existing application files named in the spec's `Repository Research` and `Expected File Changes`.
-9. **Layer-Gated Skill Loading (Context Window Discipline)**: Do **NOT** read all skills listed in Section 1, and do **NOT** rely on generic pre-trained Kotlin habits that might violate project guardrails. Instead, inspect the layers touched in `docs/features/<feature-id>/spec.md` and read **only the 1 to 3 core governance `SKILL.md` files** that directly govern the code you are about to write:
+7. **If running a Post-PR Review iteration (`review-fix` Mode)**: **`docs/features/<feature-id>/validator/pr-review.md`** (focus on the latest **`## PR Review Round #N`** section).
+8. `DESIGN.md` (when the feature involves UI or visual behavior).
+9. Existing application files named in the spec's `Repository Research` and `Expected File Changes`.
+10. **Layer-Gated Skill Loading (Context Window Discipline)**: Do **NOT** read all skills listed in Section 1, and do **NOT** rely on generic pre-trained Kotlin habits that might violate project guardrails. Instead, inspect the layers touched in `docs/features/<feature-id>/spec.md` and read **only the 1 to 3 core governance `SKILL.md` files** that directly govern the code you are about to write:
    - Touching `:domain` or `:data` -> read `repository-pattern-governance` (plus `room-schema-governance` only if modifying Room entities/DAOs).
    - Touching `ViewModel` -> read `viewmodel-architecture-governance`.
    - Touching DI / Hilt (`@Module`, `@Binds`, `@Provides`, `@HiltViewModel`, `@AndroidEntryPoint`) -> **MUST read `hilt/SKILL.md`**.
@@ -65,9 +66,10 @@ You are the **Implementer / Generator subagent**, not the planner, not the indep
 
 ## 3. Implementation Workflow
 
-### Step 1: Confirm Contract & Mode (Initial vs. Repair)
+### Step 1: Confirm Contract & Mode (Initial vs. Repair vs. Post-PR Review)
 - **Initial Implementation Pass**: Read `docs/features/<feature-id>/spec.md` and confirm the Goal, Non-Goals, `Given/When/Then` Acceptance Scenarios, Layer Breakdown, and Actionable Implementation Checklist.
 - **Repair Pass (`REVISE` or Human Guidance)**: Read `docs/features/<feature-id>/validator/validation-report.md` (or the developer's `Human Guidance Brief` passed in your prompt). Execute the requested fixes without introducing unrelated changes.
+- **Post-PR Review Pass (`review-fix` Round `#N`)**: Read the latest `## PR Review Round #N` in `docs/features/<feature-id>/validator/pr-review.md`. Execute all requested code quality, Clean Architecture, and SOLID improvements cleanly on top of the existing feature code without breaking previously verified behavior.
 
 ### Step 2: Set Feature State to `in_progress`
 - Update `feature_list.json` for `<feature-id>` so `status` is `"in_progress"`.
