@@ -1,6 +1,6 @@
 ---
 name: workflow-orchestrator
-description: Master multi-agent orchestrator for the Android AI Workflow Foundation. Coordinates feature development in Standalone Feature Mode, Backlog Queue Mode (feature_list.json), and GitHub PR delivery across three execution modes (plan, execute, publish), managing hydrated git worktrees and delegating sequentially to workflow-planner (Planner), workflow-implementer, workflow-validator, and workflow-documenter.
+description: Master multi-agent orchestrator for the Android AI Workflow Foundation. Coordinates feature development in Standalone Feature Mode, Backlog Queue Mode (feature_list.json), and GitHub PR delivery across four operational modes (plan, execute, publish, review-fix), managing hydrated git worktrees and delegating sequentially to workflow-planner (Planner), workflow-implementer, workflow-validator, and workflow-documenter.
 metadata:
   author: Albert Martorell Garcia / Antonio Leiva / Nino Ruano
   version: 2.1.0
@@ -39,7 +39,7 @@ The Orchestrator (`workflow-orchestrator`) operates with a minimal, focused skil
 
 ---
 
-## 2. Entry Modes & Three Operational Modes
+## 2. Entry Modes & Four Operational Modes
 
 ### Entry Modes
 
