@@ -76,29 +76,20 @@ You are the **Implementer / Generator subagent**, not the planner, not the indep
 - Do not mark anything `"passing"` until `@compiler` verification evidence is captured.
 
 ### Step 3: Implement Clean Architecture Layers (`WIP=1`)
-Follow the ordered checklist in `docs/features/<feature-id>/spec.md`, respect the active **Module Topology** (`Layer-Based` vs `Feature-First`, governed by `module-architecture-governance`), and strictly enforce these **Non-Negotiable Harness Invariants** (never invent alternative patterns):
-- **ViewModel & Error Invariant (`viewmodel-architecture-governance`)**:
-  - Zero `init {}` blocks launching coroutines or triggering data loads (*Passive Initialization Mandate*).
-  - ViewModels MUST NOT import `R.string` or hardcode user-facing error strings. ViewModels emit typed `DomainError` in `content.Error` states.
-  - Translating `DomainError` to localized or dynamic text is the exclusive responsibility of the UI layer via `UiText` (`DynamicString` / `StringResource`).
-- **Repository & Domain Invariant (`repository-pattern-governance`)**:
-  - `:domain` interfaces expose only pure domain models and typed `DomainError` hierarchies (never leak Room `@Entity`, network DTOs, or raw `Throwable`).
-- **Hilt DI Invariant (`hilt`)**:
-  - Interface bindings MUST use abstract `@Binds` inside `abstract class` modules rather than `@Provides` inside `object` modules whenever the implementation has `@Inject constructor`.
-- **UI Mapper & Model Invariant**:
-  - UI models must be default-free and non-nullable (Constraint #17).
-  - UI Mappers MUST NOT pre-concatenate language units (`"W "`, `" pts"`, `"%"`) or return dummy `0.0` fallbacks. Display labels must be parameterized and resolved in Compose via `stringResource`.
-- **Compose UI & Preview Invariant**:
-  - Split Stateful `Screen` from Stateless `Content`.
-  - Every new stateless composable (`*Screen`, `*Content`, `*LoadingView`, `*ErrorView`) **MUST include `@Preview` (`@BcThemePreview`)**.
-  - `Modifier` MUST be the first optional parameter with default `Modifier`.
-  - Zero hardcoded UI strings (always use `stringResource`).
-- **Zero Test-Induced Design Damage**:
-  - Production signatures of application Composables (such as the main App shell or Navigation NavHost) MUST NEVER be modified, polluted with screen-slot lambdas, or compromised solely to accommodate tests.
-- **Pragmatic High-Value Testing (Zero Robolectric UI Tests)**:
-  - Write **pure JVM unit tests only** for ViewModels (`*ViewModelTest`) and complex UI mappers (`*UiMapperTest`).
-  - Strictly **FORBID** writing Robolectric UI tests (`*ScreenTest`, `NavigationTest`).
-  - Strict Test Budget: 1 to 3 `@Test` methods per test class, 2 to 6 tests total across the feature slice.
+Follow the ordered checklist in `docs/features/<feature-id>/spec.md` and respect the active **Module Topology** (`Layer-Based` vs `Feature-First`, governed by `module-architecture-governance`).
+
+> [!IMPORTANT]
+> **Mandatory Architecture Guardrail**: Before writing code, you **MUST review and strictly apply [Clean Architecture & SOLID Rules](references/clean-architecture-solid-rules.md)**:
+> 1. **Clean Boundaries**: Pure Kotlin `:domain` and `:usecases` (no framework/Android imports).
+> 2. **SOLID**: Single-responsibility UseCases (`operator fun invoke`), passive ViewModels, cohesive Repositories, depend on abstractions.
+> 3. **Hilt DI**: `@Inject constructor`, `@Binds` in `@Module abstract class`, `internal` visibility on implementations (`*Impl`, DTOs, Entities).
+> 4. **ViewModels**: Passive initialization (zero `init { launch }`), `_state.update {}`, `DomainError` in Error state, zero `R.string`.
+> 5. **Repositories**: Return `Result<T, DomainError>` or `Flow`, `safeCall` mapping, no leaked exceptions.
+> 6. **Models**: Zero defaults (`= ...`), zero nullables (`?`), strict boundary isolation.
+> 7. **Mappers**: Sole authority for defaults/fallbacks, no hardcoded units in UI mappers.
+> 8. **Testing & Compose**: Pure JVM unit tests (ViewModels & Mappers; zero Robolectric UI tests; test budget 1-3/class, 2-6/feature); Stateful `Screen` vs Stateless `Content` with `@Preview`.
+
+> **See [Implementation Rules & Assets](references/implementation-rules.md)** for graphic asset conversion (`.webp`) and `@compiler` gates.
 
 ### Step 4: Mandatory Self-Verification (`@compiler` Suite)
 Because **`workflow-validator`** runs in a separate worktree and relies on your recorded compilation evidence to avoid redundant full Gradle rebuilds when possible, you **MUST** execute the `@compiler` skill verification suite before finishing:

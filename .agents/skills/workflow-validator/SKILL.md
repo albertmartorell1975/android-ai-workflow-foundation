@@ -106,17 +106,24 @@ Never load a skill whose layer is untouched. Violations found via these skills a
 ### Level 3: Compiler Evidence & Test Quality Audit (Worktree-Optimized)
 1. **Audit Test Source Code & Anti-Overengineering (`CONSTRAINTS.md`, `testing-setup`)**:
    - Read unit tests created/modified by `workflow-implementer`.
-   - **CRITICAL (Mandatory REVISE Triggers)**: You MUST fail validation with verdict `REVISE` if the implementer:
-     * Introduced **Test-Induced Design Damage** (e.g. modified App shell, `Navigation`, or production composable signatures with test-only lambdas/slots), OR
-     * Created Robolectric/`composeTestRule`/Espresso/UI Automator/`androidTest` tests for screens or navigation (`*ScreenTest`, `NavigationTest`), OR
-     * Added trivial "Watermelon tests" or violated the Single-Layer Assertion Rule, OR
-     * Exceeded the Strict Test Budget (> 3 `@Test` per class or > 6 total per feature slice).
-2. **Architecture, Code Quality & UI Standard Audit (Mandatory REVISE Triggers)**:
-   - **CRITICAL (`lintDebug`)**: Any warnings in `./gradlew lintDebug` MUST trigger `REVISE`.
-   - **ViewModel Invariant**: Trigger `REVISE` if a ViewModel imports `R.string`, constructs error strings, or launches loads in `init {}`. Must expose `DomainError` in `content.Error` states.
-   - **UI Mapper Invariant**: Trigger `REVISE` if a UI Mapper pre-concatenates units (`"W "`, `" pts"`, `"%"`) or returns dummy `0.0` fallbacks for empty data.
-   - **Hilt DI Invariant**: Trigger `REVISE` if interface bindings use `@Provides` in `object` modules instead of `@Binds` in `abstract class` modules when the class has `@Inject constructor`.
-   - **Compose & Preview Invariant**: Trigger `REVISE` if any new stateless view (`*Screen`, `*Content`, `*LoadingView`, `*ErrorView`) lacks `@Preview` (`@BcThemePreview`).
+   - **CRITICAL (Mandatory REVISE Triggers)**: You MUST fail validation with verdict `REVISE` if the implementer introduced Test-Induced Design Damage, created Robolectric/Compose UI tests for screens, added trivial/watermelon tests, or exceeded the strict test budget (> 3 `@Test`/class, > 6 total).
+2. **Architecture, Clean Architecture & SOLID Audit (12 Mandatory REVISE Triggers)**:
+   - **CRITICAL**: You MUST audit the diff against **[12 Architecture & SOLID REVISE Triggers](references/architecture-solid-audit.md)**:
+     1. Domain purity (zero `android.*`/Retrofit/Room imports in `:domain`).
+     2. Single Responsibility UseCases (`operator fun invoke` only).
+     3. Dependency Inversion (ViewModels/UseCases inject Domain interfaces).
+     4. Hilt DI (@Binds in abstract class, never @Provides for `@Inject constructor`).
+     5. Visibility encapsulation (`internal` on `*Impl`, DAOs, Entities, DTOs).
+     6. Passive ViewModel (zero `init { launch }`).
+     7. Atomic UDF updates (`_state.update { copy(...) }`).
+     8. Zero resource strings in VM (DomainError in Error state, no `R.string`).
+     9. Typed Domain Errors (`Result<T, DomainError>`, no leaked exceptions).
+     10. Default-free & non-nullable models.
+     11. UI Mapper decoupling (no hardcoded language units).
+     12. Compose preview invariants (`@BcThemePreview` on all new views).
+   - Any compiler warnings in `./gradlew lintDebug` MUST trigger `REVISE`.
+
+> **See [Validation Rubric & Report Template](references/validation-rubric.md)** for output formatting and [Security Checklist](references/security-checklist.md) for Intent/scope rules.
 
 ### Level 4: Runtime / User-Flow Validation (`@android-cli`)
 - If the feature has `UI Involved: yes` (spec.md, Android Layer Breakdown) and an emulator/device is active, execute the `Given / When / Then` Acceptance Scenarios of `docs/features/<feature-id>/spec.md` as black-box `android-cli` journeys (`android run`, `android layout --diff`, `android screen capture`; see `android-cli` references `journeys.md` and `interact.md`) and verify the flow without crashes.
