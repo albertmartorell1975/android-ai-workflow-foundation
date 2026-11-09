@@ -22,15 +22,15 @@ Executes the feature pipeline through all roles until locally accepted:
    - Parallel wave execution (root workspace stays on base): advances local ref via `git fetch origin <base_branch>:<base_branch>`.
    - Detects local `feature/*` branches whose PRs are already merged and removes them (`git branch -D feature/<old-id>`).
 3. **Common Base SHA**: Fixes `base_sha = $(git rev-parse origin/<base_branch>)`. All concurrent worktrees branch from this exact commit.
-3. **GitHub Issue Sync**: Reuses existing issue or creates `[<feature-id>] <title>`.
-4. **Pipeline Execution**: Spawns hydrated worktree (`.worktrees/impl-<id>`) and runs the 5-stage loop (`workflow-planner -> workflow-implementer -> workflow-validator -> workflow-documenter -> Stage 5 local atomic commits`), honoring any `require_review_after` human checkpoints configured in `feature_list.json` (or requested via prompt) before proceeding to subsequent stages.
-5. **Issue Evidence & CI Delivery**: Updates the issue body with verification evidence. Automatically executes clean push `git push -u origin feature/<feature-id>` and opens the structured evidence PR targeting `base_branch` (`develop`) so that GitHub Actions CI runs immediately. Returns root workspace to `base_branch`. Merging is 100% human-owned.
+4. **GitHub Issue Sync**: Reuses existing issue or creates `[<feature-id>] <title>`.
+5. **Pipeline Execution**: Spawns hydrated worktree (`.worktrees/impl-<id>`) and runs the 5-stage loop (`workflow-planner -> workflow-implementer -> workflow-validator -> workflow-documenter -> Stage 5 local atomic commits`), honoring any `require_review_after` human checkpoints configured in `feature_list.json` (or requested via prompt) before proceeding to subsequent stages.
+6. **Issue Evidence & CI Delivery**: Updates the issue body with verification evidence. Automatically executes clean push `git push -u origin feature/<feature-id>` and opens the structured evidence PR targeting `base_branch` (`develop`) with `BypassSandbox: true` so that GitHub Actions CI runs immediately (if any `git push` or `gh` command fails in the sandbox, retry immediately with `BypassSandbox: true` before falling back to a manual browser URL). Returns root workspace to `base_branch`. Merging is 100% human-owned.
 
 ### Mode: `publish` (publicar) — GitHub PR Delivery
 Pushes validated commits and opens a Pull Request:
 1. **Acceptance Gate**: Requires `status === "accepted"` in `feature_list.json` and existing `validation-report.md`. Status `"passing"` is strictly refused.
 2. **Push Gate**: Requires explicit push permission granted by the user in the current run (default is denied).
-3. **PR Publication**: Runs `git push -u origin feature/<feature-id>`, reuses or creates the PR targeting `base_branch` (`develop`), and formats the body with structured evidence per `@git-governance`.
+3. **PR Publication**: Runs `git push -u origin feature/<feature-id>`, reuses or creates the PR targeting `base_branch` (`develop`), and formats the body with structured evidence per `@git-governance` using `BypassSandbox: true` (always retry with `BypassSandbox: true` if sandboxed network/credential access fails before falling back to a manual browser URL).
 4. **Never Merge**: Autonomous merging (`gh pr merge`) is strictly prohibited.
 5. **Return Root Workspace to Base**: Immediately switches root workspace back to `<base_branch>` (`git checkout <base_branch>`).
 

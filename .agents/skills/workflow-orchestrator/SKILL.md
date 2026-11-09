@@ -85,16 +85,16 @@ When coordinating backlog features, delivering to GitHub, or processing PR revie
 - **Single Responsibility**: The orchestrator coordinates and commits; it never writes application code, tests, or KDoc directly while a subagent owns that role.
 - **Role-Tuned Model Selection**: Invoke subagents with their role-assigned model tier (`inherit` for `workflow-planner` and `workflow-validator`; `flash` for `workflow-implementer` and `workflow-documenter` in Antigravity/Gemini — see `references/subagent-providers.md` for Claude Code and Cursor mappings).
 - **Bounded Repair Loop (`MAX_REPAIR_ATTEMPTS = 2`) & Human Decision Gate (`needs_human_review`)**:
-  - The repair cycle between `workflow-implementer` and `workflow-validator` is strictly bounded to a maximum of 2 repair attempts.
-  - If unresolved after 2 repairs, autonomous looping stops immediately, the worktree is preserved intact, status is set to `needs_human_review`, and the user is presented with 4 clear pathways (Manual Override, Human Hint, Re-plan `spec.md`, Cancel).
+   - The repair cycle between `workflow-implementer` and `workflow-validator` is strictly bounded to a maximum of 2 repair attempts.
+   - If unresolved after 2 repairs, autonomous looping stops immediately, the worktree is preserved intact, status is set to `needs_human_review`, and the user is presented with 4 clear pathways (Manual Override, Human Hint, Re-plan `spec.md`, Cancel).
 - **Proactive Human Checkpoints (`require_review_after`)**:
-  - The pipeline supports optional, declarative Human-in-the-Loop checkpoints configured per feature in `feature_list.json` (`"require_review_after": "planner" | "implementer" | "validator" | ["planner", "validator"]`) or specified ad-hoc in the user prompt.
-  - When a checkpointed stage completes, the orchestrator pauses autonomous progression, displays the stage summary with clickable artifact links, and presents 4 structured review options:
-    1. **`[Approve & Proceed]`**: Deliverables verified; continue to next pipeline stage.
-    2. **`[Human Guidance / Hint]`**: User provides corrective feedback; stage re-runs or next stage receives guidance.
-    3. **`[Manual Worktree Edits]`**: User directly edits or tests in the active worktree before signaling the orchestrator to resume.
-    4. **`[Abort / Defer]`**: Safely aborts or suspends feature processing, preserving worktree state.
-  - **Permissive Evaluation**: Any unrecognized value or invalid stage name in `require_review_after` is treated permissively as `null` (the autonomous flow proceeds without stopping or failing).
+   - The pipeline supports optional, declarative Human-in-the-Loop checkpoints configured per feature in `feature_list.json` (`"require_review_after": "planner" | "implementer" | "validator" | ["planner", "validator"]`) or specified ad-hoc in the user prompt.
+   - When a checkpointed stage completes, the orchestrator pauses autonomous progression, displays the stage summary with clickable artifact links, and presents 4 structured review options:
+     1. **`[Approve & Proceed]`**: Deliverables verified; continue to next pipeline stage.
+     2. **`[Human Guidance / Hint]`**: User provides corrective feedback; stage re-runs or next stage receives guidance.
+     3. **`[Manual Worktree Edits]`**: User directly edits or tests in the active worktree before signaling the orchestrator to resume.
+     4. **`[Abort / Defer]`**: Safely aborts or suspends feature processing, preserving worktree state.
+   - **Permissive Evaluation**: Any unrecognized value or invalid stage name in `require_review_after` is treated permissively as `null` (the autonomous flow proceeds without stopping or failing).
 - **Worktree Hydration**: Always copy `local.properties` (with `sdk.dir`) and uncommitted environment files into new worktrees before running subagents so Gradle can compile.
 - **Push Net on Accepted Feature Branches**: When a feature completes all validation and documentation gates and reaches `status: accepted`, the orchestrator automatically executes a clean push (`git push -u origin feature/<feature-id>`) and creates the Pull Request via `gh pr create` so that GitHub Actions CI executes. Destructive forced push and pushing unaccepted or in-progress code remain strictly prohibited. All remote git and `gh` CLI commands in Stage 6 MUST run outside the sandbox (`BypassSandbox: true`).
 - **Never Merge**: Autonomous merging of Pull Requests is strictly prohibited. Merging into `develop` or `main` is 100% human-owned.
@@ -183,55 +183,27 @@ When coordinating backlog features, delivering to GitHub, or processing PR revie
 - Authors English KDoc on public classes, updates durable documentation (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`), and marks `[x]` items in `spec.md`.
 
 ### Stage 5: Worktree Consolidation & Layer Commits (`@git-governance`)
-1. Merge the validated & documented worktree state back into `feature/<feature-id>` and remove temporary worktrees (`git worktree remove` + physical filesystem cleanup of untracked caches + `git branch -d`).
-2. **Root Workspace Sync (Build Files Detection)**:
-   - Check if any build configuration files were modified in this feature (`gradle/libs.versions.toml`, `build.gradle.kts`, `settings.gradle.kts`, or `*/build.gradle.kts`).
-   - If modified, immediately execute the canonical Gradle model preparation task on the root workspace:
-     ```bash
-     ./gradlew prepareKotlinBuildScriptModel --build-cache
-     ```
-     This ensures the root project's Gradle dependency cache and Kotlin DSL build models are synchronized immediately after consolidation.
+1. Merge the validated & documented worktree state back into `feature/<feature-id>` and remove temporary worktrees (`git worktree remove` + physical cleanup of untracked caches + `git branch -d`).
+2. **Root Workspace Sync**: If build files (`libs.versions.toml`, `*.gradle.kts`) were modified, run `./gradlew prepareKotlinBuildScriptModel --build-cache`.
 3. Update `feature_list.json` status to `"accepted"` and append evidence to `PROGRESS.md`.
-4. Create atomic Conventional Commits per **`git-governance`** (`Domain -> Data -> UseCases -> UI -> Docs`), formatted as `<type>(<scope>): [<feature-id>] <subject>`.
-5. If running in local `execute` mode, present the handoff summary (including a reminder to tap "Sync Now" in Android Studio if the IDE displays its external file modification banner) and proceed immediately to Stage 6.
+4. Create atomic Conventional Commits per **`git-governance`** (`Domain -> Data -> UseCases -> UI -> Docs`).
+5. In local `execute` mode, proceed immediately to Stage 6.
 
 ### Stage 6: GitHub Issue & PR Publication (Automatic on Accepted)
-Executes automatically when a feature pipeline reaches `status: "accepted"` (or when requested via `publish` mode):
-
-> [!IMPORTANT]
-> **Sandbox Boundary & Network Mandate**: All Stage 6 remote operations (`git push`, `gh auth status`, `gh pr list`, `gh pr create`) require external network access and OS credentials and **MUST run outside the sandbox (`BypassSandbox: true`)**.
-> If any `gh` or `git push` command fails due to network, permissions, or auth errors (especially if attempted inside the standard sandbox), the orchestrator **MUST immediately retry with `BypassSandbox: true`** before ever resorting to manual browser fallback URLs. Only if `gh` remains unauthenticated or unavailable after the bypass retry should the manual URL fallback be presented.
-
-1. **Gate Verification**: Ensure feature status is `"accepted"` in `feature_list.json` and `validation-report.md` exists with verdict `accept`.
-2. **Push Branch**: Run `git push -u origin feature/<feature-id>` with `BypassSandbox: true`.
-3. **Idempotent PR Creation via GitHub CLI (`gh`)**:
-   - Verify GitHub CLI outside sandbox: check `gh auth status` (`BypassSandbox: true`). If available, check if PR exists: `gh pr list --state all --head "feature/<feature-id>" --base <base_branch>`.
-   - If not present and `gh` is available: create PR with `gh pr create` targeting `base_branch` (`develop`) using the structured evidence body template from `git-governance/references/github-delivery.md` (`BypassSandbox: true`).
-   - If `gh` fails or returns network/auth errors, re-execute immediately with `BypassSandbox: true`. Only if `gh` is strictly missing or unauthenticated after bypass retry: notify the user and provide the direct browser URL (`https://github.com/<owner>/<repo>/pull/new/feature/<feature-id>`) with pre-filled PR title and markdown body for one-click manual creation.
-4. **Never Merge**: Report PR URL. CI executes `.github/workflows/gate.yml`. The human developer performs review and merge.
-5. **Return Root Workspace to Base Branch**: Immediately switch the root workspace back to `develop` (`git checkout develop`). The root workspace must never remain stranded on a published `feature/<feature-id>` branch.
+Executes automatically when feature reaches `status: "accepted"` (or via `publish` mode) with `BypassSandbox: true`:
+1. Push branch: `git push -u origin feature/<feature-id>`.
+2. Check `gh auth status` and create PR targeting `develop` with structured evidence. If any `git push` or `gh` command fails in the sandbox, retry immediately with `BypassSandbox: true` before falling back to a manual browser URL.
+3. **Never Merge**: CI executes `.github/workflows/gate.yml`. Review/merge is 100% human-owned.
+4. Return root workspace to `develop` (`git checkout develop`).
 
 ### Stage 7: Post-PR Code Review & Feedback Loop (`review-fix` Mode — Multi-Round)
-Triggered when the developer reviews an open Pull Request on GitHub (across 1 or $N$ review rounds) and provides code quality, Clean Architecture, SOLID, or bugfix feedback. Changes are treated exactly like a Validator `REVISE` cycle and must **NEVER** be edited directly in the root workspace:
+Triggered when developer reviews PR on GitHub (across 1 or $N$ rounds) and requests improvements:
+1. **Persist PR Review Brief**: Checkout `feature/<feature-id>`, append `## PR Review Round #N` to `docs/features/<feature-id>/validator/pr-review.md`, reset `feature_list.json` to `"in_progress"` (`repair_attempts = 0`), and commit the brief.
+2. **Rehydrate Isolated Worktree**: Spawn `.worktrees/impl-<feature-id>` from `feature/<feature-id>` and hydrate local Android properties (`local.properties`, `.env`, `keystore.properties`, `app/google-services.json`).
+3. **Execution Chain**: `workflow-implementer` (code/tests + `@compiler`) -> `workflow-validator` (audits Round `#N` delta and cumulative diff) -> `workflow-documenter` (KDoc & spec sync).
+4. **Consolidation & PR Push**: Consolidate Round `#N` delta to `feature/<feature-id>` via atomic layer commits, push cleanly to `origin/feature/<feature-id>` (`BypassSandbox: true`), clean worktrees, and return root workspace to `develop`.
 
-1. **Persist PR Review Round Brief (`docs/features/<feature-id>/validator/pr-review.md`)**:
-   - Check out the existing feature branch (`git fetch origin feature/<feature-id> && git checkout feature/<feature-id>`).
-   - Append a numbered section **`## PR Review Round #N`** to `docs/features/<feature-id>/validator/pr-review.md` containing the structured **`PR Review Repair Brief`** (mapping each human review comment to target files and expected Clean Architecture/SOLID fixes).
-   - Reset `feature_list.json` status for `<feature-id>` from `"accepted"` to `"in_progress"` (`repair_attempts = 0`) and commit the brief to `feature/<feature-id>`.
-2. **Rehydrate Isolated Worktree (`.worktrees/impl-<feature-id>`)**:
-   - Recreate the implementer worktree starting from the tip of `feature/<feature-id>` (which already includes all commits from initial development and any prior review rounds $1 \dots N-1$):
-     ```bash
-     git worktree add -B wt/impl-<feature-id> .worktrees/impl-<feature-id> feature/<feature-id>
-     ```
-   - Hydrate local Android build files (`local.properties`, `.env`, `keystore.properties`, `app/google-services.json`).
-3. **Execution, Verification & Audit Loop (`Implementer ⇄ Validator -> Documenter`)**:
-   - 🟡 **`workflow-implementer`** applies the `PR Review Repair Brief` (`Round #N`) in `.worktrees/impl-<feature-id>`, runs the `@compiler` verification suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`), updates `feature_list.json` (`"passing"`), and commits to `wt/impl-<feature-id>`.
-   - 🟢 **`workflow-validator`** spawns in `.worktrees/val-<feature-id>` from `wt/impl-<feature-id>` to audit both the Round `#N` delta (`git diff feature/<feature-id>...wt/val-<feature-id>`) against `PR Review Round #N` and the cumulative feature diff (`git diff develop...wt/val-<feature-id>`) against `spec.md` and Clean Architecture standards (explicit refactorings in `pr-review.md` supersede `spec.md` signatures and are never flagged as Spec Drift). If findings exist (`revise`), the bounded repair loop (`MAX_REPAIR_ATTEMPTS = 2`) applies.
-   - 🔷 **`workflow-documenter`** spawns in `.worktrees/doc-<feature-id>` upon validator `accept` to update KDoc comments and synchronize `spec.md` / `ARCHITECTURE.md` if class or method names were refactored.
-4. **Incremental Delta Consolidation & PR Push**:
-   - Consolidates only the verified Round `#N` delta back onto `feature/<feature-id>` via atomic layer commits (`refactor(domain)`, `refactor(data)`, `fix(ui)`, `docs`) and sets `feature_list.json` status to `"accepted"`.
-   - Pushes to remote (`git push origin feature/<feature-id>`) with `BypassSandbox: true` so the open Pull Request updates and GitHub Actions CI triggers automatically without `--force`.
-   - Cleans up temporary worktrees/branches (`wt/*`) and restores the root workspace to `develop`. Repeatable across as many PR review rounds as needed.
+> **See [Git Worktree Lifecycle](references/worktree-lifecycle.md)** for exact shell commands and cleanup scripts.
 
 ---
 
@@ -240,5 +212,6 @@ Triggered when the developer reviews an open Pull Request on GitHub (across 1 or
 The orchestrator emits a standardized execution report (`feature`, `session`, `branch`, `status`, `commit`, `evidence`, `pr`) at the conclusion of any run mode.
 
 > **See [Operational Modes & Output Report](references/operational-modes.md)** for detailed mode specifications, precondition checks, and output schemas.
+> **See [Git Worktree Lifecycle](references/worktree-lifecycle.md)** for isolated worktree creation, hydration, and consolidation.
+> **See [Subagent Providers & Model Tier Configuration](references/subagent-providers.md)** for provider invocation protocols and model tier matrix.
 > **See [Contract Evals](references/evals.md)** for deterministic verification of `plan` and `publish` modes with zero side effects.
-> **See [Subagent Providers & Git Worktree Protocol](references/subagent-providers.md)** for provider-specific worktree execution.
