@@ -4,48 +4,62 @@ Use these templates as starting points. Adapt content to the repository's discov
 
 ## `AGENTS.md`
 
-Purpose: short landing page for agents.
+Purpose: concise, provider-agnostic harness map and landing page for agents (aligned with `.agents/skills/workflow-initializer/references/AGENTS_TEMPLATE.md`; strictly < 120 lines / < 6 KB).
 
 ```md
-# Project Agent Instructions
+# Instructions for Agents - [PROJECT_NAME]
 
-This repository contains [one-sentence project summary].
+## Project Overview & Architecture Map
 
-## Read First
+[Describe the project purpose, target platform, domain, and main goals.]
 
-- `PROGRESS.md` — current verified state and session history.
-- `feature_list.json` — feature backlog, dependencies (`depends_on`), and status (`not_started`, `in_progress`, `passing`, `accepted`, `blocked`).
-- `CONSTRAINTS.md` — operational MUST / MUST NOT rules discovered during development.
-- `CONTEXT.md` — domain language (when present).
-- `docs/build-brief.md` — product goals and MVP scope (when present).
-- `docs/domain-model.md` — core entities, relationships, and states (when present).
-- `.agents/skills/README.md` — active Foundation skills and technical guardrails.
+* **UI Architecture**: `MVVM (Hybrid UI State & Passive Initialization)` (`.agents/skills/viewmodel-architecture-governance/SKILL.md`)
+* **Module Topology**: `[MODULE_TOPOLOGY]` (`.agents/skills/module-architecture-governance/SKILL.md`)
+* **Dependency Injection**: `Hilt` (`.agents/skills/hilt/SKILL.md`)
+* **Persistence**: `Room` (`.agents/skills/room-schema-governance/SKILL.md`)
+
+## Deterministic Quality & Safety Gates (The Harness)
+
+* **Fast Compile Check (Iterative Coding)**: `./gradlew compileDebugKotlin` (fast Kotlin & KSP syntax check).
+* **Full APK & Hilt DI Graph Check**: `./gradlew assembleDebug` (verifies full Hilt graph, resources, Manifest, and builds the APK).
+* **Canonical Verification Gate (`@compiler`)**: `./gradlew testDebugUnitTest lintDebug --parallel --build-cache --configuration-cache`
+* **CI Gate**: `.github/workflows/gate.yml` runs automatically on every Pull Request targeting `develop` or `main`.
+* **Active Pre-Execution Hooks**: Destructive commands (`rm -rf`, `git reset --hard`, autonomous `gh pr merge`) and commits exceeding the `AGENTS.md` size budget (max 120 lines / 6 KB) are deterministically blocked by project safety hooks.
+
+## Core Guardrails (MUST / NEVER)
+
+* **NEVER** push directly to `main`/`develop`, force-push, or merge Pull Requests autonomously (`@git-governance`).
+* **NEVER** import `android.*` dependencies in `:domain` modules or hardcode secrets/API keys.
+* **ALWAYS** execute feature work in an isolated `git worktree` (`WIP=1`) and pass the Local Verification Gate before completion.
+* **ALWAYS** preserve the `AGENTS.md` instruction budget (< 100 lines target, 120 lines hard cap); codify new recurring lessons into `CONSTRAINTS.md`.
+
+## Context Routing (Read First)
+
+1. `PROGRESS.md` — Current verified state, last gate execution, and session log.
+2. `feature_list.json` — Feature backlog, `depends_on`, checkpoints (`require_review_after`), and status (`not_started`, `in_progress`, `passing`, `accepted`, `blocked`).
+3. `CONSTRAINTS.md` — Durable `MUST` / `MUST NOT` rules discovered via harness feedback loops.
+4. `CONTEXT.md` & `docs/build-brief.md` — Domain glossary and product scope (when present).
+5. `.agents/skills/README.md` — On-demand (*Just-In-Time*) modular skills and technical guardrails.
+
+Read on demand: `ARCHITECTURE.md`, `DESIGN.md`, `docs/features/<feature-id>/spec.md`, `docs/features/<feature-id>/validator/validation-report.md`, and `docs/features/<feature-id>/validator/pr-review.md` (`Round #1..#N`).
+
+---
 
 ## Unified Multi-Agent Workflow (`foundation`)
 
-Feature development is coordinated by **`workflow-orchestrator`** using isolated **`git worktree`** environments and role-tuned model tiers (`pro` for planner/validator, `flash` for implementer/documenter):
+Every agent and subagent MUST prefix its responses and `PROGRESS.md` entries with its assigned badge:
+* 🟣 **`[ORCHESTRATOR · workflow-orchestrator]`** — Pipeline coordination, `feature_list.json`, `git worktree` lifecycle, APK hydration, atomic `@git-governance` commits, and PR publication + CI gate trigger.
+* 🔵 **`[PLANNER · workflow-planner]`** — Feature diagnosis and unified specification (`docs/features/<feature-id>/spec.md`).
+* 🟡 **`[IMPLEMENTER · workflow-implementer]`** — Clean Architecture code, pure JVM tests, and `@compiler` verification in an isolated `git worktree`.
+* 🟢 **`[VALIDATOR · workflow-validator]`** *(or 🔴 on `revise` / `block`)* — Read-only 4-level validation (Spec, Security, Compiler/Tests, Runtime) and `validation-report.md` in an isolated `git worktree` (`MAX_REPAIR_ATTEMPTS = 2`).
+* 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc and durable Markdown docs (`CONSTRAINTS.md`, `ARCHITECTURE.md`, `PROGRESS.md`) in an isolated `git worktree` after acceptance.
 
-1. 🟣 **Orchestrator (`workflow-orchestrator`)**: Selects a feature (either ad-hoc from the user or the next ready feature from `feature_list.json`), manages `git worktree` lifecycles, coordinates subagents, and performs final layer-specific Conventional Commits via `git-governance`.
-2. 🔵 **Planner (`workflow-planner`)**: Analyzes the feature and generates the unified contract at `docs/features/<feature-id>/spec.md`.
-3. 🟡 **Implementer (`workflow-implementer`)**: Runs in an isolated worktree, implements Clean Architecture layers + tests, executes the `compiler` verification suite, and marks the feature `passing`.
-4. 🟢 **Validator (`workflow-validator`)**: Runs in an isolated worktree, audits the implementation across 4 validation levels, and writes `docs/features/<feature-id>/validator/validation-report.md` (`accept`, `revise`, or `block`).
-5. 🔷 **Documenter (`workflow-documenter`)**: Runs in an isolated worktree after `accept`, updates KDoc and durable docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`, `spec.md`), and updates `PROGRESS.md`.
-
-## Startup Workflow
-
-Before writing code:
-
-1. Confirm the working directory and active git branch (`git branch --show-current`).
-2. Read `PROGRESS.md` for current verified state and next step.
-3. Read `feature_list.json` to inspect active or ready features.
-4. Run the `@compiler` baseline check (`./gradlew testDebugUnitTest lintDebug --parallel --build-cache --configuration-cache`) when verifying project health.
-
-## Working Rules
-
-- Work on one feature at a time per worktree (`WIP=1`).
-- Never push or merge to `develop`/`main` without explicit user authorization (`git-governance`).
-- Subagents do not create final commits on the main feature branch; the orchestrator consolidates and commits after validation acceptance and documentation.
-- Apply **KISS** and follow the active skills in `.agents/skills/`.
+### Human Checkpoints & Execution Modes
+* **Checkpoints (`require_review_after`)**: Configurable per feature (`"planner"`, `"implementer"`, `"validator"`, or array). Recommended high-leverage pattern: supervise after `"planner"` (`spec.md`) and via GitHub Pull Request review.
+* **Execution Modes**:
+  1. **Backlog Mode**: `@build-brief` -> `@harness-starter` -> `@workflow-orchestrator` (executes ready features from `feature_list.json`).
+  2. **Standalone Mode**: Pass an ad-hoc feature to `@workflow-orchestrator` -> registers, plans, implements, validates, documents in isolated worktrees, and opens the PR against `develop`.
+  3. **Post-PR Review (`review-fix`)**: Pass PR review feedback to `@workflow-orchestrator` -> logs `## PR Review Round #N` in `pr-review.md`, repairs, re-validates, and pushes the delta to the open PR.
 ```
 
 ## `.github/workflows/gate.yml`

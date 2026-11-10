@@ -3,8 +3,9 @@
 # PURPOSE & PLATFORM COMPATIBILITY:
 # - Language: PowerShell (.ps1). Windows-native implementation using built-in PowerShell engine.
 # - Target Providers: Windows environments with Gemini / Antigravity or Cursor.
-# - Single Responsibility: Enforces the strict 10 KB (10,240 bytes) limit on AGENTS.md before
-#   allowing any git commit, preventing the "lost in the middle" degradation in AI context windows.
+# - Single Responsibility: Enforces the strict instruction budget (120 lines / 6 KB [6,144 bytes])
+#   on AGENTS.md before allowing any git commit, preventing "lost in the middle" and context rot
+#   degradation in AI context windows.
 $ErrorActionPreference = "SilentlyContinue"
 
 $rawInput = [Console]::In.ReadToEnd()
@@ -35,9 +36,10 @@ foreach ($seg in $segments) {
         foreach ($cand in @("AGENTS.md", "agents.md")) {
             if (Test-Path $cand) {
                 $item = Get-Item $cand
-                if ($item.Length -gt 10240) {
+                $lines = @(Get-Content $cand).Count
+                if ($lines -gt 120 -or $item.Length -gt 6144) {
                     $sizeKb = [math]::Round($item.Length / 1024, 1)
-                    $blockReason = "Blocked by Android AI Workflow Foundation context size hook: '$cand' is $($item.Length) bytes ($sizeKb KB), which exceeds the maximum limit of 10 KB (10,240 bytes) to prevent the 'lost in the middle' effect in AI context windows. Please trim '$cand' by moving detailed rules into CONSTRAINTS.md or references/ before committing."
+                    $blockReason = "Blocked by Android AI Workflow Foundation context size hook: '$cand' is $lines lines and $($item.Length) bytes ($sizeKb KB), which exceeds the instruction budget hard cap of 120 lines / 6 KB (6,144 bytes) to prevent 'lost in the middle' and context rot degradation. Please trim '$cand' (target < 100 lines) by moving detailed rules into CONSTRAINTS.md or references/ before committing."
                     break
                 }
             }

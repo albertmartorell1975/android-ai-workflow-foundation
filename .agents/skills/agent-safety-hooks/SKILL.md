@@ -1,6 +1,6 @@
 ---
 name: agent-safety-hooks
-description: Automated safety and context-size hooks (blocking destructive actions via block-rm-rf.js and enforcing the 10 KB AGENTS.md limit via check-agents-size.js) tailored to your active AI provider (Gemini, Cursor, or Claude Code).
+description: Automated safety and context-size hooks (blocking destructive actions via block-rm-rf.js and enforcing the 120-line / 6 KB AGENTS.md instruction budget via check-agents-size.js) tailored to your active AI provider (Gemini, Cursor, or Claude Code).
 metadata:
   author: Albert Martorell Garcia
   version: 1.1.0
@@ -18,7 +18,7 @@ metadata:
 This skill manages provider-agnostic lifecycle hooks for Android projects following the **Single Responsibility Principle (SRP)**. It installs two focused hooks into the canonical hook locations of the active AI provider:
 
 1. **`block-rm-rf.js` (Destructive Command Guard)**: Prevents AI agents from executing destructive shell commands such as `rm -rf`, `git reset --hard`, `git clean -f`, autonomous `gh pr merge` (ensuring PR merges are strictly human), or force pushes.
-2. **`check-agents-size.js` (`AGENTS.md` Context Size Guard)**: Deterministically blocks `git commit` if `AGENTS.md` exceeds 10 KB (10,240 bytes) to prevent the "lost in the middle" degradation in AI agent context windows.
+2. **`check-agents-size.js` (`AGENTS.md` Context Size Guard)**: Deterministically blocks `git commit` if `AGENTS.md` exceeds the instruction budget hard cap of 120 lines or 6 KB (6,144 bytes) to prevent "lost in the middle" and context rot degradation in AI agent context windows.
 
 ## Supported Providers & Canonical Hook Locations
 

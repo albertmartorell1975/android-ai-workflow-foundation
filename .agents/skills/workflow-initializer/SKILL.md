@@ -76,10 +76,10 @@ The Foundation uses opinionated, industry-standard engineering defaults (**MVVM 
 > [!IMPORTANT]
 > **PREREQUISITE**: You may ONLY execute Phase 3 after the user has responded to Question 1 (AI Provider) and Question 2 (Optional Catalog Plugins) from Phase 2.
 
-1. **Materialize `AGENTS.md`**: Create `AGENTS.md` in the project root by reading `.agents/skills/workflow-initializer/references/AGENTS_TEMPLATE.md` and replacing:
+1. **Materialize `AGENTS.md`**: Create a provider-agnostic `AGENTS.md` in the project root by reading `.agents/skills/workflow-initializer/references/AGENTS_TEMPLATE.md` and replacing `[PROJECT_NAME]` and `[MODULE_TOPOLOGY]`:
    - `[PROJECT_NAME]` -> Detected or confirmed Project Name.
-   - `[AI_PROVIDER]` -> User-selected AI Provider (`Gemini`, `Cursor`, or `Claude Code`).
-   - `[MODULE_TOPOLOGY]` -> `Layer-Based (:domain, :usecases, :data, :app)` or `Feature-First (:<feature>:domain, :<feature>:usecases, :<feature>:data, :<feature>:presentation + :core:* + :app)`.
+   - `[MODULE_TOPOLOGY]` -> `Layer-Based (:domain -> :usecases <- :data -> :app)` or `Feature-First (:<feature>:domain, :<feature>:usecases, :<feature>:data, :<feature>:presentation + :core:* + :app)`.
+
 2. **Materialize Subagents & `.worktrees/` Ignore Rule**:
    - Ensure `.worktrees/` is added to the project's `.gitignore`.
    - Read the Single Source of Truth for skills from `.agents/skills/workflow-initializer/references/SUBAGENT_SKILLS.json`.
