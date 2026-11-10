@@ -2,232 +2,137 @@
 
 Exploring how specialized AI agents can become part of a disciplined, human-supervised Android software engineering process.
 
-**Android AI Workflow Foundation** is a unified multi-agent development framework for Android projects. It combines shared engineering standards, Clean Architecture guardrails, persistent project harness tracking (`feature_list.json`, `PROGRESS.md`), and isolated **`git worktree`** subagents (`workflow-orchestrator`, `workflow-planner`, `workflow-implementer`, `workflow-validator`, and `workflow-documenter`).
+**Android AI Workflow Foundation** is a unified, provider-agnostic multi-agent development framework for Android projects. It combines shared engineering standards, Clean Architecture guardrails, persistent project harness tracking (`feature_list.json`, `PROGRESS.md`, `CONSTRAINTS.md`), and isolated **`git worktree`** subagents (`workflow-orchestrator`, `workflow-planner`, `workflow-implementer`, `workflow-validator`, and `workflow-documenter`).
 
 The goal is not to automate software development blindly. The developer remains the highest-level supervisor, responsible for architecture, technical decisions, review, and final acceptance.
 
 ---
 
-## 🏗 Unified Multi-Agent Architecture
+## 🏗 Multi-Agent Architecture & Specialized Roles
 
-The Foundation structures software delivery across two clear phases: a **shared discovery & harness phase** (Phase 1) followed by **flexible feature execution modes** (Phase 2) on top of a **single unified multi-agent pipeline**:
+The Foundation organizes development into a **discovery and harness phase** (Phase 1) followed by an **isolated 5-role worktree pipeline** (Phase 2):
 
 ```text
-ANDROID AI WORKFLOW FOUNDATION (v2.0.0)
-        │
-        ├── Phase 1: Project Discovery & Harness Setup
-        │     ├── New Product / MVP / Epic : build-brief (discovery) → harness-starter
-        │     └── Existing Codebase       : harness-starter (derives AGENTS.md, PROGRESS.md, CONSTRAINTS.md, feature_list.json, gate.yml)
-        │
-        ├── Phase 2: Feature Execution Modes
-        │     ├── Mode A: Standalone Feature Mode (Ad-hoc / on-demand single feature run)
-        │     └── Mode B: Backlog Queue Mode     (Sequential or parallel processing of feature_list.json)
-        │
-        ├── Multi-Agent Worktree Pipeline (model: inherit + isolated git worktrees)
-        │     ├── 🟣 Orchestrator (workflow-orchestrator)
-        │     ├── 🔵 Planner      (workflow-planner → docs/features/<id>/spec.md)
-        │     ├── 🟡 Implementer  (workflow-implementer → Code + Tests + @compiler)
-        │     ├── 🟢 Validator    (workflow-validator → Read-only 4-level evaluation + Repair Brief)
-        │     └── 🔷 Documenter   (workflow-documenter → English KDoc + Durable Docs)
-        │
-        └── Shared Engineering Guardrails
-              ├── Clean Architecture (Domain / Data / UseCases / UI & Dual Topologies)
-              ├── Stack Essentials (Hilt, Room & Firebase Core Skills)
-              ├── Kotlin, Coroutines, Flow & Jetpack Compose Standards
-              ├── Compiler Verification, Testing & Intent Security
-              └── Git Governance & AI Lifecycle Safety Hooks
+[1. Planner: workflow-planner] 🔵 ──► creates docs/features/<feature-id>/spec.md (*)
+  ▼
+[2. Implementer: workflow-implementer] 🟡 (.worktrees/impl-<id>) ──► code + tests + @compiler (*)
+  ▼
+[3. Validator: workflow-validator] 🟢/🔴 (.worktrees/val-<id>, hydrated APK + emulator pre-install)
+  ├── REVISE (attempts < 2) ──► loops back to Implementer with Repair Brief
+  ├── REVISE (attempts == 2) ─► 🛑 Human Decision Gate (Override | Hint | Re-plan | Cancel)
+  └── ACCEPT (*) ─────────────► proceeds to Documenter
+  ▼
+[4. Documenter: workflow-documenter] 🔷 (.worktrees/doc-<id>) ──► English KDoc + durable docs + spec.md
+  ▼
+[5. Consolidation & Layer Commits] 🟣 ──► atomic commits (Domain->Data->UseCases->UI->Docs)
+  ▼
+[6. Automatic GitHub PR & CI Gate] 🟣 ──► push feature/<id> + open PR vs develop -> runs .github/workflows/gate.yml
+  ▼
+[7. Post-PR Review Loop (review-fix Round #1..#N)] ──► pr-review.md -> Implementer -> Validator -> PR push
+  ▼
+[🛑 Human Merge on GitHub]  
+
+(* = Optional Human Checkpoint via require_review_after or prompt)
 ```
 
 ### Visual Identity Badges & Subagent Roles
 
-Every agent in the pipeline identifies its work in chat, validation reports, and `PROGRESS.md` with a dedicated visual badge and operates with strict single-responsibility boundaries:
-
 | Role | Core Skill | Execution Scope | Key Responsibilities |
 | :--- | :--- | :--- | :--- |
-| 🟣 **Orchestrator** | `workflow-orchestrator` | Main Feature Branch (`feature/<feature-id>`) | Selects features (Standalone or from `feature_list.json`), manages `git worktree` lifecycles, coordinates subagents, evaluates proactive Human Checkpoints (`require_review_after`), persists `validation-report.md`, manages bounded repair loops (`MAX_REPAIR_ATTEMPTS = 2`) with a Human Decision Gate (`needs_human_review`), and creates atomic layer-by-layer Conventional Commits via `git-governance`. |
-| 🔵 **Planner** | `workflow-planner` | Clean Subagent Context (`docs/features/<id>/`) | Performs pre-diagnosis in a clean subagent context, asks up to 3 clarifying questions, and writes the unified contract at `docs/features/<feature-id>/spec.md` (`Given/When/Then` scenarios + Android layer breakdown + Clean Architecture checklist) with strictly bounded documentation edits. |
-| 🟡 **Implementer** | `workflow-implementer` | Isolated Worktree (`.worktrees/impl-<feature-id>`) | Executes in an isolated worktree with automated Android environment hydration (`local.properties`, `.env`), implements Clean Architecture layers (`Domain -> Data -> UseCase -> UI`), converts `ui/resources/` assets to `.webp`, writes pure JVM unit tests, runs the `@compiler` suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`), and sets status to `passing`. |
-| 🟢/🔴 **Validator** | `workflow-validator` | Isolated Worktree (`.worktrees/val-<feature-id>`) | Strictly read-only auditor across **4 validation levels**: (1) Spec contract, (2) Security (`android-intent-security`) & Scope Discipline, (3) `@compiler` evidence & test quality audit (`testing-setup`), (4) Emulator runtime via `@android-cli` (when active). Returns its verdict (`accept`, `revise` + Repair Brief, or `block`) directly to `workflow-orchestrator` without modifying repository files. |
-| 🔷 **Documenter** | `workflow-documenter` | Isolated Worktree (`.worktrees/doc-<feature-id>`) | Runs only after `accept`. Authors English KDoc on new public classes, updates durable docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`), and checks `[x]` completed items in `spec.md` without altering executable code. |
+| 🟣 **Orchestrator** | `workflow-orchestrator` | Main Feature Branch (`feature/<id>`) | Pipeline coordination, queue selection, worktree lifecycle, APK hydration, human checkpoints, bounded repair loop (`MAX_REPAIR_ATTEMPTS = 2`), atomic layer commits (`@git-governance`), and automatic PR publication + CI trigger. |
+| 🔵 **Planner** | `workflow-planner` | Clean Subagent Context (`docs/features/<id>/`) | Clarifies up to 3 questions and authors the unified contract at `docs/features/<feature-id>/spec.md` (`Given/When/Then`, layer breakdown, Clean Architecture checklist). |
+| 🟡 **Implementer** | `workflow-implementer` | Isolated Worktree (`.worktrees/impl-<id>`) | Implements Clean Architecture layers (`Domain -> Data -> UseCase -> UI`), converts graphic assets, writes pure JVM tests, runs `@compiler`, and marks `passing`. |
+| 🟢/🔴 **Validator** | `workflow-validator` | Isolated Worktree (`.worktrees/val-<id>`) | Strictly read-only auditor for repository files across **4 levels** (Spec, Security, `@compiler`/Tests, Emulator runtime). Can test pre-installed app or deploy hydrated APK. Emits `accept`, `revise` + Repair Brief, or `block`. |
+| 🔷 **Documenter** | `workflow-documenter` | Isolated Worktree (`.worktrees/doc-<id>`) | Runs only after `accept`. Authors English KDoc on public classes, updates durable docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`), and marks completed tasks in `spec.md`. |
 
 ---
 
-## 🔄 Two Execution Modes (Phase 2)
+## 🛡 Human-in-the-Loop Governance & Supervision Philosophy
 
-Once the project harness is established via **`@build-brief`** and **`@harness-starter`** (or directly by `@harness-starter` on an existing app), the developer decides how to execute features:
-
-### Mode A: Standalone Feature Mode (Ad-hoc / On-Demand)
-When working on an ad-hoc requirement, screen, or single feature:
-1. Invoke `@workflow-orchestrator` (or `@workflow-planner`) with your feature request (e.g., *"Implement the User Profile screen"*).
-2. The orchestrator registers or activates the feature in `feature_list.json` and `PROGRESS.md`.
-3. Runs the 4-stage pipeline (`Planner -> Implementer -> Validator -> Documenter`) in isolated `git worktree` directories.
-4. Upon validation acceptance, documentation, and `@git-governance` commit consolidation, execution **stops**.
-
-### Mode B: Backlog Queue Mode (`feature_list.json`)
-When driving a multi-feature milestone, MVP release, or chained set of features:
-1. Ensure the backlog is populated in `feature_list.json` with dependencies (`depends_on`).
-2. Run **`@workflow-orchestrator`** with: *"Process the backlog"* or *"Run next ready features"*.
-3. The orchestrator executes ready features sequentially—or parallelizes independent features whose `depends_on` prerequisites are `accepted` across separate `git worktree` instances.
-4. Continues until the queue is finished or a blocking issue requires developer intervention.
-
-### Mode C: Post-PR Review & Feedback Loop (`review-fix` — Multi-Round)
-When the developer conducts code review on an open Pull Request on GitHub (across 1 or $N$ review rounds) and requests code quality, Clean Architecture, or SOLID improvements:
-1. Provide the review comments or requested refactors to **`@workflow-orchestrator`**.
-2. The orchestrator records a numbered `## PR Review Round #N` (`PR Review Repair Brief`) in `docs/features/<feature-id>/validator/pr-review.md` on `feature/<feature-id>`.
-3. Rehydrates isolated worktrees (`wt/impl-<id>` -> `wt/val-<id>` -> `wt/doc-<id>`) starting from the tip of `feature/<feature-id>`, and runs `workflow-implementer` ⇄ `workflow-validator` -> `workflow-documenter`.
-4. Consolidates the Round `#N` delta via atomic layer commits, pushes cleanly to `origin/feature/<feature-id>`, and automatically updates the existing PR and CI gate.
-
-### 🛡 Human-in-the-Loop Governance
 The Foundation guarantees developer control without sacrificing autonomous pipeline speed:
-* **Proactive Checkpoints (`require_review_after`)**: Features in `feature_list.json` can declare optional pause points (`"planner"`, `"implementer"`, `"validator"`, or array) to pause for developer review on critical workflows (e.g. auth, payments, core architecture), while routine features execute fully autonomously (`null`).
-* **Reactive Decision Gate (`needs_human_review`)**: If the repair cycle between implementer and validator cannot resolve within `MAX_REPAIR_ATTEMPTS = 2`, the orchestrator freezes the worktree and prompts the developer with 4 actionable pathways (`Approve`, `Hint`, `Manual Edit`, `Abort`).
+
+### 1. Flexible Checkpoints Across Any Stage (`require_review_after`)
+Every feature is different. A routine UI tweak does not require the same scrutiny as a biometric authentication flow, a database migration, or an in-app payment gateway:
+* Any feature in `feature_list.json` can declare proactive pause points at **any stage of the loop**: `"require_review_after": "planner" | "implementer" | "validator" | ["planner", "validator"]` (or requested dynamically in the user prompt).
+* When a checkpointed stage finishes, the orchestrator pauses and offers 4 structured options: **`[Approve & Proceed]`**, **`[Human Guidance / Hint]`**, **`[Manual Worktree Edits]`**, or **`[Abort / Defer]`**.
+
+### 2. High-Leverage Recommended Pattern (Post-Planner + PR Code Review)
+While checkpoints can be placed at any stage depending on the feature, the **recommended standard pattern** balances speed and engineering control by placing human supervision at the two highest-leverage points:
+1. **Post-Planner (`require_review_after: "planner"`)**: Review and approve the technical contract (`docs/features/<feature-id>/spec.md`) **before** any code or tests are written.
+2. **Pull Request Code Review (GitHub PR + `review-fix` loop)**: Once `spec.md` is approved, let the central loop (`Implementer ⇄ Validator -> Documenter`) execute autonomously, automatically push `feature/<feature-id>`, open the Pull Request against `develop`, and trigger the CI validation gate (`.github/workflows/gate.yml`). The developer then conducts code review directly on the PR in GitHub.
+
+### 3. Reactive Human Decision Gate (`needs_human_review`)
+If the repair loop between Implementer and Validator cannot reach `accept` within `MAX_REPAIR_ATTEMPTS = 2`, autonomous looping stops immediately, the worktree is preserved intact, and the developer resolves it via **Override**, **Hint**, **Re-plan**, or **Cancel**.
 
 ---
 
-## 🏛 Supported Modular Topologies (`module-architecture-governance`)
+## 🔄 Feature Execution & Post-PR Review Modes
 
-The Foundation supports two Clean Architecture module topologies depending on app scale:
+In both feature execution modes (**Mode A** and **Mode B**), once `workflow-documenter` finishes, the Orchestrator consolidates atomic layer-by-layer Conventional Commits (`Domain -> Data -> UseCases -> UI -> Docs`), **automatically pushes `feature/<feature-id>` to the remote repository, opens a Pull Request against `develop`, and triggers `.github/workflows/gate.yml`** (`./gradlew testDebugUnitTest lintDebug`). Autonomous PR merging (`gh pr merge`) is strictly prohibited—merging is 100% human-owned.
 
-### 1. Layer-Based Modular Topology (Small to Medium Apps)
-Organizes code strictly by technical Clean Architecture responsibility:
-```text
-:domain      ──> Pure Kotlin business entities, Repository interfaces & DomainError models
-:usecases    ──> Pure Kotlin single-responsibility interactors (e.g. GetUserProfileUseCase)
-:data        ──> Repository implementations, Room DAOs, DataSources, Network DTO mappers
-:app         ──> Jetpack Compose UI, ViewModels, Navigation, and Dependency Injection graph
-```
-
-### 2. Feature-First Modular Topology (Scalable & Multi-Team Apps)
-Organizes code into independent vertical slices per feature, backed by shared core modules:
-```text
-:<feature>:domain        ──> Feature-scoped models, repository interfaces & use cases
-:<feature>:usecases      ──> Feature-specific interactors
-:<feature>:data          ──> Feature local/remote data sources & repository implementations
-:<feature>:presentation  ──> Feature Jetpack Compose UI screens & ViewModels
-:core:database           ──> Shared Room database schemas & entities
-:core:network            ──> Shared Retrofit / Ktor network clients & interceptors
-:core:designsystem       ──> Shared Material 3 tokens, colors, typography & reusable components
-:core:common             ──> Result wrappers, coroutine dispatchers & shared domain utilities
-:app                     ──> Thin application shell, global NavHost & root DI container
-```
+1. **Mode A — Standalone Feature Mode (Ad-hoc)**: Triggered by a direct request (*"Implement User Profile screen"*). Orchestrator registers or selects the feature, executes the full pipeline through PR creation and CI validation, and stops.
+2. **Mode B — Backlog Queue Mode (`feature_list.json`)**: Orchestrator processes ready features from `feature_list.json` sequentially or parallelizes independent features (`depends_on == "accepted"`) across separate worktrees, publishing each accepted feature's PR.
+3. **Mode C — Post-PR Review & Feedback Loop (`review-fix` Multi-Round)**:
+   - When the developer requests changes during PR code review on GitHub (across 1 or $N$ rounds), invoke `@workflow-orchestrator` with the feedback.
+   - The orchestrator records `## PR Review Round #N` in `docs/features/<feature-id>/validator/pr-review.md` on `feature/<feature-id>`.
+   - Rehydrates isolated worktrees (`wt/impl-<id>` -> `wt/val-<id>` -> `wt/doc-<id>`), runs `Implementer ⇄ Validator -> Documenter`, consolidates only the Round `#N` delta via atomic layer commits, and pushes cleanly to update the open PR and re-run `.github/workflows/gate.yml` without touching the root workspace.
 
 ---
 
 ## 📁 Unified Feature Directory Structure (`docs/features/<feature-id>/`)
 
-Every feature in the repository keeps its contract, UI assets, and validation evidence organized in one canonical folder:
+Every feature keeps its contract, UI assets, and review history organized in one canonical folder:
 
 ```text
 docs/features/<feature-id>/
 ├── spec.md                         # Unified contract (Given/When/Then + Android layers + Checklist)
 ├── ui/
-│   ├── screens/                    # Full-screen reference mockups (PNG/HTML — NEVER converted to drawables)
+│   ├── screens/                    # Reference screen mockups (PNG/HTML — NEVER converted to drawables)
 │   └── resources/                  # Raw graphic assets (PNG/JPEG -> converted to res/drawable/ic_*.webp)
 └── validator/
-    └── validation-report.md        # Structured 4-level report persisted by Orchestrator
+    ├── validation-report.md        # Structured 4-level report persisted by Orchestrator
+    └── pr-review.md                # Human PR review feedback & Repair Briefs (Round #1..#N)
 ```
 
 ---
 
-## 🛠 Installation & Setup
+## 🛠 Installation, Multi-Provider Adaptation & Harness Setup
 
-### Prerequisites
+> **Prerequisites**: JDK 17/21, Git 2.30+ (for `git worktree`), and **GitHub CLI (`gh auth login`)** so the Orchestrator can publish Pull Requests automatically.
 
-Before bootstrapping or publishing features with the Foundation, ensure your development environment has:
-
-* **JDK 17 or 21**: Mandatory baseline for Android Gradle Plugin (AGP) 8.x+ and Kotlin 2.0.
-* **Git 2.30+**: Required for `git worktree` isolation and atomic layer commits.
-* **GitHub CLI (`gh`)** *(Mandatory for automated PR delivery in `publish` mode)*:
-  ```bash
-  # Windows (via winget)
-  winget install --id GitHub.cli
-
-  # macOS (via Homebrew)
-  brew install gh
-
-  # Linux (Debian / Ubuntu)
-  sudo apt install gh
-
-  # Authenticate with your GitHub account (one-time setup):
-  gh auth login
-  ```
-  > [!IMPORTANT]
-  > When `@workflow-orchestrator` operates in **`publish` mode**, it uses `gh pr create` to publish feature branches and generate structured Pull Requests automatically. If `gh` is not installed or authenticated, the agent pushes the branch via `git push` and falls back to providing a manual browser link.
-
-### Step 1: Install the Foundation
-
-Run the following command from your Android project's root directory:
-
+### Step 1: Install Active Skills
+Run from your Android project root:
 ```bash
 npx skills add albertmartorell1975/android-ai-workflow-foundation -y
 ```
 
-This installs the 37 active Foundation skills into `.agents/skills/` cleanly without interactive CLI prompts.
-
-### Step 2: Activate the Initializer
-
-Open your AI IDE (**Android Studio / Gemini**, **Antigravity**, **Claude Code**, or **Cursor**) and type:
-
+### Step 2: Activate the Initializer (`workflow-initializer`)
+Open your AI IDE and prompt:
 ```text
 Activate workflow-initializer
 ```
+The initializer auto-inspects your project's module topology (*Layer-Based* vs *Feature-First*), prompts for your **AI Provider** and optional catalog plugins, generates `AGENTS.md`, and **automatically adapts subagents, safety hooks, and context exclusions** to your chosen provider:
 
-The initializer guides the project setup:
+| AI Provider | Isolated Subagents (`SUBAGENT_SKILLS.json`) | Lifecycle Safety Hooks (`agent-safety-hooks` & `hook-creator`) | AI Context Exclusion (`ai-context-exclusion`) |
+| :--- | :--- | :--- | :--- |
+| **Gemini / Antigravity** | `.agents/agents/workflow-*.md` (`invoke_subagent`) | `.agents/hooks.json` + `.agents/hooks/*.js` (`PreToolUse`) | `.aiexclude` (Gitignore style) |
+| **Claude Code** | `.claude/agents/workflow-*.md` (`isolation: worktree`, `disallowedTools`) | `.claude/settings.json` + `.claude/hooks/*.js` (`PreToolUse`) | `.claude/settings.json` (`permissions.deny`) |
+| **Cursor** | `.cursor/agents/workflow-*.md` (`readonly: true` on validator) | `.cursor/hooks.json` + `.cursor/hooks/*.js` (`beforeShellExecution`) | `.cursorignore` (Gitignore style) |
 
-1. **Stack Auto-Inspection & Interactive Prompt (Hard Stopping Gate)**:
-   - **Defaults**: Applies Foundation standards by default (MVVM with Hybrid UI State, Hilt, Room, and Firebase suite).
-   - **Auto-Detection**: Infers Project Name and Module Topology (Layer-Based vs Feature-First) directly from Gradle files.
-   - **Interactive Prompt**: Halts execution before file generation to prompt the user for the target AI Provider (`Gemini / Antigravity`, `Cursor`, or `Claude Code`) and Optional Catalog Plugins (`camerax`, `compose-animations`, `wear-compose-m3`, `to-plan`, etc.).
-2. **Automated Governance & Subagent Materialization**:
-   - **`AGENTS.md`**: Materializes project-specific instructions and rules.
-   - **Provider-Specific Subagents (`SUBAGENT_SKILLS.json` + `model: inherit` + `git worktree`)**:
-     * **Claude Code**: Materializes `.claude/agents/workflow-planner.md`, `workflow-implementer.md`, `workflow-validator.md` (`disallowedTools: [Write, Edit]`), and `workflow-documenter.md` with scoped skills, color badges, and worktree isolation.
-     * **Cursor**: Materializes `.cursor/agents/workflow-*.md` (`readonly: true` on `workflow-validator`).
-     * **Gemini / Antigravity**: Materializes `.agents/agents/workflow-*.md` and uses native `invoke_subagent` with `Model: "inherit"` and isolated worktrees.
-   - **Subagent Scoped Skills**:
-     * 🟣 **`workflow-orchestrator`**: `workflow-orchestrator`, `git-governance`.
-     * 🔵 **`workflow-planner`**: `workflow-planner`.
-     * 🟡 **`workflow-implementer`**: Core Architecture, Kotlin, Flow, Compose, Testing, `@compiler`, Hilt (`hilt`), Room (`room-schema-governance`), and Firebase (`firebase-*`), plus any optional catalog plugins installed in `.agents/skills/`.
-     * 🟢/🔴 **`workflow-validator`**: Lightweight read-only verification (`workflow-validator`, `android-intent-security`, `compiler`, and `android-cli`).
-     * 🔷 **`workflow-documenter`**: Documentation-only (`workflow-documenter`, `kotlin-style`).
-   - **Context Exclusion (`ai-context-exclusion`)**: Materializes `.aiexclude`, `.cursorignore`, or `.claude/settings.json`, automatically ignoring `.worktrees/`, `.gradle/`, and build caches.
-   - **🛡 Automated AI Safety Hooks (`agent-safety-hooks`)**:
-     * Installs provider-native lifecycle interception (`PreToolUse` in Claude Code / Antigravity, `beforeShellExecution` in Cursor) via `block-rm-rf.js`.
-     * **Zero-Accident Guardrail**: Intercepts and blocks destructive terminal commands (such as `rm -rf`, `rmdir /s /q`, `git clean -f`, `git reset --hard`, autonomous `gh pr merge`, and force pushes) before execution, ensuring autonomous subagents running in worktrees cannot damage the project.
-3. **Optional Catalog Skills Installation**:
-   Installs any selected optional plugins from `.agents/catalog/` (such as `camerax`, `wear-compose-m3`, `perfetto-trace-analysis`, `to-plan`, `using-chrisbanes-skills`, `compose-animations`) into `.agents/skills/` and binds them to `workflow-implementer`.
+* **🛡 Automated Safety Hooks**: By default, installs `block-rm-rf.js` (blocks destructive commands like `rm -rf`, `git reset --hard`, `git clean -f`, force pushes, and autonomous `gh pr merge`) and `check-agents-size.js` (enforces the 10 KB `AGENTS.md` limit). Custom project hooks can also be created on demand via `@hook-creator`.
+* **🔒 Context Exclusion & Provider Switching**: Protects `local.properties`, `.worktrees/`, `.gradle/`, and `build/` from entering the AI context, and translates exclusion rules automatically if you switch AI providers later.
+
+### Step 3: Project Discovery & Harness (`@build-brief` & `@harness-starter`)
+* **New Product / MVP**: Run `@build-brief` for guided product/domain discovery (`CONTEXT.md`, `DESIGN.md`), then run `@harness-starter`.
+* **Existing Android Codebase**: Run `@harness-starter` directly to inspect the repository and generate `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json`, and the GitHub Actions CI gate **`.github/workflows/gate.yml`**.
 
 ---
 
-## 🧩 Skill Architecture
+## 📚 Detailed Documentation & References
 
-### 1. Active Core Workflow Skills (`.agents/skills/`)
-* `workflow-initializer` — Project bootstrapping, safety hooks, context exclusions, and subagent setup.
-* `build-brief` — Guided product and domain discovery before coding.
-* `harness-starter` — Generates `AGENTS.md`, `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json`, and `.github/workflows/gate.yml`.
-* `workflow-orchestrator` (🟣) — Coordinates feature backlog, git worktrees, subagents, `@git-governance` commits, and GitHub PR delivery across 3 modes (`plan`, `execute`, `publish`).
-* `workflow-planner` (🔵) — Feature Planner and Specification Architect (`docs/features/<id>/spec.md`).
-* `workflow-implementer` (🟡) — Worktree Implementer subagent + `@compiler` self-verification.
-* `workflow-validator` (🟢/🔴) — Read-only Worktree 4-level Validator subagent.
-* `workflow-documenter` (🔷) — Worktree KDoc and durable documentation subagent.
-* `compiler`, `git-governance`, `foundation-evolve`.
-
-### 2. Shared Engineering Guardrails & Stack Essentials (`.agents/skills/`)
-* **`agent-safety-hooks`** — Automated pre-tool execution safety guard installed by default to block catastrophic commands (`rm -rf`, recursive deletion) across Claude Code, Cursor, and Gemini.
-* **`ai-context-exclusion`** — Provider-agnostic AI context governance (`.aiexclude`, `.cursorignore`, `.claude/settings.json`) ensuring the AI never indexes `.worktrees/`, `.gradle/`, and build caches.
-* **Architecture & Governance** — `dependency-manager`, `design-system-governance`, `kotlin-style`, `module-architecture-governance`, `repository-pattern-governance`, `testing-setup`, `viewmodel-architecture-governance`.
-* **Stack Essentials (DI, Persistence & Cloud)** — `hilt`, `room-schema-governance`, `firebase-basics`, `firebase-auth-basics`, `firebase-remote-config-basics`.
-* **Platform, Compose & Concurrency** — `adaptive`, `android-cli`, `android-intent-security`, `compose-modifier-and-layout-style`, `compose-side-effects`, `compose-state-authoring`, `compose-state-hoisting`, `edge-to-edge`, `kotlin-coroutines-structured-concurrency`, `kotlin-flow-state-event-modeling`, `navigation-3`.
-
-### 3. Optional Catalog Plugins (`.agents/catalog/`)
-* Activated on demand for specialized libraries, profiling, and diagnostics (`camerax`, `wear-compose-m3`, `perfetto-trace-analysis`, `r8-analyzer`, `compose-recomposition-performance`, `compose-stability-diagnostics`, `compose-focus-navigation`, `kotlin-control-flow`, `kotlin-functions`, `hook-creator`, `skill-creator`, `to-plan`, `using-chrisbanes-skills`).
-
----
-
-## 🔄 Maintaining & Updating
-
-* **Sync Active Skills**: `npx skills update`
-* **Evolve the Foundation**: Use `@foundation-evolve` to synchronize new or improved skills from a working project back to the Foundation repository.
+* **[Architecture & Engine Overview](docs/overview.md)** — Detailed multi-agent design, modular topologies, worktree lifecycles, and pragmatic testing strategy.
+* **[Canonical Skills Index](.agents/skills/README.md)** — Complete catalog of active Foundation skills, engineering guardrails, and optional catalog plugins.
+* **[Git Worktree Lifecycle](.agents/skills/workflow-orchestrator/references/worktree-lifecycle.md)** — Shell commands for worktree hydration, APK transfer, and consolidation.
 
 ---
 
@@ -236,4 +141,3 @@ The initializer guides the project setup:
 * **Foundation Methodology & Clean Architecture Guardrails:** Albert Martorell Garcia.
 * **Harness & Multi-Agent Spec/Validator Methodology:** Originally created by **Antonio Leiva / Nino Ruano** for the AI Expert course and unified into this Foundation with permission.
 * **External Expert Patterns:** Curated Kotlin and Compose skills by **Chris Banes** and others.
-* **Official Documentation:** Google Android and Firebase documentation.

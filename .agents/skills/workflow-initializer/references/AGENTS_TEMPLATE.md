@@ -15,7 +15,7 @@
 ## Read First
 
 1. `PROGRESS.md` — Current verified state and session history (when present).
-2. `feature_list.json` — Feature backlog, dependencies (`depends_on`), and status (`not_started`, `in_progress`, `passing`, `accepted`, `blocked`).
+2. `feature_list.json` — Feature backlog, dependencies (`depends_on`), human checkpoints (`require_review_after`), and status (`not_started`, `in_progress`, `passing`, `accepted`, `blocked`).
 3. `CONSTRAINTS.md` — Operational `MUST` / `MUST NOT` rules discovered during development.
 4. `CONTEXT.md` & `docs/build-brief.md` — Domain glossary and product scope (when present).
 5. `.agents/skills/README.md` — Active Foundation skills and technical guardrails.
@@ -25,6 +25,7 @@ Read additional documentation when relevant:
 * `DESIGN.md` — Visual tokens, core screens, and Android Resource Conversion Policy.
 * `docs/features/<feature-id>/spec.md` — Feature contract for the active feature.
 * `docs/features/<feature-id>/validator/validation-report.md` — Independent validation report and repair brief.
+* `docs/features/<feature-id>/validator/pr-review.md` — Post-PR human code review feedback and repair briefs (`Round #1..#N`).
 
 ---
 
@@ -34,11 +35,14 @@ This project uses the **Android AI Workflow Foundation Unified Multi-Agent Pipel
 
 ### Visual Identity Badges (Mandatory)
 Every agent and subagent MUST prefix its responses and `PROGRESS.md` entries with its assigned color badge:
-* 🟣 **`[ORCHESTRATOR · workflow-orchestrator]`** — Pipeline coordination, `feature_list.json`, `git worktree` management, and final `@git-governance` commits.
+* 🟣 **`[ORCHESTRATOR · workflow-orchestrator]`** — Pipeline coordination, `feature_list.json`, `git worktree` management, APK hydration, atomic `@git-governance` commits, and automatic PR publication + CI gate trigger.
 * 🔵 **`[PLANNER · workflow-planner]`** — Feature diagnosis and unified specification (`docs/features/<feature-id>/spec.md`).
 * 🟡 **`[IMPLEMENTER · workflow-implementer]`** — Clean Architecture code, tests, and `@compiler` verification in an isolated `git worktree`.
-* 🟢 **`[VALIDATOR · workflow-validator]`** *(or 🔴 on `revise` / `block`)* — Independent 4-level validation and `docs/features/<feature-id>/validator/validation-report.md` in an isolated `git worktree`. Bounded to `MAX_REPAIR_ATTEMPTS = 2` before triggering the Human Decision Gate (`needs_human_review`).
+* 🟢 **`[VALIDATOR · workflow-validator]`** *(or 🔴 on `revise` / `block`)* — Independent 4-level validation (Spec, Security, Compiler/Tests, Emulator Runtime) and `docs/features/<feature-id>/validator/validation-report.md` in an isolated `git worktree`. Bounded to `MAX_REPAIR_ATTEMPTS = 2` before triggering the Human Decision Gate (`needs_human_review`).
 * 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc and durable Markdown documentation in an isolated `git worktree`. Runs upon validator acceptance or human override.
+
+### Human-in-the-Loop Checkpoints (`require_review_after`)
+Every feature is different and can configure proactive human pause points at any stage (`"planner"`, `"implementer"`, `"validator"`, or array) in `feature_list.json` or via prompt. The **recommended high-leverage pattern** is supervising after `"planner"` (to approve `spec.md`) and conducting human Code Review on the resulting GitHub Pull Request.
 
 ### How to Run Work
 1. **Project / Backlog Mode**:
@@ -46,7 +50,7 @@ Every agent and subagent MUST prefix its responses and `PROGRESS.md` entries wit
    - Run `@workflow-orchestrator` to execute the next ready feature (or parallelize independent ready features) from `feature_list.json`.
 2. **Standalone Feature Mode (Ad-hoc)**:
    - Request a feature directly via `@workflow-orchestrator` (or `@workflow-planner`).
-   - The orchestrator automatically registers the feature in `feature_list.json` and `PROGRESS.md`, generates `docs/features/<feature-id>/spec.md`, and launches the subagents (`planner` -> `implementer` -> `validator` -> `documenter`) in isolated `git worktree` instances with role-tuned model tiers (`pro` for planner/validator, `flash` for implementer/documenter).
+   - The orchestrator registers the feature in `feature_list.json` and `PROGRESS.md`, generates `docs/features/<feature-id>/spec.md`, launches subagents (`planner` -> `implementer` -> `validator` -> `documenter`) in isolated `git worktree` instances with role-tuned model tiers, creates atomic layer commits, pushes `feature/<feature-id>`, opens the PR against `develop`, and triggers `.github/workflows/gate.yml`.
 3. **Post-PR Review & Feedback Loop (`review-fix`)**:
    - When the developer provides code review comments on an open PR, invoke `@workflow-orchestrator` with the feedback.
-   - The orchestrator rehydrates isolated worktrees on `feature/<feature-id>`, runs implementer, validator, and documenter, and pushes the updated delta cleanly to the existing PR without touching the root workspace.
+   - The orchestrator records `## PR Review Round #N` in `docs/features/<feature-id>/validator/pr-review.md`, rehydrates isolated worktrees on `feature/<feature-id>`, runs implementer, validator, and documenter, and pushes the updated delta cleanly to the existing PR without touching the root workspace.

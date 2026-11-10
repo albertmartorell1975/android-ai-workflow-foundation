@@ -77,7 +77,8 @@ Evaluates the **4 Deterministic Preconditions** (dependencies accepted, clean ba
   - The repair cycle between `workflow-implementer` and `workflow-validator` is strictly bounded to a maximum of 2 repair attempts.
   - If unresolved after 2 repairs, autonomous looping stops immediately, the worktree is preserved intact, status is set to `needs_human_review`, and the user is presented with 4 clear pathways (Manual Override, Human Hint, Re-plan `spec.md`, Cancel).
 - **Proactive Human Checkpoints (`require_review_after`)**:
-  - Optional Human-in-the-Loop checkpoints configured per feature in `feature_list.json` (`"require_review_after": "planner" | "implementer" | "validator" | ["planner", "validator"]`) or specified ad-hoc in the user prompt. Any unrecognized value is treated permissively as `null`.
+  - Optional Human-in-the-Loop checkpoints configured per feature in `feature_list.json` (`"require_review_after": "planner" | "implementer" | "validator" | ["planner", "validator"]`) or specified ad-hoc in the user prompt. Every feature is different; checkpoints can be placed at any pipeline stage according to risk and architectural impact. Unrecognized values are treated permissively as `null`.
+  - **Recommended Engineering Pattern**: For standard features, the highest-leverage balance is supervising after Planner (`"require_review_after": "planner"`) to validate the specification (`spec.md`), letting the core pipeline run autonomously, and performing code review on the resulting Pull Request via `review-fix`.
   - When a checkpointed stage completes, pause autonomous progression, display the stage summary with clickable artifact links, and present 4 structured review options:
     1. **`[Approve & Proceed]`**: Deliverables verified; continue to next pipeline stage.
     2. **`[Human Guidance / Hint]`**: User provides corrective feedback; stage re-runs or next stage receives guidance.
