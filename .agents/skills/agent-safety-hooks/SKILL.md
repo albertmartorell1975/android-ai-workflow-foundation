@@ -19,6 +19,7 @@ This skill manages provider-agnostic lifecycle hooks for Android projects follow
 
 1. **`block-rm-rf.js` (Destructive Command Guard)**: Prevents AI agents from executing destructive shell commands such as `rm -rf`, `git reset --hard`, `git clean -f`, autonomous `gh pr merge` (ensuring PR merges are strictly human), or force pushes.
 2. **`check-agents-size.js` (`AGENTS.md` Context Size Guard)**: Deterministically blocks `git commit` if `AGENTS.md` exceeds the instruction budget hard cap of 120 lines or 6 KB (6,144 bytes) to prevent "lost in the middle" and context rot degradation in AI agent context windows.
+3. **`check-test-budget.js` (Strict Test Budget Guard)**: Enforces the Anti-Overengineering Rule by blocking `git commit` if the staged changes introduce more than 6 new `@Test` annotations, forcing the AI to self-correct by deleting trivial "watermelon" tests (like 1:1 pass-throughs or data class properties) before passing the quality gate.
 
 ## Supported Providers & Canonical Hook Locations
 
@@ -26,9 +27,9 @@ Following each provider's official specification (such as [Claude Code Hook Loca
 
 | AI Provider | Hook Configuration File | Hook Script Locations | Event / Matcher |
 | :--- | :--- | :--- | :--- |
-| **Claude Code** | `.claude/settings.json` | `.claude/hooks/block-rm-rf.js`<br>`.claude/hooks/check-agents-size.js` | `PreToolUse` (`Bash\|PowerShell`) |
-| **Gemini / Antigravity (Default)** | `.agents/hooks.json` | `.agents/hooks/block-rm-rf.js`<br>`.agents/hooks/check-agents-size.js` | `PreToolUse` (`run_shell_command` / `run_command`) |
-| **Cursor** | `.cursor/hooks.json` | `.cursor/hooks/block-rm-rf.js`<br>`.cursor/hooks/check-agents-size.js` | `beforeShellExecution` |
+| **Claude Code** | `.claude/settings.json` | `.claude/hooks/block-rm-rf.js`<br>`.claude/hooks/check-agents-size.js`<br>`.claude/hooks/check-test-budget.js` | `PreToolUse` (`Bash\|PowerShell`) |
+| **Gemini / Antigravity (Default)** | `.agents/hooks.json` | `.agents/hooks/block-rm-rf.js`<br>`.agents/hooks/check-agents-size.js`<br>`.agents/hooks/check-test-budget.js` | `PreToolUse` (`run_shell_command` / `run_command`) |
+| **Cursor** | `.cursor/hooks.json` | `.cursor/hooks/block-rm-rf.js`<br>`.cursor/hooks/check-agents-size.js`<br>`.cursor/hooks/check-test-budget.js` | `beforeShellExecution` |
 
 > [!IMPORTANT]
 > **Why `.claude/settings.json` + `.claude/hooks/` instead of Skill Frontmatter?**
@@ -44,6 +45,7 @@ Because `npx skills add` only distributes directories inside `.agents/skills/`, 
 * **Destructive Command Hook Template (PowerShell)**: `.agents/skills/agent-safety-hooks/references/block-rm-rf.template.ps1`
 * **AGENTS.md Size Guard Hook Template (Node.js)**: `.agents/skills/agent-safety-hooks/references/check-agents-size.template.js`
 * **AGENTS.md Size Guard Hook Template (PowerShell)**: `.agents/skills/agent-safety-hooks/references/check-agents-size.template.ps1`
+* **Test Budget Hook Template (Node.js)**: `.agents/skills/agent-safety-hooks/references/check-test-budget.template.js`
 * **Claude Code Config Template**: `.agents/skills/agent-safety-hooks/references/claude_hooks.template.json`
 * **Gemini / Antigravity Config Template**: `.agents/skills/agent-safety-hooks/references/gemini_hooks.template.json`
 * **Cursor Config Template**: `.agents/skills/agent-safety-hooks/references/cursor_hooks.template.json`
@@ -56,9 +58,9 @@ When invoked during project initialization (e.g. delegated from `workflow-initia
 
 1. **Resolve Provider**: Check the selected AI Provider (`Gemini`, `Cursor`, or `Claude Code`). If omitted or ambiguous, prompt the user via `ask_user`.
 2. **Materialize Hook Scripts (Into Official Hook Directory)**:
-   - **Claude Code**: Copy `references/block-rm-rf.template.js` to `.claude/hooks/block-rm-rf.js` and `references/check-agents-size.template.js` to `.claude/hooks/check-agents-size.js`.
-   - **Gemini / Antigravity**: Copy `references/block-rm-rf.template.js` to `.agents/hooks/block-rm-rf.js` and `references/check-agents-size.template.js` to `.agents/hooks/check-agents-size.js`.
-   - **Cursor**: Copy `references/block-rm-rf.template.js` to `.cursor/hooks/block-rm-rf.js` and `references/check-agents-size.template.js` to `.cursor/hooks/check-agents-size.js`.
+   - **Claude Code**: Copy `references/block-rm-rf.template.js` to `.claude/hooks/block-rm-rf.js`, `references/check-agents-size.template.js` to `.claude/hooks/check-agents-size.js`, and `references/check-test-budget.template.js` to `.claude/hooks/check-test-budget.js`.
+   - **Gemini / Antigravity**: Copy `references/block-rm-rf.template.js` to `.agents/hooks/block-rm-rf.js`, `references/check-agents-size.template.js` to `.agents/hooks/check-agents-size.js`, and `references/check-test-budget.template.js` to `.agents/hooks/check-test-budget.js`.
+   - **Cursor**: Copy `references/block-rm-rf.template.js` to `.cursor/hooks/block-rm-rf.js`, `references/check-agents-size.template.js` to `.cursor/hooks/check-agents-size.js`, and `references/check-test-budget.template.js` to `.cursor/hooks/check-test-budget.js`.
 3. **Materialize Hook Configuration**:
    - **Claude Code (`.claude/settings.json`)**:
      Read `.claude/settings.json` if it already exists (for instance, created by `ai-context-exclusion` with `permissions.deny`). Safely merge the `hooks.PreToolUse` block from `references/claude_hooks.template.json` without overwriting `permissions` or other existing keys.
@@ -71,5 +73,5 @@ When invoked during project initialization (e.g. delegated from `workflow-initia
 
 ## Actionable Checklist for Safety Hooks
 - [ ] Identify the target AI provider (`Gemini`, `Cursor`, or `Claude Code`).
-- [ ] Materialize both `block-rm-rf.js` and `check-agents-size.js` into the provider's official hook folder (`.claude/hooks/`, `.agents/hooks/`, or `.cursor/hooks/`), never leaving the active runtime path pointing inside `.agents/skills/`.
+- [ ] Materialize `block-rm-rf.js`, `check-agents-size.js`, and `check-test-budget.js` into the provider's official hook folder (`.claude/hooks/`, `.agents/hooks/`, or `.cursor/hooks/`), never leaving the active runtime path pointing inside `.agents/skills/`.
 - [ ] Materialize or safely merge the hook configuration file (`.claude/settings.json`, `.agents/hooks.json`, or `.cursor/hooks.json`).
