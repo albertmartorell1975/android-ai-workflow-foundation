@@ -81,9 +81,9 @@ When multiple features execute concurrently in parallel worktrees branching from
 
 ---
 
-## 5. Post-Merge Base Synchronization & Local Branch Pruning
+## 5. Post-Merge Base Synchronization, PR Review Inspection & Local Branch Pruning
 
-Once a PR is merged into `develop` by the human reviewer on GitHub (or upon starting the next feature/wave):
+Once a PR is merged into `develop` by the human reviewer on GitHub (or upon starting the next feature/wave in `@workflow-orchestrator`):
 
 1. **Synchronize Base**:
    ```bash
@@ -98,3 +98,16 @@ Once a PR is merged into `develop` by the human reviewer on GitHub (or upon star
    git branch -D feature/<old-feature-id>
    ```
    This guarantees that the local repository stays 100% in sync with `origin/develop` and prevents stale branches from accumulating or causing divergent branching points.
+3. **Inspect Open PRs for Pending Review Comments (`review-fix` Auto-Detection & `depends_on` Gate)**:
+   Before selecting the next feature from `feature_list.json`, inspect all open PRs targeting `develop` (`BypassSandbox: true`):
+   ```bash
+   gh pr list --state open --base develop --json number,headRefName,reviewDecision,headRefOid
+   ```
+   For each open PR (`feature/<feature-id>`), fetch reviews, inline code comments, and general PR comments created after the latest commit on `feature/<feature-id>`:
+   ```bash
+   gh api repos/{owner}/{repo}/pulls/<pr-number>/reviews
+   gh api repos/{owner}/{repo}/pulls/<pr-number>/comments
+   gh api repos/{owner}/{repo}/issues/<pr-number>/comments
+   ```
+   - **Self-Authored PR Review Detection (`Comment -> Submit review`)**: Because `gh pr create` uses the developer's own GitHub account, GitHub greys out *Request changes* on self-authored PRs and the developer submits reviews using **`Comment`** (`state == "COMMENTED"`). Any review submission (`COMMENTED` or `CHANGES_REQUESTED`), inline diff comment (`pulls/<pr>/comments`), or general PR comment (`issues/<pr>/comments`) created after the latest commit timestamp on `feature/<feature-id>` sets `pending_pr_review = true`, extracts each comment (`path`, `line`, `diff_hunk`, `body`) into `docs/features/<feature-id>/validator/pr-review.md` (`## PR Review Round #N`), and triggers the `review-fix` loop.
+   - **Strict `depends_on` PR Gate**: Any downstream feature in `feature_list.json` that depends (directly or transitively via `depends_on`) on a feature with pending PR review comments or an unmerged open PR MUST be skipped/blocked until that PR is resolved and merged into `develop`. Independent features with no dependency on the open PR may proceed normally.
