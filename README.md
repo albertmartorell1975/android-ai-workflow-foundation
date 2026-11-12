@@ -121,7 +121,7 @@ The initializer auto-inspects your project's module topology (*Layer-Based* vs *
 | **Claude Code** | `.claude/agents/workflow-*.md` (`isolation: worktree`, `disallowedTools`) | `.claude/settings.json` + `.claude/hooks/*.js` (`PreToolUse`) | `.claude/settings.json` (`permissions.deny`) |
 | **Cursor** | `.cursor/agents/workflow-*.md` (`readonly: true` on validator) | `.cursor/hooks.json` + `.cursor/hooks/*.js` (`beforeShellExecution`) | `.cursorignore` (Gitignore style) |
 
-* **🛡 Automated Safety Hooks**: By default, installs `block-rm-rf.js` (blocks destructive commands like `rm -rf`, `git reset --hard`, `git clean -f`, force pushes, and autonomous `gh pr merge`) and `check-agents-size.js` (enforces the 10 KB `AGENTS.md` limit). Custom project hooks can also be created on demand via `@hook-creator`.
+* **🛡 Automated Safety Hooks**: By default, installs `block-rm-rf.js` (blocks destructive commands like `rm -rf`, `git reset --hard`, `git clean -f`, force pushes, and autonomous `gh pr merge`), `check-agents-size.js` (enforces the 10 KB `AGENTS.md` limit), and `check-test-budget.js` (enforces pragmatic testing thresholds). Custom project hooks can also be created on demand via `@hook-creator`.
 * **🔒 Context Exclusion & Provider Switching**: Protects `local.properties`, `.worktrees/`, `.gradle/`, and `build/` from entering the AI context, and translates exclusion rules automatically if you switch AI providers later.
 
 ### Step 3: Project Discovery & Harness (`@build-brief` & `@harness-starter`)
