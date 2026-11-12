@@ -96,6 +96,7 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
 
 ### 1. 🟣 Orchestrator (`workflow-orchestrator`)
 * Reads `feature_list.json` and `PROGRESS.md` (creating or appending the feature entry automatically in Standalone Mode).
+* **Shared Pre-flight PR Audit (Mode A & Mode B)**: Before any work, synchronizes `develop`, prunes merged branches, and inspects open PRs via `gh api` to detect pending review comments (prioritizing `review-fix`) and to enforce the **`depends_on` PR-clean & merged gate** (a feature never starts on top of a dependency whose PR is still under review or unmerged).
 * Coordinates worktrees, hydrates build properties (`local.properties`, `.env`, `keystore.properties`, `app/google-services.json`), transfers compiled APK artifacts to the Validator worktree, and pre-installs them on active emulators.
 * Manages bounded repair cycles (`MAX_REPAIR_ATTEMPTS = 2`) with an actionable Human Decision Gate (`needs_human_review`).
 * **Human-in-the-Loop Supervision**:
@@ -138,10 +139,11 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
 
 ### 7. 🔄 Post-PR Code Review & Feedback Loop (`review-fix` Multi-Round)
 When the developer conducts code review on an open Pull Request (across 1 or $N$ review rounds) and requests code quality, Clean Architecture, or SOLID improvements:
-1. Provide review comments to `@workflow-orchestrator`.
+1. The developer reviews the PR in the GitHub UI (inline diff comments + **`Comment` -> `Submit review`**; *Request changes* is disabled on self-authored PRs). On the next invocation (*"continue"*, *"review-fix"*, or a new feature request), `@workflow-orchestrator` automatically inspects open PRs via `gh pr list` and `gh api` (`pulls/{pr}/reviews`, `pulls/{pr}/comments`, `issues/{pr}/comments`) and extracts every review submission and comment newer than the latest commit on `feature/<feature-id>` (or accepts feedback directly from the prompt). No GitHub Action or background watcher is required.
 2. The orchestrator logs `## PR Review Round #N` (`PR Review Repair Brief`) in `docs/features/<feature-id>/validator/pr-review.md` on `feature/<feature-id>`.
-3. Rehydrates isolated worktrees starting from the latest tip of `feature/<feature-id>`, and runs `Implementer -> Validator (auditing round delta & full diff with hydrated APK + emulator pre-install) -> Documenter`.
+3. Rehydrates isolated worktrees starting from the latest tip of `feature/<feature-id>`, and runs `Implementer -> Validator (auditing round delta & full diff with hydrated APK + emulator pre-install) -> Documenter`. The Planner is never re-run during code review: comments must fit the existing `spec.md`, and any contract change is escalated to the developer as a new feature or explicit re-plan.
 4. Consolidates only the verified Round `#N` delta via atomic layer commits, pushes cleanly to `origin feature/<feature-id>` (`BypassSandbox: true`), and automatically updates the existing PR and `.github/workflows/gate.yml` CI check without touching the root workspace.
+5. **Transitive `depends_on` PR Gate**: Any subsequent feature in `feature_list.json` that depends (directly or transitively via `depends_on`) on a feature with pending PR review comments or an unmerged open PR is strictly blocked/skipped during queue selection; only independent features with clean, merged dependencies may run in the meantime.
 
 ---
 
