@@ -62,6 +62,7 @@ Bootstraps the project environment and adapts customizations to the selected AI 
 During project initialization, the Foundation installs provider-native lifecycle safety hooks (`.agents/hooks.json`, `.claude/settings.json`, or `.cursor/hooks.json`):
 * **`block-rm-rf.js` (Destructive Command Guard)**: Intercepts shell commands before execution and strictly blocks catastrophic patterns such as `rm -rf`, `rmdir /s /q`, `git clean -f`, `git reset --hard`, autonomous `gh pr merge` (ensuring PR merges are strictly human), and destructive force pushes.
 * **`check-agents-size.js` (`AGENTS.md` Size Guard)**: Blocks `git commit` if `AGENTS.md` exceeds 10 KB (10,240 bytes) to prevent context window degradation.
+* **`check-test-budget.js` (Strict Test Budget Guard)**: Enforces the Anti-Overengineering Rule by blocking commits if a module's tests exceed 15% of total source size.
 * **Custom Hooks (`@hook-creator`)**: Additional project-specific hooks can be authored on demand for any of the three providers.
 
 ### 2. `build-brief` & `harness-starter`
