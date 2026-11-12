@@ -11,23 +11,33 @@ This reference defines how `@workflow-orchestrator` detects GitHub code review f
 
 Run before any Mode A or Mode B work:
 
-1. **Sync base & prune merged branches**:
+1. **Sync base & prune merged or closed-unmerged branches**:
    - Working tree clean (`git status --porcelain -uno` empty).
    - `git fetch origin develop --prune`, then `git checkout develop && git pull --ff-only origin develop`.
-   - Delete local `feature/*` branches whose PR is `MERGED` (`git branch -D feature/<old-feature-id>`).
+   - Query closed PRs targeting `develop`:
+     ```bash
+     gh pr list --state closed --base develop --json number,headRefName,mergedAt
+     ```
+   - **Merged PRs (`mergedAt != null`)**: delete the local `feature/<id>` branch (`git branch -D feature/<id>`).
+   - **Closed without Merge (`mergedAt == null` — Cancelled Feature Rollback)**: if a `feature/<id>` branch still exists locally or on `origin` for a PR that was closed without merging, the implementation was rejected/cancelled. Return the repository to the exact pre-feature state:
+     1. Delete the local branch (`git branch -D feature/<id>`), delete the remote branch (`git push origin --delete feature/<id>`), and remove any residual `.worktrees/*-<id>` worktrees.
+     2. Keep `<id>` as `"status": "not_started"` in `feature_list.json` on `develop` (so it can be redone in the near or distant future without extra commits).
+     3. **Do not auto-restart `<id>` blindly**: ask the developer whether to skip `<id>` in this session and continue with the next independent feature in `feature_list.json`, or re-run `<id>` now with new instructions.
 2. **List open PRs**:
    ```bash
    gh pr list --state open --base develop --json number,headRefName,reviewDecision,headRefOid
    ```
-3. **Compare feedback against the latest branch commit** (`headRefOid` commit date) for each open PR:
+3. **Compare feedback against the latest branch commit** (`headRefOid` commit date) and thread resolution state for each open PR:
    ```bash
    gh api repos/{owner}/{repo}/pulls/<pr>/reviews     # state, body, submitted_at
    gh api repos/{owner}/{repo}/pulls/<pr>/comments    # path, line, diff_hunk, body, created_at
    gh api repos/{owner}/{repo}/issues/<pr>/comments   # body, created_at
+   # Check whether review threads were resolved in the GitHub UI (isResolved: true)
+   gh api graphql -f query='query($owner:String!,$name:String!,$pr:Int!){repository(owner:$owner,name:$name){pullRequest(number:$pr){reviewThreads(first:50){nodes{isResolved}}}}}' -F owner='{owner}' -F name='{repo}' -F pr=<pr>
    ```
 4. **Classify each open PR**:
-   - `pending_pr_review = true` — any review (`COMMENTED` or `CHANGES_REQUESTED`), inline diff comment, or PR conversation comment is newer than the latest commit.
-   - `awaiting_pr_merge = true` — open PR with no newer feedback.
+   - `pending_pr_review = true` — any unresolved review thread (`isResolved == false`), `COMMENTED` / `CHANGES_REQUESTED` review with unresolved comments, or PR conversation comment is newer than the latest commit. (If all review threads on the PR are marked `isResolved == true` in GitHub, treat as resolved: `pending_pr_review = false`).
+   - `awaiting_pr_merge = true` — open PR with no newer unresolved feedback.
 
 ### Self-Authored PR Rule
 `gh pr create` opens the PR under the developer's own account, so GitHub disables *Approve* and *Request changes*. The developer reviews with inline comments + **`Comment` -> `Submit review`** (`state == "COMMENTED"`). A `COMMENTED` review therefore counts as actionable feedback.

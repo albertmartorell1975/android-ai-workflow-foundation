@@ -35,7 +35,7 @@ Every agent MUST prefix responses, status updates, and `PROGRESS.md` entries wit
 
 ## 2. Entry Modes
 
-Both modes start with **Shared Step 0** — base sync, merged-branch pruning, and the open PR audit (`gh pr list` + `gh api`) that flags `pending_pr_review` / `awaiting_pr_merge`. See **[PR Review Loop](references/pr-review-loop.md)**.
+Both modes start with **Shared Step 0** — base sync, merged-branch pruning, **cancelled-PR rollback** (if a PR was `CLOSED` without merge, delete local and remote `feature/<id>` branches so the repo returns to the pre-feature `not_started` state and ask whether to defer `<id>` to a future run or retry with new guidance), and the open PR audit (`gh pr list` + `gh api`) that flags `pending_pr_review` / `awaiting_pr_merge`. See **[PR Review Loop](references/pr-review-loop.md)**.
 
 - **Mode A — Standalone**: The user requests a concrete feature. Derive a `kebab-case` `<feature-id>`, create or append its entry in `feature_list.json` / `PROGRESS.md` (never overwrite; set `depends_on` if it builds on existing features), ensure `docs/features/<feature-id>/{ui/screens,ui/resources,validator}/`, apply the `depends_on` PR gate, and run the pipeline. If the feature already has an open PR with pending feedback, run `review-fix`.
 - **Mode B — Backlog Queue**: Read `AGENTS.md`, `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json`. Select in priority order: (1) PRs with pending review -> `review-fix`; (2) `in_progress` / `passing` -> resume; (3) first `not_started` feature passing the `depends_on` PR gate. Parallel waves only for independent, fully satisfied features.

@@ -96,7 +96,7 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
 
 ### 1. 🟣 Orchestrator (`workflow-orchestrator`)
 * Reads `feature_list.json` and `PROGRESS.md` (creating or appending the feature entry automatically in Standalone Mode).
-* **Shared Pre-flight PR Audit (Mode A & Mode B)**: Before any work, synchronizes `develop`, prunes merged branches, and inspects open PRs via `gh api` to detect pending review comments (prioritizing `review-fix`) and to enforce the **`depends_on` PR-clean & merged gate** (a feature never starts on top of a dependency whose PR is still under review or unmerged).
+* **Shared Pre-flight PR Audit (Mode A & Mode B)**: Before any work, synchronizes `develop`, prunes merged branches, rolls back cancelled PRs (`CLOSED` without merge -> deletes local and remote `feature/<id>` branches so the repo returns to the exact pre-feature `not_started` state and asks whether to defer `<id>` to a future session or retry with new guidance), and inspects open PRs via `gh api` to detect unresolved review comments (prioritizing `review-fix`) and to enforce the **`depends_on` PR-clean & merged gate** (a feature never starts on top of a dependency whose PR is still under review or unmerged).
 * Coordinates worktrees, hydrates build properties (`local.properties`, `.env`, `keystore.properties`, `app/google-services.json`), transfers compiled APK artifacts to the Validator worktree, and pre-installs them on active emulators.
 * Manages bounded repair cycles (`MAX_REPAIR_ATTEMPTS = 2`) with an actionable Human Decision Gate (`needs_human_review`).
 * **Human-in-the-Loop Supervision**:
