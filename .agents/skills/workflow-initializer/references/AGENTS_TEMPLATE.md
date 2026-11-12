@@ -48,6 +48,6 @@ Every agent and subagent MUST prefix its responses and `PROGRESS.md` entries wit
 ### Human Checkpoints & Execution Modes
 * **Checkpoints (`require_review_after`)**: Configurable per feature (`"planner"`, `"implementer"`, `"validator"`, or array). Recommended high-leverage pattern: supervise after `"planner"` (`spec.md`) and via GitHub Pull Request review.
 * **Execution Modes**:
-  1. **Backlog Mode**: `@build-brief` -> `@harness-starter` -> `@workflow-orchestrator` (executes ready features from `feature_list.json`).
-  2. **Standalone Mode**: Pass an ad-hoc feature to `@workflow-orchestrator` -> registers, plans, implements, validates, documents in isolated worktrees, and opens the PR against `develop`.
-  3. **Post-PR Review (`review-fix`)**: Pass PR review feedback to `@workflow-orchestrator` -> logs `## PR Review Round #N` in `pr-review.md`, repairs, re-validates, and pushes the delta to the open PR.
+  1. **Backlog Mode**: `@build-brief` -> `@harness-starter` -> `@workflow-orchestrator` (auto-detects open PR reviews first, then executes ready features from `feature_list.json` whose `depends_on` are accepted, PR-clean, and merged into `develop`).
+  2. **Standalone Mode**: Pass an ad-hoc feature to `@workflow-orchestrator` -> runs the same pre-flight PR audit & `depends_on` PR-clean gate, registers, plans, implements, validates, documents in isolated worktrees, opens the PR, and supports the `review-fix` loop.
+  3. **Post-PR Review (`review-fix`)**: Automatically extracts GitHub PR review & inline code comments via `gh api` (or user prompt) into `pr-review.md` (`## PR Review Round #N`), repairs, re-validates, and pushes the delta to the open PR while blocking dependent features until resolved.
