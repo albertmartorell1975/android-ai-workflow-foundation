@@ -37,6 +37,20 @@ Record per eval: verdict `pass`/`fail` and the observed report lines that prove 
 - Expected: refused — without acceptance there is no publish. No push, no PR, no issue, worktree, branch, or file changes.
 - Pass criteria: verdict `refused` citing that status is not `accepted` (`"passing"` does not qualify); zero side effects.
 
+## Eval 5 — dependency with pending PR review is blocked, independent feature proceeds
+
+- Input: mode `plan`, backlog queue selection (no explicit `feature_ids`).
+- State: `cart-add` is `accepted` with an open PR whose latest review (`state == "COMMENTED"`) was submitted after the latest commit on `feature/cart-add`; `cart-manage` depends_on `["cart-add"]` (`not_started`); `profile-view` depends_on `[]` (`not_started`).
+- Expected: `cart-add` reported with `pending_pr_review = true` and planned `review-fix`; `cart-manage` blocked by the `depends_on` PR-clean gate; `profile-view` selected as the next ready feature. Zero side effects.
+- Pass criteria: the report names `cart-manage` as blocked citing `cart-add` pending PR review, plans `review-fix` for `cart-add`, and plans `profile-view`; no Planner stage is planned for the `review-fix` round.
+
+## Eval 6 — accepted but unmerged dependency is blocked
+
+- Input: mode `plan`, `feature_ids = ["cart-manage"]` (Standalone Mode).
+- State: `cart-add` is `accepted`, its PR is open with no comments newer than the latest commit (`awaiting_pr_merge = true`); `cart-manage` depends_on `["cart-add"]`.
+- Expected: blocked — dependency `cart-add` is not merged into `develop`. No branch, worktree, or session is planned for `cart-manage`.
+- Pass criteria: the report states `cart-add` is awaiting PR merge and `cart-manage` is blocked; zero side effects.
+
 ## Running
 
 Run each eval through `workflow-orchestrator` in `plan` mode against the live read-only state listed above. Never run these evals in `execute` or `publish` mode for real: Eval 4 checks the refusal verdict only.

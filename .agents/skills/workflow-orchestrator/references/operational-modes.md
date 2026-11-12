@@ -35,12 +35,12 @@ Pushes validated commits and opens a Pull Request:
 5. **Return Root Workspace to Base**: Immediately switches root workspace back to `<base_branch>` (`git checkout <base_branch>`).
 
 ### Mode: `review-fix` (revisar-corregir) — Post-PR Review Feedback Loop (Multi-Round)
-Processes developer review comments on an open Pull Request across 1 or $N$ review rounds without polluting the root workspace:
-1. **Target Feature & PR Check**: Verifies that `feature/<feature-id>` exists locally or on remote, and that an open PR exists targeting `base_branch` (`develop`).
-2. **Persist PR Review Brief**: Checks out `feature/<feature-id>`, appends `## PR Review Round #N` with the structured `PR Review Repair Brief` to `docs/features/<feature-id>/validator/pr-review.md`, sets `feature_list.json` status to `"in_progress"` (`repair_attempts = 0`), and commits the brief.
-3. **Worktree Rehydration**: Recreates `.worktrees/impl-<feature-id>` directly from the latest tip of `feature/<feature-id>` and hydrates local Android build properties.
-4. **Iterative Audit & Document**: Runs `workflow-implementer` -> `@compiler` -> `workflow-validator` (`attempts <= 2`, auditing both `git diff feature/<feature-id>...wt/val-<feature-id>` and `git diff develop...wt/val-<feature-id>`) -> `workflow-documenter`.
-5. **Delta Update & Push**: Consolidates the Round `#N` delta onto `feature/<feature-id>` via atomic layer commits, runs `git push origin feature/<feature-id>` (with `BypassSandbox: true`), updates `feature_list.json` to `"accepted"`, cleans worktrees, and returns the root workspace to `develop`. Merging remains 100% human-owned.
+Processes developer review comments on an open Pull Request across 1 or $N$ rounds without polluting the root workspace:
+1. **Target Check**: `feature/<feature-id>` exists and has an open PR targeting `base_branch` (`develop`).
+2. **Feedback Extraction**: Fetch reviews, inline diff comments, and PR conversation comments newer than the latest branch commit via `gh api` (self-authored `COMMENTED` reviews count).
+3. **Repair Round (No Planner)**: Persist `## PR Review Round #N` in `pr-review.md`, rehydrate the implementer worktree, run `Implementer -> Validator -> Documenter`, push the delta, and restore `accepted`. Contract changes to `spec.md` are escalated, never applied.
+
+Full procedure, `gh api` endpoints, and the self-authored PR rule: **[PR Review Loop](pr-review-loop.md)**.
 
 ---
 
@@ -48,7 +48,7 @@ Processes developer review comments on an open Pull Request across 1 or $N$ revi
 
 Checked before `execute` or `publish` is allowed to mutate anything (`plan` evaluates these read-only):
 
-1. **Dependencies Accepted**: Every id in `depends_on` has `status === "accepted"` in `feature_list.json`.
+1. **Dependencies Accepted, PR-Clean & Merged**: Every direct and transitive `depends_on` id is `accepted`, has no pending PR feedback (`pending_pr_review == false`), and its PR is merged into `base_branch`. Otherwise the dependent feature is blocked/skipped (see [PR Review Loop](pr-review-loop.md), Section 2).
 2. **Clean Base**: `git status --porcelain -uno` returns empty `""`, no merge or rebase in progress, and `base_branch` is fetched and fast-forwarded to match `origin/<base_branch>`.
 3. **Permissions**: `gh auth status` succeeds when targeting GitHub. Push permission is granted for `accepted` feature branches; merging is strictly prohibited.
 4. **Independent Hydrated Environments**: One worktree per feature, hydrated with `local.properties` (with `sdk.dir`), `.env`, and uncommitted properties.

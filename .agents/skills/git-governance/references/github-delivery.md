@@ -21,8 +21,8 @@ Before creating any GitHub artifact, the agent MUST run read-only lookups to pre
 - **Pull Request**:
   - Head: `feature/<feature-id>` targeting `base_branch` (`develop`).
   - Title: `[<feature-id>] <feature title>`
-  - Lookup: `gh pr list --state all --head "feature/<feature-id>" --base <base_branch>`
-  - Reuse if found; create only when `publish` mode is authorized and no open PR exists.
+  - Lookup: `gh pr list --state open --head "feature/<feature-id>" --base <base_branch>`
+  - Reuse if an open PR is found; create with `gh pr create` when `publish` mode is authorized and no open PR exists (never reuse a `CLOSED` unmerged PR).
 
 ---
 
@@ -81,9 +81,9 @@ When multiple features execute concurrently in parallel worktrees branching from
 
 ---
 
-## 5. Post-Merge Base Synchronization & Local Branch Pruning
+## 5. Post-Merge Base Synchronization, PR Review Inspection & Local Branch Pruning
 
-Once a PR is merged into `develop` by the human reviewer on GitHub (or upon starting the next feature/wave):
+Once a PR is merged into `develop` by the human reviewer on GitHub (or upon starting the next feature/wave in `@workflow-orchestrator`):
 
 1. **Synchronize Base**:
    ```bash
@@ -91,10 +91,20 @@ Once a PR is merged into `develop` by the human reviewer on GitHub (or upon star
    git checkout develop
    git pull --ff-only origin develop
    ```
-2. **Prune Merged Local Branches**:
-   Identify local feature branches whose PRs are already merged into `origin/develop`:
+2. **Prune Merged or Cancelled-PR Branches**:
+   Inspect closed PRs (`gh pr list --state closed --base develop --json number,headRefName,mergedAt`):
+   - **Merged PRs (`mergedAt != null`)**: remove merged local feature branches (`git branch -D feature/<old-feature-id>`).
+   - **Closed without Merge (`mergedAt == null` — Cancelled Feature Rollback)**: if a PR for `feature/<feature-id>` was closed without merging, delete both the local branch (`git branch -D feature/<feature-id>`) and the remote branch (`git push origin --delete feature/<feature-id>`), leaving `<feature-id>` in `status: "not_started"` on `develop` (exact pre-feature state) so it can be redone in a future session without branch collisions. Do not auto-restart it blindly in the same turn; ask the user whether to defer it and continue with an independent feature or retry with new instructions.
+3. **Inspect Open PRs for Pending Review Comments (`review-fix` Auto-Detection & `depends_on` Gate)**:
+   Before selecting the next feature from `feature_list.json`, inspect all open PRs targeting `develop` (`BypassSandbox: true`):
    ```bash
-   # Remove merged feature branches locally
-   git branch -D feature/<old-feature-id>
+   gh pr list --state open --base develop --json number,headRefName,reviewDecision,headRefOid
    ```
-   This guarantees that the local repository stays 100% in sync with `origin/develop` and prevents stale branches from accumulating or causing divergent branching points.
+   For each open PR (`feature/<feature-id>`), fetch reviews, inline code comments, general PR comments, and GraphQL thread resolution (`isResolved`) created after the latest commit on `feature/<feature-id>`:
+   ```bash
+   gh api repos/{owner}/{repo}/pulls/<pr-number>/reviews
+   gh api repos/{owner}/{repo}/pulls/<pr-number>/comments
+   gh api repos/{owner}/{repo}/issues/<pr-number>/comments
+   ```
+   - **Self-Authored PR Review Detection (`Comment -> Submit review`) & Resolved Thread Filtering**: Because `gh pr create` uses the developer's own GitHub account, GitHub greys out *Request changes* on self-authored PRs and the developer submits reviews using **`Comment`** (`state == "COMMENTED"`). Any unresolved review submission (`COMMENTED` or `CHANGES_REQUESTED`), unresolved inline diff comment (`isResolved == false`), or general PR comment created after the latest commit timestamp on `feature/<feature-id>` sets `pending_pr_review = true`, extracts each comment (`path`, `line`, `diff_hunk`, `body`) into `docs/features/<feature-id>/validator/pr-review.md` (`## PR Review Round #N`), and triggers the `review-fix` loop. If all review threads are marked resolved (`isResolved == true`), `pending_pr_review` is `false`.
+   - **Strict `depends_on` PR Gate**: Any downstream feature in `feature_list.json` that depends (directly or transitively via `depends_on`) on a feature with pending PR review comments or an unmerged open PR MUST be skipped/blocked until that PR is resolved and merged into `develop`. Independent features with no dependency on the open PR may proceed normally.

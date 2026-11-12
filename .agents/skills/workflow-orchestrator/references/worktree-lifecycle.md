@@ -151,7 +151,9 @@ Once `workflow-documenter` finishes:
 
 ## 6. Step F: Post-PR Review Worktree Lifecycle (`review-fix` Mode — Multi-Round)
 When the developer conducts code review on an open PR (across 1 or $N$ review rounds) and requests revisions:
-1. **Never edit application code in the root workspace**. Check out `feature/<feature-id>`, append `## PR Review Round #N` with the structured `PR Review Repair Brief` to `docs/features/<feature-id>/validator/pr-review.md`, set `feature_list.json` status to `"in_progress"` (`repair_attempts = 0`), and commit the brief to `feature/<feature-id>`.
+1. **Persist the Review Brief**:
+   - **Never edit application code in the root workspace**.
+   - Extract GitHub feedback per [PR Review Loop](pr-review-loop.md) (Shared Step 0 endpoints), check out `feature/<feature-id>`, append `## PR Review Round #N` to `docs/features/<feature-id>/validator/pr-review.md`, set `feature_list.json` status to `"in_progress"` (`repair_attempts = 0`), and commit the brief to `feature/<feature-id>`.
 2. **Re-spawn Implementer Worktree**:
    ```bash
    git fetch origin feature/<feature-id>
