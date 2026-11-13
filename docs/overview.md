@@ -56,7 +56,7 @@ Bootstraps the project environment and adapts customizations to the selected AI 
 * Performs Stack Auto-Inspection (Project Name, Module Topology) and executes a **Hard Stopping Gate** to prompt the developer for their target AI Provider and Optional Catalog Plugins before generating any project files. Standards (MVVM, Hilt, Room, Firebase) are active by default.
 * Materializes `AGENTS.md` and adds `.worktrees/` to `.gitignore`.
 * Configures provider-native **AI Context Exclusion** (`ai-context-exclusion`: `.aiexclude`, `.claude/settings.json` `permissions.deny`, or `.cursorignore`), automatically excluding `local.properties`, `.worktrees/`, `.gradle/`, and build outputs from the AI context.
-* Materializes provider-specific **Subagent Definitions** (`workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter` under `.agents/agents/`, `.claude/agents/`, or `.cursor/agents/`) using **`SUBAGENT_SKILLS.json`** and **Role-Tuned Model Selection** (`inherit`/`opus` for Planner and Validator; `flash`/`sonnet`/`haiku`/`fast` for Implementer and Documenter).
+* Materializes provider-specific **Subagent Definitions** (`workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter` under `.agents/agents/`, `.claude/agents/`, or `.cursor/agents/`) using **`SUBAGENT_SKILLS.json`** and **Role-Tuned Model Selection** (`inherit`/`opus` for Planner and Validator; `inherit`/`sonnet`/`fast` for Implementer; `flash`/`haiku`/`fast` for Documenter).
 
 #### 🛡 Automated AI Safety Hooks (`agent-safety-hooks` & `hook-creator`)
 During project initialization, the Foundation installs provider-native lifecycle safety hooks (`.agents/hooks.json`, `.claude/settings.json`, or `.cursor/hooks.json`):

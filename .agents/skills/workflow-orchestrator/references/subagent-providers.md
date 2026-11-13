@@ -24,7 +24,7 @@ Each subagent is configured with an optimal model tier matching its cognitive re
 | Subagent Role | Antigravity / Gemini | Claude Code | Cursor | Cognitive Profile |
 | :--- | :--- | :--- | :--- | :--- |
 | 🔵 **`workflow-planner`** | `inherit` | `opus` | `inherit` | Deep architectural reasoning & contract design |
-| 🟡 **`workflow-implementer`** | `flash` | `sonnet` | `fast` | High-speed deterministic code & test generation |
+| 🟡 **`workflow-implementer`** | `inherit` | `sonnet` | `fast` | High-speed deterministic code & test generation |
 | 🟢 **`workflow-validator`** | `inherit` | `opus` | `inherit` | Strict adversarial audit & security analysis |
 | 🔷 **`workflow-documenter`** | `flash` | `haiku` | `fast` | Fast KDoc & Markdown documentation synthesis |
 
@@ -36,8 +36,8 @@ Each subagent is configured with an optimal model tier matching its cognitive re
 In Antigravity, subagents are defined under `.agents/agents/` and invoked using the native `invoke_subagent` tool:
 * **`TypeName`**: Use `"self"` for ALL subagents (`workflow-planner`, `workflow-implementer`, `workflow-validator`, `workflow-documenter`). Subagents require shell execution (`run_command`) for `git diff`, Gradle (`./gradlew`), and `android-cli`. Read-only boundaries for Validator are enforced via prompt and worktree isolation.
 * **`Model`**:
-  - `"inherit"` for `workflow-planner` and `workflow-validator`.
-  - `"flash"` for `workflow-implementer` and `workflow-documenter`.
+  - `"inherit"` for `workflow-planner`, `workflow-implementer`, and `workflow-validator`.
+  - `"flash"` for `workflow-documenter`.
 * **`Role`**:
   - `"🔵 Planner (workflow-planner)"`
   - `"🟡 Implementer (workflow-implementer)"`
