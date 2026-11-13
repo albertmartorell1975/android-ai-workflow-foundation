@@ -14,9 +14,9 @@ Each subagent is assigned the optimal model tier for its cognitive profile acros
 
 | Subagent Role | Cognitive Profile | Antigravity / Gemini | Claude Code | Cursor |
 | :--- | :--- | :--- | :--- | :--- |
-| 🔵 **`workflow-planner`** | Deep architectural reasoning & specification design | `pro` | `opus` | `inherit` |
-| 🟡 **`workflow-implementer`** | High-speed deterministic code & test generation | `flash` | `sonnet` | `fast` |
-| 🟢 **`workflow-validator`** | Strict independent 4-level audit & security analysis | `pro` | `opus` | `inherit` |
+| 🔵 **`workflow-planner`** | Deep architectural reasoning & specification design | `inherit` | `opus` | `inherit` |
+| 🟡 **`workflow-implementer`** | High-speed deterministic code & test generation | `inherit` | `sonnet` | `fast` |
+| 🟢 **`workflow-validator`** | Strict independent 4-level audit & security analysis | `inherit` | `opus` | `inherit` |
 | 🔷 **`workflow-documenter`** | Fast KDoc & Markdown documentation synthesis | `flash` | `haiku` | `fast` |
 
 ---

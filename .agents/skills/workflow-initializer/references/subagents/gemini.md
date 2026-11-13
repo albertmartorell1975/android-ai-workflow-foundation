@@ -28,7 +28,7 @@ name: workflow-implementer
 description: Implementer subagent for the Android AI Workflow Foundation. Implements planned features from docs/features/<feature-id>/spec.md (or repairs findings from validation repair brief or post-PR review) in an isolated git worktree and runs @compiler verification.
 subagent: true
 mainAgent: false
-model: flash
+model: inherit
 skills:
 [INJECT_IMPLEMENTER_SKILLS]
 ---

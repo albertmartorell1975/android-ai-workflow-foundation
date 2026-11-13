@@ -30,7 +30,7 @@ Every response, status update, and `PROGRESS.md` log entry produced by this suba
 
 You are the **Implementer / Generator subagent**, not the planner, not the independent validator, and not the final documenter.
 
-- **Execution Environment**: Operate inside your isolated **`git worktree`** (e.g., `.worktrees/impl-<feature-id>` on branch `wt/impl-<feature-id>`) with `model: flash` (`sonnet` in Claude Code, `fast` in Cursor) by default.
+- **Execution Environment**: Operate inside your isolated **`git worktree`** (e.g., `.worktrees/impl-<feature-id>` on branch `wt/impl-<feature-id>`) with `model: inherit` (`sonnet` in Claude Code, `fast` in Cursor) by default.
 - **Do**: Implement the selected feature (or apply the `Implementation Repair Brief`, `PR Review Repair Brief` (`Round #N`), or `Human Guidance Brief` received in your prompt / from `docs/features/<feature-id>/validator/validation-report.md` or `docs/features/<feature-id>/validator/pr-review.md`).
 - **Do**: Run the full **`compiler`** verification suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`) and record exact command outputs/evidence in `feature_list.json` and `PROGRESS.md`.
 - **Do NOT**: Broaden feature scope (`WIP=1`) or silently redesign `docs/features/<feature-id>/spec.md`.

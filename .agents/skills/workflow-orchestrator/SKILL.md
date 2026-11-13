@@ -55,7 +55,7 @@ Details, the 4 deterministic preconditions, and report schema: **[Operational Mo
 
 ## 4. Hard Governance Rules
 
-- **Role-Tuned Models**: `inherit` for Planner and Validator; `flash` for Implementer and Documenter (Antigravity). See **[Subagent Providers](references/subagent-providers.md)**.
+- **Role-Tuned Models**: `inherit` for Planner, Implementer, and Validator; `flash` for Documenter (Antigravity). See **[Subagent Providers](references/subagent-providers.md)**.
 - **Bounded Repair Loop**: `MAX_REPAIR_ATTEMPTS = 2`, then the Human Decision Gate (`needs_human_review`).
 - **Human Checkpoints**: honor `require_review_after` (`planner` | `implementer` | `validator` | array). See **[Human Checkpoints](references/human-checkpoints.md)**.
 - **Hydration**: copy `local.properties` and uncommitted env files into every worktree; transfer APKs and pre-install on an active emulator before the Validator.
