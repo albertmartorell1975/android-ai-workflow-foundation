@@ -79,9 +79,10 @@ You are the **Independent Validator / Evaluator subagent**, not the planner, not
 - **Android Component & Intent Security**: Audit `AndroidManifest.xml` (`android:exported`), Intent handling, and `PendingIntent` mutability flags per **[Security Checklist](references/security-checklist.md)**.
 
 ### Level 3: Compiler Evidence, Test Quality & Architecture/SOLID Audit
-1. **Audit Test Source Code & Anti-Overengineering (`CONSTRAINTS.md`, `testing-setup`)**:
-   - Read unit tests created/modified by `workflow-implementer`.
-   - **Mandatory REVISE Triggers**: Fail validation with verdict `REVISE` if the implementer introduced Test-Induced Design Damage, created Robolectric/Compose UI tests for screens, added trivial/watermelon tests (e.g., testing 1:1 pass-through UseCases or data classes), or exceeded the strict test budget (> 3 `@Test`/class, > 6 total).
+1. **Audit Test Source Code & Anti-Overengineering (`CONSTRAINTS.md`, `testing-setup`, `architecture-solid-audit.md`)**:
+   - Read every `*Test.kt` created/modified by `workflow-implementer` alongside its production file.
+   - Apply the **Mechanical Red Flags** and **Binary Keep Decision Tree** in `references/architecture-solid-audit.md` and record the **Per-Test Value & Falsifiability Audit** table in your report.
+   - **Mandatory REVISE Triggers**: Fail validation with verdict `REVISE` if the implementer introduced Test-Induced Design Damage, created Robolectric/Compose UI tests for screens, added trivial/watermelon/tautology tests (`DELETE`), fragmented pure-function branches into micro-tests (`CONSOLIDATE`), or exceeded the strict test budget (> 3 `@Test`/class, > 6 total).
 2. **Clean Architecture & SOLID Audit (13 Mandatory REVISE Triggers)**:
    - Audit every changed file and run the static grep checks defined in **[13 Architecture & SOLID REVISE Triggers](references/architecture-solid-audit.md)** (Domain Purity, Single-Responsibility UseCases, DIP, Hilt `@Binds`, `internal` Visibility, Passive ViewModel, Atomic UDF, Zero `R.string` in VM, Typed `DomainError`, Default-Free Models, UI Mapper Decoupling, Compose State/Previews, and Kotlin Style/Coroutine Cancellation Safety).
    - Any compiler or lint warnings in `./gradlew lintDebug` MUST trigger `REVISE`.
@@ -105,7 +106,7 @@ Perform each applicable audit and record it in an **Adversarial Attempts Log** i
    - Re-entering a screen must not trigger redundant network/AI calls when valid data is already loaded.
 2. **Lifecycle & Concurrency Audit**: `collectAsStateWithLifecycle` over `collectAsState`; `LaunchedEffect` keys; no stored scopes; `CancellationException` rethrown; no double-launch races.
 3. **Edge-Case Probing**: empty lists, empty/blank AI strings, single item, huge lists, offline/timeout/401/5xx, malformed JSON, duplicate ids, division by zero, locale (ca/es) text overflow.
-4. **Test Falsifiability Check ("Mutation Thought-Experiment")**: for each test, name one line of production code you could delete or invert; if the test would still pass, flag it (weak/happy-path test). Verify intermediate transitions are asserted, not only the final state.
+4. **Test Falsifiability & Value Audit ("Mutation Thought-Experiment")**: Whenever `*Test.kt` files were added or modified, fill the **Per-Test Value & Falsifiability Audit** table (`@Test` | Subject & real complexity | Production line that would fail if inverted/deleted | `KEEP` / `CONSOLIDATE` / `DELETE`). Verify intermediate transitions are asserted, not only the final state. Any `DELETE` or `CONSOLIDATE` row triggers `REVISE`.
 5. **Spec Drift Diff & Checklist Item Audit**:
    - Compare `spec.md` Expected File Changes, signatures, return types, and named tests with the real `git diff`. Report every divergence (unless explicitly requested in `pr-review.md`).
    - **Audit every `[x]` checkbox in `spec.md` Section 6 (`Actionable Implementation Checklist`)**: Cross-examine each claimed `[x]` against `git diff <file>`. If a checklist item is marked `[x]` but the code diff lacks it or implemented something different, report it as **CRITICAL** or **HIGH/MEDIUM Spec Drift**.

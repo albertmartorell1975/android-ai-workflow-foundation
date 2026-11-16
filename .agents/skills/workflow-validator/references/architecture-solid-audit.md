@@ -43,3 +43,25 @@ git grep -n "class .*Impl" -- "*data/*" | grep -v "internal "
 # 5. Check for default parameters in data/domain/UI models (excluding *UiState.kt):
 git grep -n "= null\|= \"\"\|= 0" -- "*Model.kt" "*Entity.kt" "*Dto.kt"
 ```
+
+---
+
+## Pragmatic Testing & Triviality Audit (Mandatory `REVISE` Triggers)
+
+Whenever `*Test.kt` files are added or modified, apply these two filters before evaluating `accept`:
+
+### 1. Mechanical Red Flags (Automatic `REVISE` -> `DELETE`)
+- **Unplanned test file**: A `*Test.kt` file created outside `docs/features/<feature-id>/spec.md` (unless requested in a Repair/PR-review brief) with no high-value logic.
+- **1:1 Pass-Through UseCase**: Target `*UseCase.kt` has zero branches (`if`, `when`, `?:`, `try/catch`, collection ops, or multi-repo orchestration) -> any `*UseCaseTest` MUST be deleted.
+- **Model / Constant / 1:1 Mapper**: Subject under test is a `data class` without custom methods, `*PreviewData`, or a mapper copying fields 1:1 with zero fallback/computation.
+- **Mirror / Tautology Test**: Test stubs a `Fake*` with value `X` and asserts `X` back without any transformation, calculation, or state-machine transition (`Loading -> Error -> Retry`).
+- **Cross-Layer Duplicate**: Same business rule or calculation already tested in `:domain` or `:data` and re-tested in `:usecases` or `*ViewModelTest`.
+
+### 2. Binary Keep Decision Tree (Every `@Test` Must Satisfy >= 1)
+A `@Test` is `KEEP` **only** if it exercises at least one of:
+1. **Branch or boundary**: `if` / `when` / `?:`, division by zero, empty list, HTTP/DB error path.
+2. **Non-trivial transformation / math**: formula, JSON/text parsing, `Throwable -> DomainError` mapping, `*UiMapper` formatting/grouping.
+3. **Orchestration / fallback**: >1 data source, cache-then-network, retry policy.
+4. **ViewModel state-machine transitions**: `Loading -> Error -> Retry -> Loading -> Success`, asserting intermediate transitions (not only final state).
+
+If **none** of the 4 apply -> **`DELETE` (`REVISE`)**. If multiple `@Test`s test different inputs to the same pure function -> **`CONSOLIDATE` (`REVISE`)** into 1–2 cohesive `@Test`s.

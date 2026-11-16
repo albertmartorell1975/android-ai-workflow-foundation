@@ -11,7 +11,7 @@ Use this rubric during independent validation and return the structured evaluati
 | **Level 1: Spec & Correctness** | Does the implementation match `docs/features/<feature-id>/spec.md`? | All `Given/When/Then` scenarios and UI states (`Loading`, `Error`, `Empty`, `Success`) are implemented with real logic. | Behavior missing, stubbed with `TODO`/hardcoded fakes, or materially different from the spec. |
 | **Level 2: Scope & Assets** | Did implementation stay inside `<feature-id>` (`WIP=1`) and follow asset rules? | Only relevant files changed; `ui/resources/` PNG/JPEGs converted to `.webp`; `ui/screens/` mockups untouched. | Adjacent features implemented opportunistically, or screen mockups converted to drawables. |
 | **Level 2: Security** | Does the diff avoid Android and API security regressions? | Exported components guarded (`android-intent-security`), no hardcoded secrets, boundary inputs validated. | Unprotected exported components, Intent redirection risk, secrets committed, private data logged. |
-| **Level 3: Tests & Compiler Evidence** | Are pure JVM unit tests meaningful, and did `@compiler` pass? | Exact `@compiler` (`assembleDebug`, `lintDebug`, `testDebugUnitTest`) evidence recorded; pure JVM unit tests assert real behavior within the Strict Test Budget. | Missing compiler evidence, failing checks hidden, or empty/trivial test assertions. |
+| **Level 3: Tests & Compiler Evidence** | Are pure JVM unit tests meaningful, and did `@compiler` pass? | Exact `@compiler` (`assembleDebug`, `lintDebug`, `testDebugUnitTest`) evidence recorded; pure JVM unit tests pass the Per-Test Value & Falsifiability Audit within the `0–6` Strict Test Budget. | Missing compiler evidence, failing checks hidden, or any trivial/non-falsifiable/redundant test (`DELETE` or `CONSOLIDATE`). |
 | **Level 4: Runtime / User-Flow** | Was runtime behavior verified when an emulator/device is active? | Acceptance Scenarios executed via `@android-cli` journeys on active device, or recorded as `SKIPPED (headless)` and verified via pure JVM tests + `@Preview`s. | Crash on launch or broken navigation flow on active emulator. |
 | **Handoff Readiness** | Is the worktree state clean for `workflow-documenter`? | `feature_list.json` (`passing`) and `PROGRESS.md` match reality; no temporary build junk tracked. | State files contradict the diff or omit blockers. |
 
@@ -79,6 +79,16 @@ Always format your validation response using this exact structure so **`workflow
 ## 3. Security Assessment Summary
 * **Status**: `No issues found` | `Notes recorded` | `Blocking security findings`
 * **Details**: <Concise summary of `android-intent-security`, secrets, boundary validation, and privacy review>
+
+---
+
+## 3.1 Per-Test Value & Falsifiability Audit *(Required when `*Test.kt` added/modified)*
+
+| `@Test` | Subject & Real Complexity | Production Line That Breaks If Inverted | Verdict (`KEEP` / `CONSOLIDATE` / `DELETE`) |
+| :--- | :--- | :--- | :--- |
+| `<ClassTest.method>` | `<Branch / Math / Error Mapping / State Machine>` | `<File.kt#L..>` | `KEEP` / `CONSOLIDATE` / `DELETE` |
+
+*(If no `*Test.kt` files were added/modified, write: "N/A — 0 unit tests added/modified (verified boilerplate-only / UI-only slice).")*
 
 ---
 
