@@ -48,7 +48,7 @@ To prevent "Watermelon tests" (green on the outside, empty on the inside), test 
 
 ### 3.2 Strict Test Budget (Hard Caps)
 - **Per Test Class Cap**: Write **1 to 3 cohesive `@Test` methods maximum per test class**. Group related branch assertions of a single pure function into 1–2 cohesive `@Test` methods rather than splitting them into 8 micro-tests.
-- **Per Feature Slice Cap**: Introduce **at most 2 to 6 `@Test` methods in total across all layers** for a standard feature slice.
+- **Per Feature Slice Cap**: Introduce **0 to 6 `@Test` methods in total across all layers** for a standard feature slice (write 0 tests when a layer or feature has no branching, calculation, error mapping, or state transitions).
 
 ### 3.3 Single-Layer Assertion Rule (Zero Cross-Layer Redundancy)
 - Test each business rule, calculation, or edge case **ONCE at the lowest layer that owns the logic**, and NEVER re-test it at higher layers:

@@ -50,7 +50,7 @@ Explicitly specify which durable documents **`workflow-documenter`** will need t
 
 ### 2.7 Granular Actionable Clean Architecture Checklist (For `workflow-implementer`)
 Create an ordered step-by-step checklist following the project's Clean Architecture layers (adapting module names to either `Layer-Based` or `Feature-First` topology per `module-architecture-governance`):
-`Database / Models → Domain (:domain or :<feature>:domain) → Data (:data or :<feature>:data) → UseCase (:usecases or :<feature>:usecases) → UI / Presentation (:app or :<feature>:presentation + :app wiring) → UI Design Assets → Pragmatic High-Value Testing (Max 2-6 tests total) → Compiler Self-Verification`
+`Database / Models → Domain (:domain or :<feature>:domain) → Data (:data or :<feature>:data) → UseCase (:usecases or :<feature>:usecases) → UI / Presentation (:app or :<feature>:presentation + :app wiring) → UI Design Assets → Pragmatic High-Value Testing (0-6 tests total) → Compiler Self-Verification`
 
 ---
 
@@ -157,7 +157,9 @@ so I can [expected outcome].
   - UI Mapper: `internal class *UiMapper` converting Domain to `*UiModel` (default-free) without concatenating language units (`" pts"`, `"%"`).
   - Stateless Compose Screen + `@Preview` (`@BcThemePreview`) for every view state.
 - [ ] **UI Design Assets & Folders:** Convert raw graphic assets in `docs/features/<feature-id>/ui/resources/` (PNG/JPEG) to `.webp` in the target UI module (`app/src/main/res/drawable/ic_<name>.webp` or `<feature>/presentation/src/main/res/drawable/ic_<name>.webp`; mockups in `ui/screens/` excluded).
-- [ ] **Testing & Integration (Pragmatic High-Value Testing & Budget Rule):** [Max 1-3 `@Test` per class and 2-6 `@Test` total across the feature. Pure JVM only: strictly target high-value logic (math calculations, error mapping, multi-source orchestration fallbacks, ViewModel/UiMapper tests) with Manual Fakes. No Compose/Robolectric screen tests; full flows are validated by `@android-cli` from the Acceptance Scenarios. Zero cross-layer duplication and zero trivial tests (no data class constructors, 1:1 pass-through UseCases, static preview data, or trivial mappers)].
+- [ ] **Testing & Integration (Pragmatic High-Value Testing & Closed Test Plan):**
+  - *Budget*: Max 1-3 `@Test` per class and **0-6 `@Test` total** across the feature (pure JVM only with Manual Fakes; no Compose/Robolectric screen tests; zero cross-layer duplication; zero trivial tests).
+  - *Planned `*Test.kt` files*: [List exact `<ClassName>Test.kt` -> `@Test` method names and the production branch/calculation/state transition each covers, or state `0 tests` for layers with no branching/transformation logic].
 - [ ] **Compiler Self-Verification (MANDATORY):** Execute the `compiler` skill verification suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`) and record evidence in `PROGRESS.md` and `feature_list.json` (`status: "passing"`).
 
 ## 7. Validator Checklist (For `workflow-validator`)
@@ -165,6 +167,6 @@ so I can [expected outcome].
 - [ ] Implementation stays strictly within `<feature-id>` scope (`WIP=1`) and `CONSTRAINTS.md`.
 - [ ] All Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior (no fake/hardcoded stubs).
 - [ ] Clean Architecture & SOLID invariants (`architecture-solid-audit.md`) and security rules (`android-intent-security`) are respected across all layers.
-- [ ] `@compiler` verification evidence is present and valid; pure JVM unit tests (`testing-setup`) verify real behavior within the strict Test Budget (1-3 tests/class, 2-6 tests/feature, zero cross-layer duplication, zero trivial/watermelon tests).
+- [ ] `@compiler` verification evidence is present and valid; pure JVM unit tests (`testing-setup`) verify real behavior within the strict Test Budget (1-3 tests/class, 0-6 tests/feature, zero cross-layer duplication, zero trivial/watermelon tests).
 - [ ] Structured validation report written to `docs/features/<feature-id>/validator/validation-report.md`.
 ```

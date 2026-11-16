@@ -78,7 +78,6 @@ Bootstraps the project environment and adapts customizations to the selected AI 
 During project initialization, the Foundation installs provider-native lifecycle safety hooks (`.agents/hooks.json`, `.claude/settings.json`, or `.cursor/hooks.json`):
 * **`block-rm-rf.js` (Destructive Command Guard)**: Intercepts shell commands before execution and strictly blocks catastrophic patterns such as `rm -rf`, `rmdir /s /q`, `git clean -f`, `git reset --hard`, autonomous `gh pr merge` (ensuring PR merges are strictly human), and destructive force pushes.
 * **`check-agents-size.js` (`AGENTS.md` Size Guard)**: Blocks `git commit` if `AGENTS.md` exceeds 120 lines or 6 KB to prevent context window degradation.
-* **`check-test-budget.js` (Strict Test Budget Guard)**: Enforces the Anti-Overengineering Rule by blocking `git commit` if staged changes introduce more than 6 new `@Test` annotations.
 * **Custom Hooks (`@hook-creator`)**: Additional project-specific hooks can be authored on demand for any of the three providers.
 
 ### 2. `build-brief` & `harness-starter`
@@ -183,7 +182,7 @@ The Foundation enforces a **pragmatic, high-value testing strategy** (`@testing-
 ### Core Testing Invariants
 1. **Pure JVM Presentation Testing**: Presentation tests are strictly limited to ViewModels and complex UI mappers. No functional Robolectric tests of screens or navigation are permitted.
 2. **Manual Fakes First**: Hand-crafted in-memory fakes are used for all domain interfaces.
-3. **Strict Test Budget**: 1 to 3 cohesive `@Test` methods per class, 2 to 6 tests total per feature slice.
+3. **Strict Test Budget**: 1 to 3 cohesive `@Test` methods per class, 0 to 6 tests total per feature slice (0 tests on boilerplate/pass-through layers).
 4. **Single-Layer Assertion Rule**: Every business rule is tested once at the lowest owning layer.
 5. **Zero Trivial Tests Mandate**: Strictly forbids tests for `data class` constructors, getters/setters, static preview data, or 1:1 pass-through UseCases.
 6. **Zero Test-Induced Design Damage**: Production Composables never accept test-only lambdas or test tags solely for automated harnesses.

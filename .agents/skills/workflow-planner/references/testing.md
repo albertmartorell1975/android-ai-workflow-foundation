@@ -6,7 +6,7 @@ The goal of testing is to ensure the reliability of complex logic, critical calc
 
 To prevent test inflation and keep the test suite fast and maintainable:
 - **Per Test Class Cap**: Write **1 to 3 cohesive `@Test` methods maximum per test class**. Group related branch assertions of a single pure function into 1–2 cohesive `@Test` methods covering happy path + corner/error cases instead of fragmenting them into 8 separate 2-line `@Test` methods.
-- **Per Feature Slice Cap**: A feature specification (`spec.md`) and implementation MUST introduce **at most 2 to 6 `@Test` methods in total across all layers**, unless a complex algorithmic requirement explicitly justifies more.
+- **Per Feature Slice Cap**: A feature specification (`spec.md`) and implementation MUST introduce **0 to 6 `@Test` methods in total across all layers**, unless a complex algorithmic requirement explicitly justifies more. Do NOT invent filler tests to hit a minimum; write 0 tests for layers without branching, calculations, error mapping, or state transitions.
 
 ## 2. Single-Layer Assertion Rule (Zero Cross-Layer Redundancy)
 
@@ -29,7 +29,7 @@ Strictly FORBID planning or writing tests for:
 
 ## 4. High-Value Testing Targets
 
-Focus the 2–6 tests per feature strictly on components with high regression risk:
+Focus the 0–6 tests per feature strictly on components with high regression risk:
 
 1. **Domain Logic & Math Calculations**:
    - Conditional logic, loops, differentials, ratios, rankings, and mathematical calculations.

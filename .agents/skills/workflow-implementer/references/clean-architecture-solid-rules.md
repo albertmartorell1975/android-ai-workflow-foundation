@@ -66,3 +66,10 @@ These non-negotiable rules govern all code written by `workflow-implementer`. Al
 * **Coroutine Cancellation Safety**: Never catch broad `Exception` or `Throwable` in `suspend` functions without immediately rethrowing `CancellationException` (`if (e is CancellationException) throw e`).
 * **No Domain/Mapper Extensions on Primitives or `String`**: Do not pollute global completion with `fun String.toX()` or `fun Int.toY()`; scope conversions to the specific DTO/Entity/Domain class or dedicated Mapper.
 * **Class Layout Order**: Keep class members ordered strictly as: Properties -> `init` blocks -> Public functions -> Private functions -> `companion object` at the very bottom.
+
+---
+
+## 10. Pragmatic Testing & Zero Trivial Tests (`testing-setup`)
+* **Closed Test Plan**: Implement ONLY the `*Test.kt` files and `@Test` methods specified in `docs/features/<feature-id>/spec.md` (or requested in `validation-report.md` / `pr-review.md`). Never invent extra `*Test.kt` files just to increase coverage.
+* **Zero Tests by Default on Boilerplate**: If a class or layer has no conditional branching (`if`/`when`/`?:`), mathematical/parsing logic, `Throwable -> DomainError` mapping, multi-source orchestration, or ViewModel state-machine transitions, write **0 tests** for it (no tests for `data class`es, 1:1 pass-through UseCases, 1:1 mappers, `*PreviewData`, or simple collection wrappers).
+* **Strict Budget**: Max **1 to 3 cohesive `@Test` methods per test class** and **0 to 6 `@Test` total** per feature slice. Group related branch assertions of a pure function into 1–2 cohesive `@Test` methods.

@@ -76,7 +76,7 @@ When planning a feature (either invoked by **`workflow-orchestrator`** or direct
   - Define `Goal`, `Non-Goals`, and `Given / When / Then` **Acceptance Scenarios**.
   - Architect the **Android Layer Breakdown** (`UI/UX`, `API Design`, `Persistence`, `Durable Documentation Impact`) and the **Actionable Clean Architecture Checklist** (`Database/Models -> Domain -> Data -> UseCase -> UI -> Pragmatic High-Value Testing`).
   - **Pragmatic High-Value Testing & Strict Test Budget**: Consult `references/testing.md` and enforce:
-    1. **Strict Test Budget**: Plan **at most 1 to 3 cohesive `@Test` methods per test class**, and **2 to 6 `@Test` methods in total across the entire feature slice**.
+    1. **Strict Test Budget**: Plan **at most 1 to 3 cohesive `@Test` methods per test class**, and **0 to 6 `@Test` methods in total across the entire feature slice** (explicitly list which `*Test.kt` files and `@Test` methods are needed, and state `0 tests` for boilerplate/pass-through layers).
     2. **Single-Layer Assertion Rule**: Each rule or edge case MUST be tested at the lowest layer that owns it and never duplicated across higher layers.
     3. **Zero Trivial Tests**: Never plan tests for pure `data class` models, 1:1 pass-through UseCases, static preview data, 1:1 mappers, or simple collection wrappers.
     4. **Zero Robolectric UI Tests**: Never plan `*ScreenTest` or `NavigationTest` using Robolectric. Tests in `:app` must be pure JVM unit tests (`*ViewModelTest`, `*UiMapperTest`).
