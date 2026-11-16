@@ -122,7 +122,7 @@ Once the Validator returns `ACCEPT`, create an isolated worktree on temporary br
 ```bash
 git worktree add -B wt/doc-<feature-id> .worktrees/doc-<feature-id> wt/impl-<feature-id>
 ```
-* Inside `.worktrees/doc-<feature-id>`, the Documenter adds English KDoc, updates durable Markdown docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`, `spec.md`), updates `PROGRESS.md`, and commits to `wt/doc-<feature-id>`.
+* Inside `.worktrees/doc-<feature-id>`, the Documenter adds English KDoc comments to public project classes (`.kt` files only, never modifying Markdown/JSON files) and commits to `wt/doc-<feature-id>`.
 
 ---
 
@@ -143,7 +143,7 @@ Once `workflow-documenter` finishes:
    Remove-Item -Path ".worktrees/impl-<feature-id>", ".worktrees/val-<feature-id>", ".worktrees/doc-<feature-id>" -Recurse -Force -ErrorAction SilentlyContinue
    if ((Test-Path ".worktrees") -and ((Get-ChildItem ".worktrees" -Force | Measure-Object).Count -eq 0)) { Remove-Item ".worktrees" -Force }
    ```
-2. Bring changes onto `feature/<feature-id>` (`git merge --squash wt/doc-<feature-id>` + `git reset` for atomic layer commits via `git-governance`).
+2. Bring changes onto `feature/<feature-id>` (`git merge --squash wt/doc-<feature-id>` + `git reset`), update `spec.md` (`[x]` + `accepted`), `PROGRESS.md`, `feature_list.json` (`accepted`), and durable Markdown docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md` if required by `spec.md`), and create atomic layer commits via `git-governance`.
 3. If build files were modified, run `./gradlew prepareKotlinBuildScriptModel --build-cache`.
 4. Delete temporary branches: `git branch -D wt/impl-<feature-id> wt/val-<feature-id> wt/doc-<feature-id>`.
 
@@ -163,7 +163,7 @@ When the developer conducts code review on an open PR (across 1 or $N$ review ro
 3. **Subagent Execution Chain**:
    - 🟡 **Implementer**: Applies fixes from `pr-review.md` (`PR Review Round #N`), verifies `@compiler`, and commits to `wt/impl-<feature-id>`.
    - 🟢 **Validator**: Evaluates changes in `.worktrees/val-<feature-id>` branched from `wt/impl-<feature-id>` (with environment and compiled APK hydration + emulator pre-install per Step C), auditing both the Round `#N` delta and cumulative feature state. Bounded repair loop applies (`MAX_REPAIR_ATTEMPTS = 2`).
-   - 🔷 **Documenter**: Enriches KDoc and synchronizes `spec.md` / `ARCHITECTURE.md` in `.worktrees/doc-<feature-id>`.
+   - 🔷 **Documenter**: Enriches English KDoc on modified/extracted `.kt` classes in `.worktrees/doc-<feature-id>` (Orchestrator synchronizes `spec.md` / `ARCHITECTURE.md` during Step 4 Consolidation).
 4. **Incremental Consolidation & PR Update**:
    - Merge `wt/doc-<feature-id>` into `feature/<feature-id>` applying **only the Round `#N` delta** via atomic layer commits (`refactor(domain)`, `refactor(data)`, `fix(ui)`, `docs`).
    - Push delta to remote: `git push origin feature/<feature-id>` (outside sandbox, `BypassSandbox: true`).

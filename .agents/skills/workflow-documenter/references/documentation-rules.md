@@ -1,4 +1,4 @@
-# Documentation & KDoc Rules (`workflow-documenter`)
+# KDoc Rules (`workflow-documenter`)
 
 ## 1. KDoc Standards (`kotlin-style`)
 
@@ -21,26 +21,12 @@ All KDoc comments MUST be written in **English** and follow Official Kotlin Codi
    */
   ```
 
-### Zero Code-Mutation Guardrail
-When adding KDoc to `.kt` files:
-- Use `replace_file_content` carefully around class/function headers only.
-- **Never** modify imports, package declarations, annotations (`@HiltViewModel`, `@Composable`, `@Inject`), parameter defaults, or function bodies.
-- Preserve all existing comments and KDoc that are still accurate.
-
 ---
 
-## 2. Durable Documentation Rules (Anti-Bloat)
+## 2. Zero Code & Zero Markdown Mutation Guardrails
 
-Code changes and durable knowledge changes travel together, but documentation must stay lean so future agents do not suffer from context rot:
-
-- **`ARCHITECTURE.md`**:
-  - Create or update only when domains, modules, layers, dependency directions, or core adapters/providers are established or changed.
-  - Capture durable boundaries and data flow diagrams (`mermaid`), **not** a list of every file in the repository.
-- **`CONSTRAINTS.md`**:
-  - Record only operational `MUST` and `MUST NOT` rules that future features and agents must obey, with a one-line rationale.
-  - Do not restate general rules already covered in `AGENTS.md` or `.agents/skills/`.
-- **`AGENTS.md`**:
-  - Update only if the repo-wide startup path, verification command, or global operating rules changed. Keep it short and routing-oriented.
-- **`docs/features/<feature-id>/spec.md`**:
-  - Check off `[x]` completed tasks in the `Actionable Implementation Checklist` and `Validator Checklist`.
-  - If necessary implementation findings changed a detail of the spec (and were approved by `workflow-validator`), ensure the spec reflects the final accepted reality.
+When adding KDoc to `.kt` files:
+- Edit only around class, interface, function, and property headers.
+- **Never** modify imports, package declarations, annotations (`@HiltViewModel`, `@Composable`, `@Inject`), parameter defaults, or function bodies.
+- Preserve all existing comments and KDoc that are still accurate.
+- **Never** modify Markdown (`.md`) or JSON files (`spec.md`, `ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`, `PROGRESS.md`, `feature_list.json`). Updating project Markdown documentation and harness state is the exclusive responsibility of **`workflow-orchestrator`** during Stage 5 Consolidation.

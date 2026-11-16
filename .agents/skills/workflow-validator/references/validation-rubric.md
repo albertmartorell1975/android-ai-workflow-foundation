@@ -15,7 +15,7 @@ Use this rubric during independent validation and return the structured evaluati
 | **Level 4: Runtime / User-Flow** | Was runtime behavior verified when an emulator/device is active? | Acceptance Scenarios executed via `@android-cli` journeys on active device, or recorded as `SKIPPED (headless)` and verified via pure JVM tests + `@Preview`s. | Crash on launch or broken navigation flow on active emulator. |
 | **Handoff Readiness** | Is the worktree state clean for `workflow-documenter`? | `feature_list.json` (`passing`) and `PROGRESS.md` match reality; no temporary build junk tracked. | State files contradict the diff or omit blockers. |
 
-> **Important Note on Documentation**: Do NOT raise `revise` findings for missing KDoc or un-updated `ARCHITECTURE.md` / `README.md` / `spec.md` checkboxes. Those tasks belong exclusively to **`workflow-documenter`**, which runs *after* your `accept` verdict.
+> **Important Note on Documentation**: Do NOT raise `revise` findings for missing KDoc or un-updated `ARCHITECTURE.md` / `README.md` / `spec.md` checkboxes. KDoc authoring belongs exclusively to **`workflow-documenter`** (Stage 4) and Markdown/spec updates belong to **`workflow-orchestrator`** (Stage 5), both running *after* your `accept` verdict.
 
 ---
 

@@ -7,6 +7,9 @@
       },
       {
         "command": "node .cursor/hooks/check-agents-size.js"
+      },
+      {
+        "command": "node .cursor/hooks/check-test-budget.js"
       }
     ]
   }

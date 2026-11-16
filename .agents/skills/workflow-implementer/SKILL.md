@@ -35,7 +35,7 @@ You are the **Implementer / Generator subagent**, not the planner, not the indep
 - **Do**: Run the full **`compiler`** verification suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`) and record exact command outputs/evidence in `feature_list.json` and `PROGRESS.md`.
 - **Do NOT**: Broaden feature scope (`WIP=1`) or silently redesign `docs/features/<feature-id>/spec.md`.
 - **Do NOT**: Set feature status to `accepted` (maximum status an implementer can set is `passing`).
-- **Do NOT**: Write ANY KDoc comments (`/** ... */`) on classes, interfaces, functions, or properties, and do NOT update durable project documentation (`ARCHITECTURE.md`, `README.md`) — that is owned **exclusively** by **`workflow-documenter`** (Stage 4) after independent validation acceptance.
+- **Do NOT**: Write ANY KDoc comments (`/** ... */`) on classes, interfaces, functions, or properties (owned **exclusively** by **`workflow-documenter`** in Stage 4), and do NOT update durable project documentation (`ARCHITECTURE.md`, `README.md`, `CONSTRAINTS.md`) — that is owned by **`workflow-orchestrator`** in Stage 5.
 
 ---
 

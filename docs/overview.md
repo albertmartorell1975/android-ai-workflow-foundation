@@ -12,40 +12,56 @@ The Foundation structures development across three modular layers:
 
 ### High-Level Architecture
 
-```text
-PHASE 1: INITIALIZATION, DISCOVERY & HARNESS SETUP
-───────────────────────────────────────────────────────────────────────────────
-[Foundation Installation] ──► [workflow-initializer] (Provider-Adapted Subagents, Hooks & Exclusions)
-                                 ├── New Product / MVP ──► [@build-brief] ──► [@harness-starter]
-                                 └── Existing Codebase ─────────────────────► [@harness-starter]
-                                      (Derives AGENTS.md, PROGRESS.md, CONSTRAINTS.md, feature_list.json, gate.yml)
+```mermaid
+flowchart TD
+    subgraph P1["Phase 1: Initialization, Discovery and Harness Setup"]
+        Install["Foundation Installation (npx skills add)"]
+        Init["workflow-initializer (Subagents, Hooks and Exclusions)"]
+        Brief["@build-brief (New Product / MVP)"]
+        Harness["@harness-starter (AGENTS.md, PROGRESS.md, CONSTRAINTS.md, feature_list.json, gate.yml)"]
 
-PHASE 2: FEATURE EXECUTION MODES & WORKTREE PIPELINE
-───────────────────────────────────────────────────────────────────────────────
-[Mode A: Standalone Feature (Ad-hoc)]  or  [Mode B: Backlog Queue (feature_list.json)]
-  │
-  ▼
-[workflow-orchestrator] 🟣 (Queue selection, git worktrees, checkpoints & @git-governance)
-  ▼
-[1. workflow-planner] 🔵 ──► generates docs/features/<feature-id>/spec.md (*)
-  ▼
-[2. workflow-implementer] 🟡 (.worktrees/impl-<id>) ──► Clean/SOLID code + pure JVM tests + @compiler (*)
-  ▼
-[3. workflow-validator] 🟢/🔴 (.worktrees/val-<id>, hydrated APK + emulator pre-install)
-  ├── REVISE (attempts < 2) ──► loops back to Implementer with Repair Brief
-  ├── REVISE (attempts == 2) ─► 🛑 Human Decision Gate (1. Override | 2. Hint | 3. Re-plan | 4. Cancel)
-  └── ACCEPT (*) ─────────────► proceeds to Documenter
-  ▼
-[4. workflow-documenter] 🔷 (.worktrees/doc-<id>) ──► English KDoc + durable docs + spec.md
-  ▼
-[5. Consolidation & Layer Commits] 🟣 (@git-governance) ──► atomic commits (Domain->Data->UseCases->UI->Docs)
-  ▼
-[6. Automatic GitHub PR & CI Gate] 🟣 ──► push feature/<id> + open PR vs develop -> runs .github/workflows/gate.yml
-  ▼
-[7. Post-PR Review Loop (review-fix Round #1..#N)] ──► pr-review.md -> Implementer -> Validator -> Documenter -> PR push
-  ▼
-[🛑 Human Merge on GitHub]  (* = Optional Human Checkpoint via require_review_after or prompt)
+        Install --> Init
+        Init -->|"New Product / MVP"| Brief
+        Brief --> Harness
+        Init -->|"Existing Codebase"| Harness
+    end
+
+    subgraph P2["Phase 2: Feature Execution Modes and Worktree Pipeline"]
+        ModeA["Mode A: Standalone Feature (Ad-hoc)"]
+        ModeB["Mode B: Backlog Queue (feature_list.json)"]
+        Orch["🟣 workflow-orchestrator (Queue, worktrees, checkpoints and @git-governance)"]
+        Planner["🔵 1. workflow-planner — docs/features/feature-id/spec.md (*)"]
+        Impl["🟡 2. workflow-implementer — .worktrees/impl-feature-id (*)"]
+        Val{"🟢/🔴 3. workflow-validator — .worktrees/val-feature-id"}
+        Gate(["🛑 Human Decision Gate: 1. Override / 2. Hint / 3. Re-plan / 4. Cancel"])
+        Doc["🔷 4. workflow-documenter — .worktrees/doc-feature-id"]
+        Cons["🟣 5. Consolidation, .md Sync and Layer Commits (Domain → Data → UseCases → UI → Docs)"]
+        PR["🟣 6. Push Branch, Open/Update PR and Run CI Gate (feature/feature-id → develop)"]
+        Rev{"👀 7. Human PR Review on GitHub"}
+        RF["🟣 Orchestrator (review-fix #1..#N): Extract comments to pr-review.md"]
+        Merge(["🛑 Human Merge on GitHub"])
+
+        ModeA --> Orch
+        ModeB --> Orch
+        Orch --> Planner
+        Planner --> Impl
+        Impl --> Val
+        Val -->|"REVISE (attempts below 2): Repair Brief"| Impl
+        Val -->|"REVISE (attempts == 2)"| Gate
+        Val -->|"ACCEPT (*)"| Doc
+        Doc --> Cons
+        Cons --> PR
+        PR --> Rev
+        Rev -->|"Review comments submitted"| RF
+        RF -->|"Re-enters Stage 2 (skips Planner)"| Impl
+        Rev -->|"Approved and CI green"| Merge
+    end
+
+    Harness --> ModeA
+    Harness --> ModeB
 ```
+
+*(Where `(*)` denotes an optional human checkpoint via `require_review_after` or user prompt.)*
 
 ---
 
@@ -61,8 +77,8 @@ Bootstraps the project environment and adapts customizations to the selected AI 
 #### 🛡 Automated AI Safety Hooks (`agent-safety-hooks` & `hook-creator`)
 During project initialization, the Foundation installs provider-native lifecycle safety hooks (`.agents/hooks.json`, `.claude/settings.json`, or `.cursor/hooks.json`):
 * **`block-rm-rf.js` (Destructive Command Guard)**: Intercepts shell commands before execution and strictly blocks catastrophic patterns such as `rm -rf`, `rmdir /s /q`, `git clean -f`, `git reset --hard`, autonomous `gh pr merge` (ensuring PR merges are strictly human), and destructive force pushes.
-* **`check-agents-size.js` (`AGENTS.md` Size Guard)**: Blocks `git commit` if `AGENTS.md` exceeds 10 KB (10,240 bytes) to prevent context window degradation.
-* **`check-test-budget.js` (Strict Test Budget Guard)**: Enforces the Anti-Overengineering Rule by blocking commits if a module's tests exceed 15% of total source size.
+* **`check-agents-size.js` (`AGENTS.md` Size Guard)**: Blocks `git commit` if `AGENTS.md` exceeds 120 lines or 6 KB to prevent context window degradation.
+* **`check-test-budget.js` (Strict Test Budget Guard)**: Enforces the Anti-Overengineering Rule by blocking `git commit` if staged changes introduce more than 6 new `@Test` annotations.
 * **Custom Hooks (`@hook-creator`)**: Additional project-specific hooks can be authored on demand for any of the three providers.
 
 ### 2. `build-brief` & `harness-starter`
@@ -103,7 +119,7 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
 * **Human-in-the-Loop Supervision**:
   - **Flexibility Across Any Stage**: Every feature is different; checkpoints can be configured at any stage in `feature_list.json` (`require_review_after: "planner" | "implementer" | "validator" | ["planner", "validator"]`) or requested dynamically via prompt.
   - **Recommended High-Leverage Pattern**: Supervising after **Planner** (`"require_review_after": "planner"`) to validate `spec.md` before coding, letting the central loop (`Implementer ⇄ Validator -> Documenter -> PR`) run autonomously, and performing thorough code review on the resulting **GitHub Pull Request** (using the `review-fix` loop when adjustments are needed).
-* Consolidates the final worktree after documentation completes, creates atomic Conventional Commits (`Domain -> Data -> UseCases -> UI -> Docs`) via `@git-governance`, and automatically pushes the branch and opens the Pull Request.
+* Consolidates the final worktree after KDoc documentation completes, updates harness and durable Markdown files (`spec.md`, `PROGRESS.md`, `feature_list.json`, and when needed `ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`), creates atomic Conventional Commits (`Domain -> Data -> UseCases -> UI -> Docs`) via `@git-governance`, and automatically pushes the branch and opens the Pull Request.
 
 ### 2. 🔵 Planner (`workflow-planner`)
 * Spawns in a clean subagent context restricted to specification files, never modifying executable application code.
@@ -125,7 +141,7 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
 
 ### 5. 🔷 Documenter (`workflow-documenter`)
 * Runs in an isolated `git worktree` (`.worktrees/doc-<feature-id>`) **only after `workflow-validator` returns `accept`**.
-* Strictly documents public classes across all layers with English KDoc, updates durable project docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`), and marks `[x]` completed tasks in `spec.md`.
+* Strictly documents public classes across all layers with English KDoc comments without altering executable code or modifying Markdown documentation files.
 
 ---
 

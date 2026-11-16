@@ -28,7 +28,7 @@ The operational backbone responsible for project discovery, harness state, `git 
 * **workflow-planner** (🔵): Feature Planner and Specification Architect subagent that produces the unified feature contract at `docs/features/<feature-id>/spec.md`.
 * **workflow-implementer** (🟡): Implementer subagent executing in an isolated `git worktree` to build Clean Architecture layers + tests and run `@compiler` verification.
 * **workflow-validator** (🟢/🔴): Independent Validator subagent executing in an isolated `git worktree` across 4 validation levels and producing `docs/features/<feature-id>/validator/validation-report.md` with an `Implementation Repair Brief`.
-* **workflow-documenter** (🔷): Documenter subagent executing in an isolated `git worktree` after validation acceptance to author English KDoc, update durable docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`), and complete `spec.md`.
+* **workflow-documenter** (🔷): Documenter subagent executing in an isolated `git worktree` after validation acceptance to author English KDoc comments on public project classes.
 * **compiler**: Centralized project verification, compilation, Lint, and deployment engine.
 * **git-governance**: Enforces Git Flow conventions, branching rules, atomic layer-specific Conventional Commits, idempotent GitHub PR publication, and parallel wave rebase reconciliation.
 * **foundation-evolve**: Synchronizes useful skills and improvements from working projects back to the Foundation.
@@ -36,7 +36,7 @@ The operational backbone responsible for project discovery, harness state, `git 
 ### 1.2 Shared Engineering Guardrails
 Technical standards shared by the active Foundation environment across all subagents.
 
-* **agent-safety-hooks**: Automated safety and context-size guards installed automatically during project setup (`block-rm-rf.js` to block destructive actions like `rm -rf`, `git reset --hard`, `git clean -f`, `gh pr merge`, or forced pushes, and `check-agents-size.js` to enforce the 10 KB `AGENTS.md` limit) tailored to your active AI provider (Gemini, Cursor, or Claude Code).
+* **agent-safety-hooks**: Automated safety, context-size, and test-budget guards installed automatically during project setup (`block-rm-rf.js` to block destructive actions like `rm -rf`, `git reset --hard`, `git clean -f`, `gh pr merge`, or forced pushes; `check-agents-size.js` to enforce the 120-line / 6 KB `AGENTS.md` limit; and `check-test-budget.js` to block commits adding more than 6 `@Test` annotations) tailored to your active AI provider (Gemini, Cursor, or Claude Code).
 * **ai-context-exclusion**: Provider-agnostic AI context exclusion governance across Gemini, Cursor, and Claude Code.
 * **dependency-manager**: Governance for `libs.versions.toml` and dependency compatibility.
 * **design-system-governance**: Design System standards covering Material 3, accessibility, RTL, adaptive UI, and reusability.

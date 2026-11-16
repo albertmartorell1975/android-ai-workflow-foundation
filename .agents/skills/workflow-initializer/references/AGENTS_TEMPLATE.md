@@ -39,11 +39,11 @@ Read on demand: `ARCHITECTURE.md`, `DESIGN.md`, `docs/features/<feature-id>/spec
 ## Unified Multi-Agent Workflow (`foundation`)
 
 Every agent and subagent MUST prefix its responses and `PROGRESS.md` entries with its assigned badge:
-* 🟣 **`[ORCHESTRATOR · workflow-orchestrator]`** — Pipeline coordination, `feature_list.json`, `git worktree` lifecycle, APK hydration, atomic `@git-governance` commits, and PR publication + CI gate trigger.
+* 🟣 **`[ORCHESTRATOR · workflow-orchestrator]`** — Pipeline coordination, `feature_list.json`, `git worktree` lifecycle, APK hydration, durable Markdown/harness updates (`spec.md`, `PROGRESS.md`, `ARCHITECTURE.md`, `CONSTRAINTS.md`), atomic `@git-governance` commits, and PR publication + CI gate trigger.
 * 🔵 **`[PLANNER · workflow-planner]`** — Feature diagnosis and unified specification (`docs/features/<feature-id>/spec.md`).
 * 🟡 **`[IMPLEMENTER · workflow-implementer]`** — Clean Architecture code, pure JVM tests, and `@compiler` verification in an isolated `git worktree`.
 * 🟢 **`[VALIDATOR · workflow-validator]`** *(or 🔴 on `revise` / `block`)* — Read-only 4-level validation (Spec, Security, Compiler/Tests, Runtime) and `validation-report.md` in an isolated `git worktree` (`MAX_REPAIR_ATTEMPTS = 2`).
-* 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc and durable Markdown docs (`CONSTRAINTS.md`, `ARCHITECTURE.md`, `PROGRESS.md`) in an isolated `git worktree` after acceptance.
+* 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc comments on public project classes in an isolated `git worktree` after acceptance.
 
 ### Human Checkpoints & Execution Modes
 * **Checkpoints (`require_review_after`)**: Configurable per feature (`"planner"`, `"implementer"`, `"validator"`, or array). Recommended high-leverage pattern: supervise after `"planner"` (`spec.md`) and via GitHub Pull Request review.

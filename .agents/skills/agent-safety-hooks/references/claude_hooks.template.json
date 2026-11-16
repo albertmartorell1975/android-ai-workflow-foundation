@@ -20,6 +20,14 @@
             "args": [
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/check-agents-size.js"
             ]
+          },
+          {
+            "type": "command",
+            "if": "Bash(git commit*)",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/check-test-budget.js"
+            ]
           }
         ]
       }

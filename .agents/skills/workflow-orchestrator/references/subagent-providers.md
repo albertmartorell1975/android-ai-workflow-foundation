@@ -7,11 +7,11 @@ This reference defines the role-tuned model tier matrix and provider-specific in
 ## 1. Visual Badges & Role Identity
 
 Every agent in the pipeline identifies itself with its canonical color badge:
-* 🟣 **`[ORCHESTRATOR · workflow-orchestrator]`** — Pipeline coordination, `feature_list.json`, `git worktree` management, and final `@git-governance` commits/PRs.
+* 🟣 **`[ORCHESTRATOR · workflow-orchestrator]`** — Pipeline coordination, `feature_list.json`, `git worktree` management, durable Markdown/harness updates (`spec.md`, `PROGRESS.md`, `ARCHITECTURE.md`, `CONSTRAINTS.md`), and final `@git-governance` commits/PRs.
 * 🔵 **`[PLANNER · workflow-planner]`** — Technical diagnosis and specification at `docs/features/<feature-id>/spec.md`.
 * 🟡 **`[IMPLEMENTER · workflow-implementer]`** — Clean Architecture code, tests, and `@compiler` verification in an isolated worktree.
 * 🟢/🔴 **`[VALIDATOR · workflow-validator]`** — Independent 4-level audit (Spec, Security/Scope, Compiler/Tests, Runtime).
-* 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc, durable documentation sync, and checklist completion in an isolated worktree.
+* 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc comments on public project classes in an isolated worktree.
 
 > **See [Git Worktree Lifecycle](worktree-lifecycle.md)** for detailed worktree setup, hydration, and consolidation steps.
 
@@ -26,7 +26,7 @@ Each subagent is configured with an optimal model tier matching its cognitive re
 | 🔵 **`workflow-planner`** | `inherit` | `opus` | `inherit` | Deep architectural reasoning & contract design |
 | 🟡 **`workflow-implementer`** | `inherit` | `sonnet` | `fast` | High-speed deterministic code & test generation |
 | 🟢 **`workflow-validator`** | `inherit` | `opus` | `inherit` | Strict adversarial audit & security analysis |
-| 🔷 **`workflow-documenter`** | `flash` | `haiku` | `fast` | Fast KDoc & Markdown documentation synthesis |
+| 🔷 **`workflow-documenter`** | `flash` | `haiku` | `fast` | Fast English KDoc synthesis on project classes |
 
 ---
 

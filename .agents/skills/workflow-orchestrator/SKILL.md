@@ -26,7 +26,7 @@ Every agent MUST prefix responses, status updates, and `PROGRESS.md` entries wit
 * 🔵 **`[PLANNER · workflow-planner]`** — `docs/features/<feature-id>/spec.md`.
 * 🟡 **`[IMPLEMENTER · workflow-implementer]`** — Code, pure JVM tests, `@compiler` evidence.
 * 🟢 **`[VALIDATOR · workflow-validator]`** *(🔴 on `revise` / `block`)* — Read-only 4-level audit.
-* 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc and durable docs.
+* 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc on project classes.
 
 ## 1. Scope & Git Ownership
 
@@ -73,9 +73,9 @@ Details, the 4 deterministic preconditions, and report schema: **[Operational Mo
   ├── REVISE (attempts == 2) ─► 🛑 Human Decision Gate
   └── ACCEPT (*) ─────────────► Stage 4
   ▼
-[4. Documenter] 🔷 (.worktrees/doc-<id>) ──► KDoc + durable docs + spec.md [x]
+[4. Documenter] 🔷 (.worktrees/doc-<id>) ──► English KDoc on project classes
   ▼
-[5. Consolidation] 🟣 ──► atomic layer commits, status "accepted"
+[5. Consolidation] 🟣 ──► update .md docs + spec.md [x], status "accepted", atomic layer commits
   ▼
 [6. PR Delivery] 🟣 ──► push + open PR vs develop -> CI gate
   ▼
@@ -88,8 +88,8 @@ Details, the 4 deterministic preconditions, and report schema: **[Operational Mo
 1. **Planner (`workflow-planner`)**: Reuse `docs/features/<feature-id>/spec.md` if current; otherwise spawn `workflow-planner` (max 3 Necessary Questions, no executable code). Honor `require_review_after: "planner"` if set.
 2. **Implementer (`workflow-implementer`)**: Create `.worktrees/impl-<feature-id>` from `feature/<feature-id>` and hydrate local Android env files (`local.properties`, `.env`, `keystore.properties`, `app/google-services.json`); spawn `workflow-implementer` until `status: passing`. Honor `require_review_after: "implementer"` if set.
 3. **Validator (`workflow-validator`)**: Create `.worktrees/val-<feature-id>`, hydrate env files, copy compiled APKs (`app/build/outputs/apk/`) from `.worktrees/impl-<feature-id>`, and pre-install onto active emulator/device; spawn read-only `workflow-validator` and persist `docs/features/<feature-id>/validator/validation-report.md`. `revise` -> repair loop (`< MAX_REPAIR_ATTEMPTS` routes back to Stage 2; `>= MAX_REPAIR_ATTEMPTS` triggers `needs_human_review`); `block` -> stop and report; `accept` -> honor `require_review_after: "validator"` if set, then proceed to Stage 4.
-4. **Documenter (`workflow-documenter`)**: Spawn `workflow-documenter` in `.worktrees/doc-<feature-id>` for English KDoc on public classes, durable docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`), and `[x]` items in `spec.md`.
-5. **Consolidation (`@git-governance`)**: Merge validated & documented worktree state into `feature/<feature-id>`, clean temporary worktrees and `wt/*` branches, run `./gradlew prepareKotlinBuildScriptModel --build-cache` if build files (`libs.versions.toml`, `*.gradle.kts`) changed, set `feature_list.json` status to `"accepted"`, update `PROGRESS.md`, and create atomic Conventional Commits (`Domain -> Data -> UseCases -> UI -> Docs`). In `execute` mode, proceed immediately to Stage 6.
+4. **Documenter (`workflow-documenter`)**: Spawn `workflow-documenter` in `.worktrees/doc-<feature-id>` to add English KDoc comments to public project classes (`.kt` files only; never modifies executable code or Markdown docs).
+5. **Consolidation (`@git-governance`)**: Merge validated & KDoc-documented worktree state into `feature/<feature-id>`, clean temporary worktrees and `wt/*` branches, run `./gradlew prepareKotlinBuildScriptModel --build-cache` if build files (`libs.versions.toml`, `*.gradle.kts`) changed, mark `[x]` completed items in `docs/features/<feature-id>/spec.md`, update durable project docs (`ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`) when required by `spec.md` Section 5, set `feature_list.json` status to `"accepted"`, update `PROGRESS.md`, and create atomic Conventional Commits (`Domain -> Data -> UseCases -> UI -> Docs`). In `execute` mode, proceed immediately to Stage 6.
 6. **PR Delivery**: Push `git push -u origin feature/<feature-id>`, verify `gh auth status`, open the structured PR against `develop` (`BypassSandbox: true`), and return root workspace to `develop` (`git checkout develop`). Retry failed sandboxed `git`/`gh` calls with `BypassSandbox: true` before falling back to a browser URL.
 7. **review-fix (`review-fix` Mode — Multi-Round)**: Triggered on the next invocation after the developer submits review comments on GitHub. Queries `gh api` (`BypassSandbox: true`), appends `## PR Review Round #N` to `docs/features/<feature-id>/validator/pr-review.md`, resets status to `"in_progress"`, and runs `Implementer -> Validator -> Documenter` only (**never the Planner**, never edits `spec.md`; contract changes are escalated to the developer). Consolidates and pushes the Round `#N` delta. Downstream features with `<feature-id>` in `depends_on` remain blocked until resolved and merged. See **[PR Review Loop](references/pr-review-loop.md)**.
 
