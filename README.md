@@ -46,7 +46,6 @@ The initializer inspects your module topology (*Layer-Based* vs. *Feature-First*
 * **🛡 Automated Safety Hooks (installed out of the box):**
   * `block-rm-rf.js`: Blocks destructive shell commands (`rm -rf`, `git reset --hard`, `git clean -f`, force pushes, and autonomous `gh pr merge`).
   * `check-agents-size.js`: Blocks `git commit` if `AGENTS.md` exceeds **120 lines or 6 KB** to prevent context rot.
-  * `check-test-budget.js`: Enforces the anti-overengineering rule by blocking `git commit` if staged changes introduce **more than 6 new `@Test` annotations**.
   * *Custom hooks:* Project-specific hooks can be authored on demand using `@hook-creator` from the optional catalog.
 * **🔒 Context Exclusion:** Automatically keeps `local.properties`, `.worktrees/`, `.gradle/`, and `build/` out of the AI context, and translates rules if you switch providers later.
 
