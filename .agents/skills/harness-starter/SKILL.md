@@ -26,6 +26,7 @@ Create or update the smallest useful repository harness so any orchestrator or s
 ## `AGENTS.md` Discipline
 
 - If `workflow-initializer` already materialized `AGENTS.md`, enrich the project summary and Read First references without overwriting Foundation governance rules.
+- Keep `AGENTS.md` truthful to the actual repository: remove or replace template entries (e.g., `Room` / `room-schema-governance`) and optional doc references (`CONTEXT.md`, `docs/build-brief.md`, `DESIGN.md`) that the project does not use.
 - Keep it a short, provider-agnostic routing map: target < 100 lines, **hard cap 120 lines / 6 KB**. Move detail into `CONSTRAINTS.md`, `ARCHITECTURE.md`, or skills.
 
 ## Inputs To Read First

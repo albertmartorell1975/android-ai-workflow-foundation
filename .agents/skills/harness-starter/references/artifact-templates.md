@@ -64,7 +64,7 @@ Every agent and subagent MUST prefix its responses and `PROGRESS.md` entries wit
 
 ## `.github/workflows/gate.yml`
 
-- **Purpose**: Deterministic GitHub Actions Quality Gate for Pull Requests. Executes a headless, non-interactive Gradle check in the cloud (checkout -> JDK setup -> Gradle cache -> `testDebugUnitTest` and `lintDebug`). Unlike the AI-driven `@compiler` skill (which runs in the local IDE with code analysis, Compose previews, and optional asset generation), `gate.yml` is a pure CI script running on GitHub infrastructure with zero AI intervention.
+- **Purpose**: Deterministic GitHub Actions Quality Gate for Pull Requests. Executes a headless, non-interactive check in the cloud (checkout -> verify `AGENTS.md` referenced paths exist -> JDK setup -> Gradle cache -> `testDebugUnitTest` and `lintDebug`). Unlike the AI-driven `@compiler` skill (which runs in the local IDE with code analysis, Compose previews, and optional asset generation), `gate.yml` is a pure CI script running on GitHub infrastructure with zero AI intervention.
 - **JDK Configuration**: Defaults to JDK 17 (the mandatory baseline for AGP 8.x+ and Kotlin 2.0). If the project specifies `jvmToolchain(21)` or targets Android SDK 36+, configure `java-version: '21'`.
 - **Lifecycle**: Inspected and materialized **once** during repository harness initialization by `@harness-starter`. Standard feature commits in `@workflow-orchestrator` and `@git-governance` never create or alter CI workflows.
 
@@ -90,6 +90,28 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Verify AGENTS.md referenced paths exist
+        run: |
+          python3 -c '
+          import os, re, sys
+          with open("AGENTS.md", encoding="utf-8") as f:
+              text = f.read()
+          # Optional/on-demand docs may be absent before discovery or first feature
+          optional = {"CONTEXT.md", "docs/build-brief.md", "DESIGN.md", "ARCHITECTURE.md"}
+          tokens = re.findall(r"`([^`]+)`", text)
+          missing = []
+          for t in tokens:
+              if any(c in t for c in (" ", "<", ">", "*")) or t.startswith(("./", "http")) or t in optional:
+                  continue
+              if "/" in t or re.fullmatch(r"[A-Z]+\.md", t) or t == "feature_list.json":
+                  if not os.path.exists(t):
+                      missing.append(t)
+          if missing:
+              print("Missing paths referenced in AGENTS.md:", missing, file=sys.stderr)
+              sys.exit(1)
+          print("All AGENTS.md referenced paths exist.")
+          '
 
       - name: Set up JDK
         uses: actions/setup-java@v4
