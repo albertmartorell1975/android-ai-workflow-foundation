@@ -171,6 +171,18 @@ your-android-project/
 
 ---
 
+## 📱 Reference Projects
+
+Real Android applications all developed using this Foundation's agentic workflow across different stages of its evolution:
+
+| Project | Overview |
+| :--- | :--- |
+| **[BasketCoach](https://github.com/albertmartorell1975/BasketCoach)** | Youth basketball app that **also integrates in-app AI as a product feature** to analyze game data and suggest coaching improvements. |
+| **[MeteoMartoCompose](https://github.com/albertmartorell1975/MeteoMartoCompose)** | Weather Android application built with Jetpack Compose and multi-module Clean Architecture. |
+| **[RickAndMorty2026](https://github.com/albertmartorell1975/RickAndMorty2026)** | Multi-module Clean Architecture (MVVM) showcase built with Jetpack Compose, Coroutines, Room, and Hilt. |
+
+---
+
 ## 🙏 Acknowledgments & Credits
 
 * **Foundation Methodology & Clean Architecture Guardrails:** Albert Martorell Garcia.
