@@ -31,6 +31,11 @@ The initializer inspects your module topology (*Layer-Based* vs. *Feature-First*
 * **Existing Android codebase:** Run `@harness-starter` directly. In both cases, it generates `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json`, `docs/features/<feature-id>/` folders, and the CI quality gate (`.github/workflows/gate.yml`) in your Android repository.
 * **Start building:** Invoke `@workflow-orchestrator` with a specific feature request (Standalone Mode) or `"continue"` to process `feature_list.json` / pending PR reviews.
 
+### Updating an Existing Project
+When the Foundation releases new or updated skills, propagate them to a consuming Android project in two steps:
+1. **Update `.agents/skills/`:** Run `npx skills update` (or `npx skills add albertmartorell1975/android-ai-workflow-foundation -y`) from your project root.
+2. **Re-sync generated provider files (when needed):** Because `npx skills` only updates `.agents/skills/`, if the update also changed subagent definitions, safety hooks, or context exclusions, ask your AI IDE to refresh those generated files from the updated `workflow-initializer` / `agent-safety-hooks` / `ai-context-exclusion` templates while preserving your existing `AGENTS.md`, `PROGRESS.md`, `CONSTRAINTS.md`, and `feature_list.json`.
+
 ---
 
 ## 🛠 Multi-Provider Support, Safety Hooks & Context Exclusion
@@ -115,36 +120,44 @@ flowchart TD
 
 ## 🧩 Android Stack, Guardrails & Pragmatic Testing
 
-The Foundation ships **37 active skills** under `.agents/skills/` and **25 optional catalog plugins** under `.agents/catalog/`:
+The Foundation ships **37 active skills** under `.agents/skills/` and **25 optional catalog plugins** under `.agents/catalog/` (see the [Canonical Skills Index](.agents/skills/README.md)):
 
-* **Supported Module Topologies (`module-architecture-governance`):**
+* **Supported Module Topologies:**
   * **Layer-Based** (small/medium apps): `:domain`, `:usecases`, `:data`, `:app`.
   * **Feature-First** (scalable/multi-team): `:<feature>:{domain,usecases,data,presentation}`, `:core:*`, `:app`.
-* **Opinionated Engineering Stack:** Kotlin, Clean Architecture & SOLID (enforced by 13 mandatory Validator audit triggers), MVVM with Hybrid UI State (`viewmodel-architecture-governance`), Repository SSOT with typed `DomainError` (`repository-pattern-governance`), **Hilt**, **Room**, **Firebase** (Auth, Remote Config), and **Jetpack Compose** (`navigation-3`, `adaptive`, `edge-to-edge`, state hoisting, side-effects).
-* **Pragmatic Testing Strategy (`testing-setup`):**
-  * Pure JVM unit tests (JUnit + Manual Fakes + `MainDispatcherRule` + Turbine) for domain, data, use cases, and ViewModels.
-  * **Zero Robolectric screen tests**, zero mocking frameworks (`MockK`/`Mockito`) over domain interfaces, and zero trivial tests (no tests for `data class` properties or 1:1 pass-through UseCases).
-  * Real UI journeys validated black-box on an active emulator/device via **`@android-cli`** (or recorded as `SKIPPED (headless)` when no device is attached).
-* **Optional Catalog Plugins (on demand):** CameraX, Wear Compose M3, AppFunctions, R8 Analyzer, Perfetto Trace/SQL, Compose stability/recomposition diagnostics, Play Billing/Policy tools, `@skill-creator`, `@hook-creator`, and more.
+* **Opinionated Engineering Stack:** Kotlin, Clean Architecture & SOLID, MVVM with Hybrid UI State, Repository SSOT with typed `DomainError`, **Hilt**, **Room**, **Firebase** (Auth, Remote Config), and **Jetpack Compose** (Navigation 3, adaptive layouts, edge-to-edge, state hoisting, side effects).
+* **Pragmatic Testing Strategy:**
+  * **Closed, high-value test budget (0–6 `@Test` per feature):** Pure JVM unit tests (JUnit + Manual Fakes + `MainDispatcherRule` + Turbine) planned upfront in `spec.md` only for layers with real branching, calculations, error mapping, multi-source orchestration, or ViewModel state transitions (**0 tests** by default on boilerplate or 1:1 pass-through layers).
+  * **Zero bloat:** No Robolectric screen tests, no mocking frameworks (`MockK`/`Mockito`) over domain interfaces, and no trivial tests—every test is audited for falsifiability and non-trivial value.
+  * **Black-box UI journeys:** End-to-end flows validated on an active emulator/device (and skipped cleanly when no device is attached).
+* **Optional Catalog Plugins (on demand):** CameraX, Wear Compose M3, AppFunctions, R8 Analyzer, Perfetto Trace/SQL, Compose stability/recomposition diagnostics, Play Billing/Policy tools, and custom skill/hook authoring.
 
 ---
 
-## 📁 Feature Directory Structure & Lifecycle
+## 📁 Project Harness, Feature Directory & Lifecycle
 
-Every feature keeps its contract, visual references, and audit trail in one canonical directory:
+The Foundation separates project-wide harness tracking at the repository root from per-feature contracts, visual references, and review history:
 
 ```text
-docs/features/<feature-id>/
-├── spec.md                         # Unified contract (Given/When/Then + Android layers + Checklist)
-├── ui/
-│   ├── screens/                    # Reference screen mockups (PNG/HTML — never converted to drawables)
-│   └── resources/                  # Raw graphic assets (PNG/JPEG -> converted to res/drawable/ic_*.webp)
-└── validator/
-    ├── validation-report.md        # Structured 4-level report & Adversarial Attempts Log
-    └── pr-review.md                # Human PR review feedback & Repair Briefs (Round #1..#N)
+your-android-project/
+├── AGENTS.md                           # Routing map & project guardrails (max 120 lines / 6 KB)
+├── PROGRESS.md                         # Current verified state & session log
+├── CONSTRAINTS.md                      # Durable MUST / MUST NOT architectural rules
+├── feature_list.json                   # Backlog queue, depends_on, checkpoints & status
+├── .github/workflows/gate.yml          # CI quality gate triggered on PRs
+└── docs/features/<feature-id>/
+    ├── spec.md                         # Unified contract (Given/When/Then + layers + test plan)
+    ├── ui/
+    │   ├── screens/                    # Reference mockups (PNG/HTML — never converted to drawables)
+    │   └── resources/                  # Raw assets (PNG/JPEG -> converted to res/drawable/ic_*.webp)
+    └── validator/
+        ├── validation-report.md        # 4-level report & Adversarial Attempts Log
+        └── pr-review.md                # Human PR review feedback (Round #1..#N)
 ```
 
-Feature lifecycle in `feature_list.json`: `not_started` → `in_progress` → `passing` *(Implementer)* → `accepted` *(Validator + Documenter + Orchestrator)* — or `needs_human_review` if escalated.
+**Feature lifecycle in `feature_list.json`:**
+* **Normal flow:** `not_started` → `in_progress` → `passing` *(Implementer)* → `accepted` *(Validator + Documenter + Orchestrator)*
+* **Exceptions & PR transitions:** `needs_human_review` *(escalated after `MAX_REPAIR_ATTEMPTS = 2`)* · `blocked` *(explicit blocker or Validator `block` verdict)* · a `review-fix` round temporarily sets status back to `in_progress` until `accepted`, while a PR closed without merging rolls back to `not_started`.
 
 ---
 
