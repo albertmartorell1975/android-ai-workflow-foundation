@@ -9,6 +9,7 @@
     "design-system-governance",
     "compose-state-hoisting",
     "compose-modifier-and-layout-style",
+    "compose-navigation-architecture",
     "adaptive",
     "navigation-3",
     "edge-to-edge",
@@ -29,6 +30,7 @@
     "compose-state-hoisting",
     "compose-side-effects",
     "compose-modifier-and-layout-style",
+    "compose-navigation-architecture",
     "navigation-3",
     "adaptive",
     "edge-to-edge",
@@ -49,6 +51,7 @@
     "repository-pattern-governance",
     "hilt",
     "compose-modifier-and-layout-style",
+    "compose-navigation-architecture",
     "testing-setup"
   ],
   "workflow-documenter": [

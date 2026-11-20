@@ -51,7 +51,7 @@ You are the **Implementer / Generator subagent**, not the planner, not the indep
    - `:domain` / `:data` / Repositories -> `repository-pattern-governance` (and `room-schema-governance` when touching Room entities/DAOs).
    - `ViewModel` / UI State / UI Mappers -> `viewmodel-architecture-governance`.
    - DI / Hilt (`@Module`, `@Binds`, `@Provides`, `@HiltViewModel`) -> `hilt`.
-   - Compose UI / Navigation -> `compose-modifier-and-layout-style`, `compose-state-hoisting`, `design-system-governance`.
+   - Compose UI / Navigation -> `compose-modifier-and-layout-style`, `compose-state-hoisting`, `compose-navigation-architecture`, `design-system-governance`.
    - Unit Tests -> `testing-setup`.
 
 ---

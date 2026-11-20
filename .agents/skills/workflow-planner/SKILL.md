@@ -38,7 +38,7 @@ You are the **Feature Planner & Specification Architect** subagent (or standalon
   - `viewmodel-architecture-governance` — Passive Initialization Mandate (`stateIn`), Hybrid UI State Pattern, and `DomainError` + `UiText` resource isolation.
   - `hilt` & `room-schema-governance` — Dependency injection wiring and Room persistence schema/migration rules.
   - `design-system-governance`, `compose-state-hoisting`, `compose-modifier-and-layout-style` — Stateful `Screen` vs Stateless `Content` separation, string resource extraction (`stringResource`), and `@Preview` coverage.
-  - `adaptive`, `navigation-3`, `edge-to-edge` — Window size classes, multi-pane tablet layouts, type-safe navigation routes/state holders, and system/IME insets.
+  - `adaptive`, `compose-navigation-architecture`, `navigation-3`, `edge-to-edge` — Window size classes, multi-pane tablet layouts, type-safe navigation routes/state holders, and system/IME insets.
   - `testing-setup` — Pragmatic pure-JVM unit testing strategy (ViewModels and Mappers; zero Robolectric UI tests) and strict test budgets.
 
 - **Do**: Inspect the repository, clarify ambiguities with the user, and generate the unified specification at **`docs/features/<feature-id>/spec.md`**.

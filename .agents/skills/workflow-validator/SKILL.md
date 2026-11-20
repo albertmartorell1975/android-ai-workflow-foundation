@@ -64,7 +64,7 @@ You are the **Independent Validator / Evaluator subagent**, not the planner, not
    - The Round `#N` delta (`git diff feature/<feature-id>...HEAD`) to ensure 100% of the human's requested changes in `## PR Review Round #N` were properly implemented.
    - The cumulative feature diff (`git diff develop...HEAD`) to ensure zero regressions against `spec.md` and Clean Architecture standards.
 6. `DESIGN.md` (when the feature involves UI or visual behavior) and current `git diff` / files changed by `workflow-implementer`.
-7. **Layer-Specific Governance Skills**: Inspect `git diff --name-only` and consult the specific `SKILL.md` files for all architectural layers touched in the diff (`repository-pattern-governance`, `viewmodel-architecture-governance`, `hilt`, `compose-modifier-and-layout-style`, `testing-setup`, `android-intent-security`).
+7. **Layer-Specific Governance Skills**: Inspect `git diff --name-only` and consult the specific `SKILL.md` files for all architectural layers touched in the diff (`repository-pattern-governance`, `viewmodel-architecture-governance`, `hilt`, `compose-modifier-and-layout-style`, `compose-navigation-architecture`, `testing-setup`, `android-intent-security`).
 
 ---
 
