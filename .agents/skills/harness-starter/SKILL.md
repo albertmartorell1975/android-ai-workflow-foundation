@@ -41,7 +41,7 @@ If neither exists, ask whether to run `@build-brief` first or accept a brief lis
 1. **Inspect** which target files exist and preserve their intent.
 2. **Derive** each artifact from **[Artifact Templates](references/artifact-templates.md)**:
    - `AGENTS.md` — landing page and workflow routing.
-   - `.github/workflows/gate.yml` — headless CI gate (`testDebugUnitTest` + `lintDebug`) on PRs to `develop`/`main`; JDK 17 by default, 21 for `jvmToolchain(21)` or SDK 36+. Created **once**; an existing CI workflow is preserved untouched.
+   - `.github/workflows/gate.yml` — headless CI gate (`testDebugUnitTest` + `lintDebug`, or `test<Flavor>DebugUnitTest` + `lint<Flavor>Debug` when `productFlavors` are configured) on PRs to `develop`/`main`; JDK 17 by default, 21 for `jvmToolchain(21)` or SDK 36+. Created **once**; an existing CI workflow is preserved untouched.
    - `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json` (with optional `require_review_after`).
    - Feature folders for every feature id.
 3. **Slice** features into session-sized units and wire `depends_on` per **[Feature Slicing & Quality Check](references/feature-slicing.md)**.

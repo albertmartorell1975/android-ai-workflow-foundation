@@ -66,6 +66,7 @@ Every agent and subagent MUST prefix its responses and `PROGRESS.md` entries wit
 
 - **Purpose**: Deterministic GitHub Actions Quality Gate for Pull Requests. Executes a headless, non-interactive check in the cloud (checkout -> verify `AGENTS.md` referenced paths exist -> JDK setup -> Gradle cache -> `testDebugUnitTest` and `lintDebug`). Unlike the AI-driven `@compiler` skill (which runs in the local IDE with code analysis, Compose previews, and optional asset generation), `gate.yml` is a pure CI script running on GitHub infrastructure with zero AI intervention.
 - **JDK Configuration**: Defaults to JDK 17 (the mandatory baseline for AGP 8.x+ and Kotlin 2.0). If the project specifies `jvmToolchain(21)` or targets Android SDK 36+, configure `java-version: '21'`.
+- **Product Flavors**: Defaults to `testDebugUnitTest` and `lintDebug`. If the repository defines `productFlavors` (e.g., `pre` / `pro`), inspect Gradle build files and adapt the verification commands in `AGENTS.md`, `PROGRESS.md`, `feature_list.json`, and `gate.yml` to the target debug flavor (e.g., `./gradlew testPreDebugUnitTest lintPreDebug --parallel --build-cache --configuration-cache`).
 - **Lifecycle**: Inspected and materialized **once** during repository harness initialization by `@harness-starter`. Standard feature commits in `@workflow-orchestrator` and `@git-governance` never create or alter CI workflows.
 
 ```yaml
