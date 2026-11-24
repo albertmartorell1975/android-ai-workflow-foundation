@@ -1,10 +1,10 @@
-# Clean Architecture & SOLID Audit Checklist (`workflow-validator`)
+# Clean Architecture, SOLID & Senior Code-Review Audit Checklist (`workflow-validator`)
 
-During independent validation (Level 3 & Level 3.5), evaluate the implementation against these **13 Mechanical REVISE Triggers**. If any trigger matches, you MUST return verdict `REVISE` with the exact file path and line number in your `Implementation Repair Brief`.
+During independent validation (Level 3 & Level 3.5), evaluate the implementation against these **17 Mechanical REVISE Triggers**. If any trigger matches, you MUST return verdict `REVISE` with the exact file path and line number in your `Implementation Repair Brief`.
 
 ---
 
-## 13 Mandatory Architecture & SOLID REVISE Triggers
+## 17 Mandatory Architecture, SOLID & Senior Code-Review REVISE Triggers
 
 | # | Invariant Area | Pass Condition | Mandatory REVISE Trigger (Fails Validation) |
 | :-: | :--- | :--- | :--- |
@@ -17,10 +17,14 @@ During independent validation (Level 3 & Level 3.5), evaluate the implementation
 | **7** | **Atomic UI State (UDF)** | UI state modified via `_state.update { copy(...) }`. | Using `_state.value = _state.value.copy(...)` (causes race conditions) or exposing MutableStateFlow publicly. |
 | **8** | **Zero Resource Coupling in VM** | Errors exposed as typed `DomainError` in `content.Error(val error: DomainError)`. | ViewModel importing `R.string` or assembling user-facing error strings directly. |
 | **9** | **Typed Domain Errors** | Repositories return `Result<T, DomainError>` or `Flow`. | Repository leaking raw `Throwable`, `HttpException`, `IOException`, or `SQLiteException` across the domain boundary. |
-| **10** | **Model Hygiene (No Defaults/Nullables)** | DTOs, Entities, Domain models, and `*UiModel` are default-free (`= ...`) and non-nullable (`?`). | Adding default values (`= null`, `= ""`, `= 0`) or unnecessary nullables to DTOs, Entities, Domain models, or `*UiModel` *(top-level `*UiState` initial state defaults are permitted)*. |
+| **10** | **Model Hygiene (No Defaults/Nullables)** | DTOs, Entities, Domain models, and `*UiModel` are default-free (`= ...`) and non-nullable (`?`). | Adding Kotlin default values (`= null`, `= ""`, `= 0`) or unnecessary nullables to DTOs, Entities, Domain models, or `*UiModel` *(top-level `*UiState` initial state defaults and Room SQL `@ColumnInfo(defaultValue = "...")` annotations for migrated `NOT NULL` columns are permitted)*. |
 | **11** | **UI Mapper Decoupling** | Display units (`" pts"`, `"% "`) resolved in Compose via `stringResource`. | UI Mapper concatenating hardcoded language units or returning dummy `0.0` fallbacks. |
-| **12** | **Compose State & Previews** | Stateful `*Screen` separated from Stateless `*Content`. | Any new stateless composable missing `@Preview` (`@BcThemePreview`) or root layout hardcoding `.fillMaxSize()` on reusable components. |
+| **12** | **Compose State & Previews** | Stateful `*Screen` separated from Stateless `*Content`. | Any new stateless composable missing `@Preview` or root layout hardcoding `.fillMaxSize()` on reusable components. |
 | **13** | **Kotlin Style & Coroutine Safety** | Structured concurrency and official Kotlin layout conventions followed. | Catching broad `Exception`/`Throwable` in `suspend` functions without rethrowing `CancellationException`, defining domain/mapper extensions on `String`/primitives, or placing `companion object` above methods. |
+| **14** | **Suppression & Lint Hygiene** | Compiler and Lint warnings are fixed at the root cause. | Introducing any new `@SuppressLint(...)` or `@Suppress(...)` annotation without explicit justification in `spec.md` or `pr-review.md` (e.g., silencing `MissingPermission` instead of checking permissions). |
+| **15** | **Dead Code & Orphaned Resources** | Every new/modified symbol and resource in the diff is actively used. | Introducing or leaving behind unused public/internal helper methods, extensions, imports, or orphaned XML resources (`strings.xml`, `colors.xml`, drawables) unreferenced anywhere in production code. |
+| **16** | **Named Constants (Zero Magic Literals)** | Protocol codes, thresholds, and repeated literals are named constants. | Using un-named magic numbers or repeated protocol/domain literals (e.g., HTTP status codes `401`/`403`, numeric thresholds, key strings) directly inside new/modified production logic. |
+| **17** | **Main-Safe Room & Retrofit Dispatchers** | Explicit `withContext(...)` is reserved for blocking I/O or CPU work. | Wrapping already main-safe Room (`suspend` DAO methods, `Flow` queries, `withTransaction`) or Retrofit (`suspend`) calls in redundant `withContext(Dispatchers.IO)`. |
 
 ---
 
@@ -42,6 +46,12 @@ git grep -n "class .*Impl" -- "*data/*" | grep -v "internal "
 
 # 5. Check for default parameters in data/domain/UI models (excluding *UiState.kt):
 git grep -n "= null\|= \"\"\|= 0" -- "*Model.kt" "*Entity.kt" "*Dto.kt"
+
+# 6. Check for newly added Lint/compiler suppressions in the diff:
+git diff <base>..HEAD -U0 | grep -E "^\+.*@Suppress(Lint)?\("
+
+# 7. Check for redundant Dispatchers.IO wrappers in Room/Retrofit data sources:
+git grep -n "withContext(Dispatchers\.IO)" -- "*Room*.kt" "*Dao*.kt" "*DataSource*.kt" "*RepositoryImpl.kt"
 ```
 
 ---

@@ -8,14 +8,16 @@ Use this rubric during independent validation and return the structured evaluati
 
 | Category | Question | Pass Signal | Fail Signal |
 | :--- | :--- | :--- | :--- |
-| **Level 1: Spec & Correctness** | Does the implementation match `docs/features/<feature-id>/spec.md`? | All `Given/When/Then` scenarios and UI states (`Loading`, `Error`, `Empty`, `Success`) are implemented with real logic. | Behavior missing, stubbed with `TODO`/hardcoded fakes, or materially different from the spec. |
+| **Level 1: Spec & Correctness** | Does the implementation match `docs/features/<feature-id>/spec.md` without introducing spec-induced smells? | All `Given/When/Then` scenarios and UI states (`Loading`, `Error`, `Empty`, `Success`) are implemented with real logic; no unchallenged spec-smells. | Behavior missing, stubbed with `TODO`/hardcoded fakes, materially different from spec, or blindly implements dead code / unsafe workarounds. |
 | **Level 2: Scope & Assets** | Did implementation stay inside `<feature-id>` (`WIP=1`) and follow asset rules? | Only relevant files changed; `ui/resources/` PNG/JPEGs converted to `.webp`; `ui/screens/` mockups untouched. | Adjacent features implemented opportunistically, or screen mockups converted to drawables. |
 | **Level 2: Security** | Does the diff avoid Android and API security regressions? | Exported components guarded (`android-intent-security`), no hardcoded secrets, boundary inputs validated. | Unprotected exported components, Intent redirection risk, secrets committed, private data logged. |
-| **Level 3: Tests & Compiler Evidence** | Are pure JVM unit tests meaningful, and did `@compiler` pass? | Exact `@compiler` (`assembleDebug`, `lintDebug`, `testDebugUnitTest`) evidence recorded; pure JVM unit tests pass the Per-Test Value & Falsifiability Audit within the `0–6` Strict Test Budget. | Missing compiler evidence, failing checks hidden, or any trivial/non-falsifiable/redundant test (`DELETE` or `CONSOLIDATE`). |
-| **Level 4: Runtime / User-Flow** | Was runtime behavior verified when an emulator/device is active? | Acceptance Scenarios executed via `@android-cli` journeys on active device, or recorded as `SKIPPED (headless)` and verified via pure JVM tests + `@Preview`s. | Crash on launch or broken navigation flow on active emulator. |
+| **Level 3: Tests, Lint & Architecture** | Are pure JVM unit tests meaningful, Lint XML clean, and all 17 Triggers satisfied? | Independent uncached `@compiler` evidence verified (incl. Lint XML inspection on modified/new files); all 17 REVISE Triggers pass; tests pass Per-Test Value & Falsifiability Audit within `0–6` Strict Test Budget. | Cached/unverified evidence, Lint/compiler warnings on touched files, any of the 17 Triggers violated, or any `DELETE`/`CONSOLIDATE` test. |
+| **Level 4: Runtime / User-Flow** | Was runtime behavior verified when an emulator/device is active? | Acceptance Scenarios executed via `@android-cli` / `adb` on active device, or recorded as `SKIPPED (headless)` and verified via pure JVM tests + `@Preview`s. | Crash on launch, broken navigation flow, or SQLite/migration error on active emulator. |
 | **Handoff Readiness** | Is the worktree state clean for `workflow-documenter`? | `feature_list.json` (`passing`) and `PROGRESS.md` match reality; no temporary build junk tracked. | State files contradict the diff or omit blockers. |
 
 > **Important Note on Documentation**: Do NOT raise `revise` findings for missing KDoc or un-updated `ARCHITECTURE.md` / `README.md` / `spec.md` checkboxes. KDoc authoring belongs exclusively to **`workflow-documenter`** (Stage 4) and Markdown/spec updates belong to **`workflow-orchestrator`** (Stage 5), both running *after* your `accept` verdict.
+
+> **Spec-Smell Escalation**: Literal compliance with `spec.md` does **NOT** excuse dead code, `@SuppressLint` workarounds, magic literals, or regressions against `CONSTRAINTS.md`. Raise a Blocking Finding if a hard guardrail is breached, or surface it under `Non-Blocking Code Review Observations` when a design trade-off in `spec.md` warrants human review.
 
 ---
 
@@ -23,13 +25,13 @@ Use this rubric during independent validation and return the structured evaluati
 
 ### Severity Levels
 - **Critical**: Unsafe, data-loss, security vulnerability, project does not compile, or feature is fundamentally wrong.
-- **High**: An acceptance scenario fails, required pure JVM unit tests are missing/broken, or scope discipline is violated.
-- **Medium**: Maintainability or edge-case gap likely to cause bugs or hurt future sessions.
-- **Low**: Minor polish or non-blocking note.
+- **High**: An acceptance scenario fails, required pure JVM unit tests are missing/broken, or scope/architecture discipline is violated.
+- **Medium**: Maintainability, Lint/suppression, dead-code, magic-literal, dispatcher, or edge-case gap likely to cause bugs or hurt future sessions.
+- **Low**: Minor polish, naming preference, subtle inconsistency, or cross-OS CI advisory (non-blocking — MUST still be surfaced under `Non-Blocking Code Review Observations`, never silently omitted).
 
 ### Verdict Rules
-- **`accept`**: Zero `Critical` or `High` findings (and no unaddressed `Medium` bugs); verification evidence is complete.
-- **`revise`**: Fixable `Critical`, `High`, or `Medium` findings exist. Requires a complete **`Implementation Repair Brief`**.
+- **`accept`**: Zero `Critical`, `High`, or `Medium` findings; independent verification evidence and Adversarial Attempts Log are complete; `Non-Blocking Code Review Observations` section is explicitly populated.
+- **`revise`**: Fixable `Critical`, `High`, or `Medium` findings exist (or any of the 17 Mandatory REVISE Triggers matched). Requires a complete **`Implementation Repair Brief`**.
 - **`block`**: Validation cannot continue, wrong feature implemented, missing spec, or unsafe repository state.
 
 ---
@@ -54,25 +56,31 @@ Always format your validation response using this exact structure so **`workflow
 | :--- | :--- | :--- |
 | **1. Spec Contract & Acceptance Scenarios** | `PASS` / `FAIL` | <Summary of Given/When/Then scenarios and UI asset checks> |
 | **2. Security & Scope Discipline** | `PASS` / `FAIL` | <Summary of `android-intent-security`, secrets, boundary inputs, and `WIP=1` scope check> |
-| **3. Compiler Evidence & Test Quality** | `PASS` / `FAIL` | <Verified recorded `@compiler` evidence / Rerunnable checks & Pure JVM unit test review> |
+| **3. Compiler Evidence, Lint & Architecture** | `PASS` / `FAIL` | <Uncached `@compiler` checks, Lint XML inspection, 17-Trigger audit & Pure JVM unit test review> |
 | **4. Runtime / Emulator Flow (`@android-cli`)** | `PASS` / `SKIPPED` / `FAIL` | <Emulator verification result or note that no active device was connected> |
 
 ---
 
 ## 2. Findings
 
-*(If Verdict is `accept` and there are no findings, write: "No blocking or non-blocking findings identified.")*
+### 2.1 Blocking Findings (Critical / High / Medium)
+*(If Verdict is `accept`, write: "No blocking findings identified.")*
 
-### Finding 1: <Short Descriptive Title>
-* **Severity**: `Critical` | `High` | `Medium` | `Low`
+#### Finding 1: <Short Descriptive Title>
+* **Severity**: `Critical` | `High` | `Medium`
 * **File / Evidence**: `<path/to/File.kt#L10-L25 or command output>`
-* **Why it matters**: <Impact on correctness, Clean Architecture, security, or test reliability>
+* **Why it matters**: <Impact on correctness, Clean Architecture, security, or maintainability>
 * **Required change**: <Concrete outcome required>
 * **Suggested implementation steps**:
   1. <Step 1>
   2. <Step 2>
 * **Verification after fix**:
   * `<Gradle command or test class to run>`
+
+### 2.2 Non-Blocking Code Review Observations (Low / Spec-Smells / Cross-OS Risks)
+*(MANDATORY even when Verdict is `accept`. Surface every minor inconsistency, naming concern, potential Linux-vs-Windows CI/rendering risk, or `spec.md` trade-off without rationalizing it away. Write "None observed after adversarial diff inspection." only if genuinely zero.)*
+
+* **Observation 1 (`<File.kt#L..>`)**: <Concrete detail, why a senior reviewer might care, and optional suggestion>
 
 ---
 
@@ -89,6 +97,12 @@ Always format your validation response using this exact structure so **`workflow
 | `<ClassTest.method>` | `<Branch / Math / Error Mapping / State Machine>` | `<File.kt#L..>` | `KEEP` / `CONSOLIDATE` / `DELETE` |
 
 *(If no `*Test.kt` files were added/modified, write: "N/A — 0 unit tests added/modified (verified boilerplate-only / UI-only slice).")*
+
+---
+
+## 3.2 Adversarial Attempts Log *(Mandatory before any `accept`)*
+
+1. **Attempt — <What you tried to break>**: <Concrete probe / input / XML check / runtime test> -> **Result**: `PASS` / `FAIL` (<exact evidence>)
 
 ---
 
@@ -109,7 +123,7 @@ Always format your validation response using this exact structure so **`workflow
 * Do not alter files that already passed validation unless required by the steps above.
 
 ### Run (`@compiler`)
-* `./gradlew assembleDebug lintDebug testDebugUnitTest`
+* `./gradlew assemble<Flavor>Debug lint<Flavor>Debug test<Flavor>DebugUnitTest` *(or `./gradlew assembleDebug lintDebug testDebugUnitTest` for non-flavored projects)*
 
 ### Update
 * Update `feature_list.json` (`evidence`) and `PROGRESS.md` with the new verification results.

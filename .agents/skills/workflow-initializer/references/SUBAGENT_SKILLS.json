@@ -50,6 +50,9 @@
     "viewmodel-architecture-governance",
     "repository-pattern-governance",
     "hilt",
+    "room-schema-governance",
+    "kotlin-style",
+    "kotlin-coroutines-structured-concurrency",
     "compose-modifier-and-layout-style",
     "compose-navigation-architecture",
     "testing-setup"

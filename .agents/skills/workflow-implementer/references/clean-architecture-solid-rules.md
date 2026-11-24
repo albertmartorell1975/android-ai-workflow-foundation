@@ -43,7 +43,7 @@ These non-negotiable rules govern all code written by `workflow-implementer`. Al
 ---
 
 ## 6. Model Design (DTOs, Entities, Domain, UI Models)
-* **Zero Defaults & Zero Unnecessary Nullables on Data/Domain/UI Models**: DTOs, Entities, Domain Models, and nested `*UiModel` classes MUST NOT declare default values (`= ...`) or nullable types (`?`) unless nullability is an explicit business requirement. *(Exception: Only the top-level screen state container `*UiState` may define initial default values such as `val isLoading: Boolean = false, val content: Content = Content.Loading`).*
+* **Zero Defaults & Zero Unnecessary Nullables on Data/Domain/UI Models**: DTOs, Entities, Domain Models, and nested `*UiModel` classes MUST NOT declare Kotlin default values (`= ...`) or nullable types (`?`) unless nullability is an explicit business requirement. *(Exceptions: the top-level screen state container `*UiState` may define initial default values such as `val isLoading: Boolean = false, val content: Content = Content.Loading`, and Room `@Entity` columns added via migration may use SQL `@ColumnInfo(defaultValue = "...")` without Kotlin constructor defaults).*
 * **Boundary Isolation**: DTOs stay in `:data/network`, Entities stay in `:data/local`, Domain models stay in `:domain`, and UI models stay in `:app`/`:presentation`.
 
 ---
@@ -58,13 +58,15 @@ These non-negotiable rules govern all code written by `workflow-implementer`. Al
 ## 8. Jetpack Compose Best Practices (`compose-*` & `design-system-governance`)
 * **State Hoisting (`*Screen` vs `*Content`)**: Separate the stateful route composable (`*Screen`, which collects `uiState` via `collectAsStateWithLifecycle()` and wires callbacks) from the stateless UI composable (`*Content(uiState: *UiState, onAction: (...) -> Unit, modifier: Modifier = Modifier)`).
 * **Modifier Hygiene**: Every reusable or stateless composable MUST accept `modifier: Modifier = Modifier` as its first optional parameter, apply it to its root layout node once, and never hardcode `.fillMaxSize()` on reusable components.
-* **Mandatory Previews**: Provide `@Preview` (or project-standard `@BcThemePreview`) functions covering `Loading`, `Success`, and `Error` states on the stateless `*Content` composable.
+* **Mandatory Previews**: Provide `@Preview` functions covering `Loading`, `Success`, and `Error` states on the stateless `*Content` composable.
 
 ---
 
-## 9. Kotlin Style & Coroutine Safety (`kotlin-style` & `kotlin-coroutines-structured-concurrency`)
+## 9. Kotlin Style, Coroutine Safety & Code-Review Hygiene (`kotlin-style` & `kotlin-coroutines-structured-concurrency`)
 * **Coroutine Cancellation Safety**: Never catch broad `Exception` or `Throwable` in `suspend` functions without immediately rethrowing `CancellationException` (`if (e is CancellationException) throw e`).
+* **Main-Safe Room & Retrofit Calls**: Never wrap already main-safe Room (`suspend` DAO methods, `Flow` queries, `db.withTransaction`) or Retrofit (`suspend`) calls in redundant `withContext(Dispatchers.IO)`.
 * **No Domain/Mapper Extensions on Primitives or `String`**: Do not pollute global completion with `fun String.toX()` or `fun Int.toY()`; scope conversions to the specific DTO/Entity/Domain class or dedicated Mapper.
+* **Named Constants & Zero Dead Code**: Extract protocol codes, numeric thresholds, and repeated literals into named constants; never leave unused helpers, imports, or orphaned XML resources (`strings.xml`, drawables), and never silence warnings with `@SuppressLint` / `@Suppress` instead of fixing the root cause.
 * **Class Layout Order**: Keep class members ordered strictly as: Properties -> `init` blocks -> Public functions -> Private functions -> `companion object` at the very bottom.
 
 ---
