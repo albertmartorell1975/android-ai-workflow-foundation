@@ -14,7 +14,7 @@ The Data Layer is responsible for handling business logic and application data. 
    - **Data Module**: Implements the repository interface. Handles data sources (Network/Local), entity mapping (DTOs/Entities to Domain models), and exception translation (`Throwable` -> `DomainError`).
 3. **Single Source of Truth (SSOT)**: The local database or cache should ideally act as the SSOT. The repository should expose this truth via reactive streams, avoiding returning data directly from the network when offline capabilities or local state (like `isFavorite`) are required.
 4. **Typed Domain Errors vs. Naked Exceptions**: Never leak technology-specific exceptions (`HttpException`, `SQLiteException`, `IOException`) into the Domain or UI layers. The Data Layer MUST translate technical framework exceptions into typed domain errors (`DomainError`).
-5. **Concurrency**: All operations must be main-safe. Use Kotlin Coroutines (`suspend`) for one-shot operations and `Flow` for continuous data streams.
+5. **Concurrency**: All operations must be main-safe. Use Kotlin Coroutines (`suspend`) for one-shot operations and `Flow` for continuous data streams. Do **not** wrap already main-safe Room (`suspend` DAO methods, `Flow` queries, `withTransaction`) or Retrofit (`suspend`) calls in redundant `withContext(Dispatchers.IO)`; use explicit `withContext(...)` (preferring an injected `CoroutineDispatcher`) only when executing genuinely blocking I/O, non-suspending/legacy APIs, or CPU-heavy work (`Dispatchers.Default`).
 
 ---
 
@@ -25,6 +25,7 @@ When generating or refactoring a Repository or Data Layer, you MUST follow these
    - Ensure `DomainError` and `Result<T, DomainError>` exist in the `domain` module. 
    - Never use raw `java.lang.Exception` in domain result types.
    - Prefer idiomatic Kotlin `Result<T, E : DomainError>` over FP monads (`Either<L, R>`) unless the codebase explicitly mandates Arrow FP conventions.
+   - Consume `Result` via exhaustive `when (result)` (`is Result.Success` / `is Result.Error`) rather than FP-style `.fold(...)` helpers so repositories, use cases, and ViewModels share one idiomatic Kotlin pattern.
    - **Read:** `references/error-modeling-result.md` for the domain models and rationale.
 
 2. **Define Domain Contract**: 

@@ -64,3 +64,20 @@ inline fun <T, E : DomainError> Result<T, E>.onError(action: (E) -> Unit): Resul
     return this
 }
 ```
+
+## 3. Consuming `Result` (`when` vs. `fold`)
+Always consume `Result` with an exhaustive `when` expression rather than introducing or calling FP-style `.fold(...)` helpers:
+
+```kotlin
+// ✅ GOOD — idiomatic, readable, and consistent across repositories and ViewModels
+when (val result = repository.getCharacterDetail(id)) {
+    is Result.Success -> handleSuccess(result.data)
+    is Result.Error -> handleError(result.error)
+}
+
+// ❌ AVOID — mixes FP style with Kotlin exhaustive `when`
+repository.getCharacterDetail(id).fold(
+    onError = { handleError(it) },
+    onSuccess = { handleSuccess(it) },
+)
+```
