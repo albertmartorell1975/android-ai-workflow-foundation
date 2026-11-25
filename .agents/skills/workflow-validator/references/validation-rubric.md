@@ -11,8 +11,8 @@ Use this rubric during independent validation and return the structured evaluati
 | **Level 1: Spec & Correctness** | Does the implementation match `docs/features/<feature-id>/spec.md` without introducing spec-induced smells? | All `Given/When/Then` scenarios and UI states (`Loading`, `Error`, `Empty`, `Success`) are implemented with real logic; no unchallenged spec-smells. | Behavior missing, stubbed with `TODO`/hardcoded fakes, materially different from spec, or blindly implements dead code / unsafe workarounds. |
 | **Level 2: Scope & Assets** | Did implementation stay inside `<feature-id>` (`WIP=1`) and follow asset rules? | Only relevant files changed; `ui/resources/` PNG/JPEGs converted to `.webp`; `ui/screens/` mockups untouched. | Adjacent features implemented opportunistically, or screen mockups converted to drawables. |
 | **Level 2: Security** | Does the diff avoid Android and API security regressions? | Exported components guarded (`android-intent-security`), no hardcoded secrets, boundary inputs validated. | Unprotected exported components, Intent redirection risk, secrets committed, private data logged. |
-| **Level 3: Tests, Lint & Architecture** | Are pure JVM unit tests meaningful, Lint XML clean, and all 17 Triggers satisfied? | Independent uncached `@compiler` evidence verified (incl. Lint XML inspection on modified/new files); all 17 REVISE Triggers pass; tests pass Per-Test Value & Falsifiability Audit within `0–6` Strict Test Budget. | Cached/unverified evidence, Lint/compiler warnings on touched files, any of the 17 Triggers violated, or any `DELETE`/`CONSOLIDATE` test. |
-| **Level 4: Runtime / User-Flow** | Was runtime behavior verified when an emulator/device is active? | Acceptance Scenarios executed via `@android-cli` / `adb` on active device, or recorded as `SKIPPED (headless)` and verified via pure JVM tests + `@Preview`s. | Crash on launch, broken navigation flow, or SQLite/migration error on active emulator. |
+| **Level 3: Tests, Lint & Architecture** | Are pure JVM unit tests meaningful, Lint XML clean, and all 18 Triggers satisfied? | Independent uncached `@compiler` evidence verified (incl. Lint XML inspection on modified/new files); all 18 REVISE Triggers pass; tests pass Per-Test Value & Falsifiability Audit within `0–6` Strict Test Budget. | Cached/unverified evidence, Lint/compiler warnings on touched files, any of the 18 Triggers violated, or any `DELETE`/`CONSOLIDATE` test. |
+| **Level 4: Runtime / User-Flow & Process Death** | Were runtime flows, Activity recreation, and LMK process death verified when an emulator/device is active? | Acceptance Scenarios + Probe 4A (`always_finish_activities 1 -> 0`) + Probe 4B (`KEYCODE_HOME` -> `am kill` -> Recents restore) executed via `@android-cli`/`adb` on stateful UI slices (or `N/A` on pure stateless token/component slices), or recorded as `SKIPPED (headless)` with static Trigger #18 + JVM tests + `@Preview`s. | Crash on launch, broken navigation flow, SQLite/migration error, lost UI/ViewModel state after Activity recreation or LMK process death, `TransactionTooLargeException`, or failing to reset `always_finish_activities` to `0`. |
 | **Handoff Readiness** | Is the worktree state clean for `workflow-documenter`? | `feature_list.json` (`passing`) and `PROGRESS.md` match reality; no temporary build junk tracked. | State files contradict the diff or omit blockers. |
 
 > **Important Note on Documentation**: Do NOT raise `revise` findings for missing KDoc or un-updated `ARCHITECTURE.md` / `README.md` / `spec.md` checkboxes. KDoc authoring belongs exclusively to **`workflow-documenter`** (Stage 4) and Markdown/spec updates belong to **`workflow-orchestrator`** (Stage 5), both running *after* your `accept` verdict.
@@ -31,7 +31,7 @@ Use this rubric during independent validation and return the structured evaluati
 
 ### Verdict Rules
 - **`accept`**: Zero `Critical`, `High`, or `Medium` findings; independent verification evidence and Adversarial Attempts Log are complete; `Non-Blocking Code Review Observations` section is explicitly populated.
-- **`revise`**: Fixable `Critical`, `High`, or `Medium` findings exist (or any of the 17 Mandatory REVISE Triggers matched). Requires a complete **`Implementation Repair Brief`**.
+- **`revise`**: Fixable `Critical`, `High`, or `Medium` findings exist (or any of the 18 Mandatory REVISE Triggers matched). Requires a complete **`Implementation Repair Brief`**.
 - **`block`**: Validation cannot continue, wrong feature implemented, missing spec, or unsafe repository state.
 
 ---
@@ -56,8 +56,8 @@ Always format your validation response using this exact structure so **`workflow
 | :--- | :--- | :--- |
 | **1. Spec Contract & Acceptance Scenarios** | `PASS` / `FAIL` | <Summary of Given/When/Then scenarios and UI asset checks> |
 | **2. Security & Scope Discipline** | `PASS` / `FAIL` | <Summary of `android-intent-security`, secrets, boundary inputs, and `WIP=1` scope check> |
-| **3. Compiler Evidence, Lint & Architecture** | `PASS` / `FAIL` | <Uncached `@compiler` checks, Lint XML inspection, 17-Trigger audit & Pure JVM unit test review> |
-| **4. Runtime / Emulator Flow (`@android-cli`)** | `PASS` / `SKIPPED` / `FAIL` | <Emulator verification result or note that no active device was connected> |
+| **3. Compiler Evidence, Lint & Architecture** | `PASS` / `FAIL` | <Uncached `@compiler` checks, Lint XML inspection, 18-Trigger audit (incl. Trigger #18 Process Death) & Pure JVM unit test review> |
+| **4. Runtime, Activity Recreation & Process Death (`@android-cli`)** | `PASS` / `SKIPPED` / `FAIL` | <Emulator user flows + Probe 4A `always_finish_activities` (reset to `0`) + Probe 4B `am kill` Recents restore, or `SKIPPED (headless)`> |
 
 ---
 

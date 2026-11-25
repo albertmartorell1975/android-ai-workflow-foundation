@@ -3,7 +3,7 @@ name: workflow-validator
 description: Strictly read-only independent Validator subagent for the Android AI Workflow Foundation. Executes in an isolated git worktree across 4 validation levels (Spec Contract, Clean Architecture & Security, Compiler/Pure JVM Test Evidence, and optional Emulator Runtime via android-cli) and returns a structured evaluation with an Implementation Repair Brief to workflow-orchestrator without modifying repository files.
 metadata:
   author: Albert Martorell Garcia / Antonio Leiva / Nino Ruano
-  version: 2.4.0
+  version: 2.5.0
   keywords:
     - validator
     - subagent
@@ -13,6 +13,7 @@ metadata:
     - repair-brief
     - read-only
     - pragmatic-testing
+    - process-death
 ---
 
 # Origin
@@ -59,7 +60,7 @@ You are the **Independent Validator / Evaluator subagent**, not the planner, not
 ## 2. Inputs To Read First
 
 1. `AGENTS.md`, `PROGRESS.md`, `CONSTRAINTS.md` (if present), and `feature_list.json`.
-2. **[17 Mandatory Architecture, SOLID & Senior Code-Review REVISE Triggers](references/architecture-solid-audit.md)** *(MANDATORY baseline for every validation pass)*.
+2. **[18 Mandatory Architecture, SOLID & Senior Code-Review REVISE Triggers](references/architecture-solid-audit.md)** *(MANDATORY baseline for every validation pass)*.
 3. Feature specification: **`docs/features/<feature-id>/spec.md`**.
 4. Previous validation report if re-validating after a repair pass (`docs/features/<feature-id>/validator/validation-report.md`).
 5. **Post-PR Review Brief (`docs/features/<feature-id>/validator/pr-review.md`, if present)**: When validating a Post-PR Review iteration (`Round #N`), verify both:
@@ -85,15 +86,28 @@ You are the **Independent Validator / Evaluator subagent**, not the planner, not
    - Read every `*Test.kt` created/modified by `workflow-implementer` alongside its production file.
    - Apply the **Mechanical Red Flags** and **Binary Keep Decision Tree** in `references/architecture-solid-audit.md` and record the **Per-Test Value & Falsifiability Audit** table in your report.
    - **Mandatory REVISE Triggers**: Fail validation with verdict `REVISE` if the implementer introduced Test-Induced Design Damage, created Robolectric/Compose UI tests for screens, added trivial/watermelon/tautology tests (`DELETE`), fragmented pure-function branches into micro-tests (`CONSOLIDATE`), or exceeded the strict test budget (> 3 `@Test`/class, > 6 total).
-2. **Clean Architecture, SOLID & Senior Code-Review Audit (17 Mandatory REVISE Triggers)**:
-   - Audit every changed file and run the static grep checks defined in **[17 Architecture, SOLID & Senior Code-Review REVISE Triggers](references/architecture-solid-audit.md)** (Domain Purity, Single-Responsibility UseCases, DIP, Hilt `@Binds`, `internal` Visibility, Passive ViewModel, Atomic UDF, Zero `R.string` in VM, Typed `DomainError`, Default-Free Models, UI Mapper Decoupling, Compose State/Previews, Kotlin Style/Coroutine Cancellation Safety, Suppression & Lint Hygiene, Dead Code & Orphaned Resources, Named Constants, and Main-Safe Room/Retrofit Dispatchers).
+2. **Clean Architecture, SOLID & Senior Code-Review Audit (18 Mandatory REVISE Triggers)**:
+   - Audit every changed file and run the static grep checks defined in **[18 Architecture, SOLID & Senior Code-Review REVISE Triggers](references/architecture-solid-audit.md)** (Domain Purity, Single-Responsibility UseCases, DIP, Hilt `@Binds`, `internal` Visibility, Passive ViewModel, Atomic UDF, Zero `R.string` in VM, Typed `DomainError`, Default-Free Models, UI Mapper Decoupling, Compose State/Previews, Kotlin Style/Coroutine Cancellation Safety, Suppression & Lint Hygiene, Dead Code & Orphaned Resources, Named Constants, Main-Safe Room/Retrofit Dispatchers, and Process Death & Single-Activity State Restoration).
    - **Uncached Verification & Lint XML Inspection**: When Gradle marks test tasks `FROM-CACHE` or `UP-TO-DATE`, force uncached execution (`--rerun-tasks`) for modified modules. Inspect the generated Lint XML report (`lint-results-*.xml`), not just Gradle's exit code; any compiler or Lint warning on modified/new files MUST trigger `REVISE`.
 
 > **See [Validation Rubric & Report Template](references/validation-rubric.md)** for the mandatory output format.
 
-### Level 4: Runtime / User-Flow Validation (`@android-cli`)
+### Level 4: Runtime / User-Flow, Activity Recreation & Process Death Validation (`@android-cli`)
 - If the feature has `UI Involved: yes` (spec.md, Android Layer Breakdown) and an emulator/device is active, verify that the pre-installed application is launched or deploy the hydrated APK artifact located at `app/build/outputs/apk/` using `android run --apks=<path>` (retry `android` / `adb` commands with `BypassSandbox: true` if blocked by sandbox local socket restrictions). Execute the `Given / When / Then` Acceptance Scenarios of `docs/features/<feature-id>/spec.md` as black-box `android-cli` journeys (`android layout --diff`, `android screen capture` saving any temporary captures under git-ignored `app/build/outputs/`; see `android-cli` references `journeys.md` and `interact.md`) and verify the flow without crashes.
-- If no device is active (or `UI Involved: no`), record Level 4 as `SKIPPED (headless)` and note that behavior was verified via Pure JVM tests and `@Preview`s. This never blocks the pipeline.
+- **Lifecycle & Process Death Runtime Probes (MANDATORY whenever the feature touches stateful Screens, ViewModels, forms/filters, or Navigation routes on an active emulator; mark `N/A — stateless component/token slice` for pure Design System slices)**:
+  1. **Probe 4A — Activity Destruction (*Don't keep activities*)**: Tests `MainActivity` + Compose `setContent` teardown/recreation while `ViewModelStore` stays alive (simulating system picker/OAuth return or low-RAM Activity eviction):
+     - Enable: `adb shell settings put global always_finish_activities 1`.
+     - Navigate to the feature's destination (enter/select UI state if applicable), background via `adb shell input keyevent KEYCODE_HOME`, and resume from Recents (`adb shell input keyevent KEYCODE_APP_SWITCH` + tap app card via `@android-cli`).
+     - Verify via `android layout` and `adb logcat` that `rememberSaveable` state survives, no crash occurs, and `LaunchedEffect` does not trigger duplicate loads or reset valid ViewModel state.
+     - **MANDATORY Cleanup (always execute, even on failure)**: `adb shell settings put global always_finish_activities 0`.
+  2. **Probe 4B — True Process Death (OS LMK Simulation)**: Tests full Linux process termination (`Application`, Hilt `@Singleton`s, `ViewModel`s, and Compose tree wiped) while preserving the `NavHost` backstack and saved `Bundle`s:
+     - Navigate to the feature's destination (preferring a non-root detail/sub-graph screen or active input/filter state).
+     - Background the app so Android transitions the process to *Cached* priority and runs `onStop()` + `onSaveInstanceState()`: `adb shell input keyevent KEYCODE_HOME`.
+     - Kill the cached process cleanly: `adb shell am kill <applicationId>` *(NEVER use `am force-stop`, which wipes the task stack and saved instance state)*.
+     - Confirm the process is dead: `adb shell pidof <applicationId>` returns empty.
+     - Restore the existing task exclusively via **Recents** (`adb shell input keyevent KEYCODE_APP_SWITCH` + tap app card via `@android-cli` — NEVER a plain cold `am start -n` that bypasses task restoration).
+     - Verify via `adb logcat` and `android layout` that: (i) zero crashes (`NullPointerException`, deserialization errors, `TransactionTooLargeException`) occurred, and (ii) the app restored directly onto the active destination with intact data/input state (not blank, not reset to root unexpectedly, not stuck in infinite `Loading`).
+- If no device is active (or `UI Involved: no`), record Level 4 as `SKIPPED (headless)` and note that behavior was verified via Pure JVM tests, static Trigger #18 audit, and `@Preview`s. This never blocks the pipeline.
 
 ---
 
@@ -106,7 +120,9 @@ Perform each applicable audit and record it in an **Adversarial Attempts Log** i
    - Every `UiState` field MUST be written AND read by the UI. A flag that is never read (e.g. `isRefreshing`) is a **dead state → REVISE**.
    - Retry/refresh MUST give visible feedback (content switches to `Loading` or an overlay is rendered).
    - Re-entering a screen must not trigger redundant network/AI calls when valid data is already loaded.
-2. **Lifecycle & Concurrency Audit**: `collectAsStateWithLifecycle` over `collectAsState`; `LaunchedEffect` keys; no stored scopes; `CancellationException` rethrown; no double-launch races.
+2. **Lifecycle, Process Death & Concurrency Audit**:
+   - `collectAsStateWithLifecycle` over `collectAsState`; `LaunchedEffect` keys (idempotent on `MainActivity` recreation); no stored scopes; `CancellationException` rethrown; no double-launch races.
+   - **Single-Activity Process Death Resilience (Trigger #18)**: Verify every non-root `NavHost` destination and shared sub-graph `ViewModel` can cold-restore directly after LMK kill without relying on mutable RAM state in `@Singleton`/`Application`/`companion object` (*Single Entry Point Illusion*); verify critical user inputs/filters/tabs use `rememberSaveable`, `SavedStateHandle`, or SSOT (and `rememberNavBackStack` for Nav 3); verify zero critical persistence inside `onCleared()`/`onDestroy()`; verify ID-only payloads in `SavedStateHandle`/routes (no `TransactionTooLargeException` risk); and verify a pure JVM `SavedStateHandle(mapOf(...))` restoration test exists whenever a ViewModel uses `SavedStateHandle`.
 3. **Edge-Case Probing**: empty lists, empty/blank AI strings, single item, huge lists, offline/timeout/401/5xx, malformed JSON, duplicate ids, division by zero, locale (ca/es) text overflow.
 4. **Test Falsifiability & Value Audit ("Mutation Thought-Experiment")**: Whenever `*Test.kt` files were added or modified, fill the **Per-Test Value & Falsifiability Audit** table (`@Test` | Subject & real complexity | Production line that would fail if inverted/deleted | `KEEP` / `CONSOLIDATE` / `DELETE`). Verify intermediate transitions are asserted, not only the final state. Any `DELETE` or `CONSOLIDATE` row triggers `REVISE`.
 5. **Spec Drift Diff & Checklist Item Audit**:
@@ -121,6 +137,6 @@ Perform each applicable audit and record it in an **Adversarial Attempts Log** i
 
 ## 4. Verdicts & Implementation Repair Brief
 
-- **`accept`**: Zero blocking findings (`Critical` / `High` / `Medium`); all acceptance scenarios, 17 triggers, and test checks pass; AND both an **Adversarial Attempts Log** (Section 3.5) and a **Non-Blocking Code Review Observations** section are explicitly populated. An `accept` without those sections is invalid.
+- **`accept`**: Zero blocking findings (`Critical` / `High` / `Medium`); all acceptance scenarios, 18 triggers, and test checks pass; AND both an **Adversarial Attempts Log** (Section 3.5) and a **Non-Blocking Code Review Observations** section are explicitly populated. An `accept` without those sections is invalid.
 - **`revise`**: Fixable Critical, High, or Medium findings exist. You **MUST** include a clear `Implementation Repair Brief`.
 - **`block`**: Fundamental architectural/security blocker.

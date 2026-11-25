@@ -1,10 +1,10 @@
 # Clean Architecture, SOLID & Senior Code-Review Audit Checklist (`workflow-validator`)
 
-During independent validation (Level 3 & Level 3.5), evaluate the implementation against these **17 Mechanical REVISE Triggers**. If any trigger matches, you MUST return verdict `REVISE` with the exact file path and line number in your `Implementation Repair Brief`.
+During independent validation (Level 3 & Level 3.5), evaluate the implementation against these **18 Mechanical REVISE Triggers**. If any trigger matches, you MUST return verdict `REVISE` with the exact file path and line number in your `Implementation Repair Brief`.
 
 ---
 
-## 17 Mandatory Architecture, SOLID & Senior Code-Review REVISE Triggers
+## 18 Mandatory Architecture, SOLID & Senior Code-Review REVISE Triggers
 
 | # | Invariant Area | Pass Condition | Mandatory REVISE Trigger (Fails Validation) |
 | :-: | :--- | :--- | :--- |
@@ -25,6 +25,7 @@ During independent validation (Level 3 & Level 3.5), evaluate the implementation
 | **15** | **Dead Code & Orphaned Resources** | Every new/modified symbol and resource in the diff is actively used, and superseded legacy docs scheduled in `spec.md` §5 are removed. | Introducing or leaving behind unused public/internal helper objects, classes, methods, extensions, imports, or orphaned XML resources (`strings.xml`, `colors.xml`, drawables) unreferenced anywhere in production code, or leaving superseded legacy docs scheduled for deletion in `spec.md` §5 behind. |
 | **16** | **Named Constants (Zero Magic Literals)** | Protocol codes, thresholds, and repeated literals are named constants. | Using un-named magic numbers or repeated protocol/domain literals (e.g., HTTP status codes `401`/`403`, numeric thresholds, key strings) directly inside new/modified production logic. |
 | **17** | **Main-Safe Room & Retrofit Dispatchers** | Explicit `withContext(...)` is reserved for blocking I/O or CPU work. | Wrapping already main-safe Room (`suspend` DAO methods, `Flow` queries, `withTransaction`) or Retrofit (`suspend`) calls in redundant `withContext(Dispatchers.IO)`. |
+| **18** | **Process Death & Single-Activity State Restoration** | Non-root `NavHost` destinations and sub-graph `ViewModel`s cold-restore after OS LMK kill via `SavedStateHandle` (ID-only `@Serializable` routes), `rememberSaveable` (or `rememberNavBackStack` in Nav 3), and SSOT (Room/DataStore); critical drafts persist eagerly. | Any of: (a) **Single Entry Point Illusion** — non-root screen or sub-graph `ViewModel` depends on mutable RAM state in a `@Singleton`, `Application`, or `companion object` populated by a prior destination instead of route args (`SavedStateHandle`) + SSOT; (b) **Volatile User/Flow State** — user inputs, queries, active filters, selected tabs, or multi-step sub-graph drafts stored in plain `remember` (instead of `rememberSaveable`) or unbacked `MutableStateFlow` without `SavedStateHandle`/SSOT *(excludes purely ephemeral visual state like animations/tooltips or reactive Room-derived state)*; (c) **Unreliable Teardown Persistence** — saving critical state inside `ViewModel.onCleared()` or `Activity.onDestroy()` (never executed on cached LMK kill); (d) **`TransactionTooLargeException` Risk** — storing large lists, bitmaps, or full domain payloads inside `SavedStateHandle`, `rememberSaveable`, or Nav routes instead of primitive IDs/keys; (e) **Missing JVM Restoration Test** — a new/modified `ViewModel` using `SavedStateHandle` lacks a pure JVM `@Test` instantiating it with a pre-populated `SavedStateHandle(mapOf(...))`; or (f) **Non-Saveable Nav 3 Stack** — using `remember { mutableStateListOf(...) }` instead of `rememberNavBackStack(...)`. |
 
 ---
 
@@ -55,6 +56,12 @@ git grep -n "withContext(Dispatchers\.IO)" -- "*Room*.kt" "*Dao*.kt" "*DataSourc
 
 # 8. Check new/modified public objects in the diff for single-file-only usage (must be private/internal):
 git diff <base>..HEAD -U0 | grep -E "^\+object "
+
+# 9. Check for plain remember { mutableStateOf(...) } in Screens that might hold user input/filters (should be rememberSaveable or hoisted to SavedStateHandle/SSOT):
+git diff <base>..HEAD -U0 -- "*Screen.kt" | grep -E "^\+.*remember\s*\{\s*mutableStateOf"
+
+# 10. Check for onCleared() overrides (verify zero critical state persistence) and mutable RAM holders in Singletons:
+git diff <base>..HEAD -U0 | grep -E "^\+.*override fun onCleared\(|^\+.*var .*MutableStateFlow"
 ```
 
 ---
