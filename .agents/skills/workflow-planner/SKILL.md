@@ -3,7 +3,7 @@ name: workflow-planner
 description: Foundation-native Feature Planner and Specification Architect. Analyzes the repository and feature requirements to produce the unified implementation specification at docs/features/<feature-id>/spec.md before handing off to workflow-implementer.
 metadata:
   author: Albert Martorell Garcia / Antonio Leiva / Nino Ruano
-  version: 2.3.0
+  version: 2.4.0
   keywords:
     - workflow
     - planning
@@ -12,6 +12,7 @@ metadata:
     - task-decomposition
     - acceptance-scenarios
     - pragmatic-testing
+    - process-death
 ---
 
 # Workflow Planner Specialist (`workflow-planner`)
@@ -37,7 +38,7 @@ You are the **Feature Planner & Specification Architect** subagent (or standalon
   - `repository-pattern-governance` — Single Source of Truth (SSOT), `LocalDataSource`/`RemoteDataSource` separation, `safeCall`, and `DomainError` contracts.
   - `viewmodel-architecture-governance` — Passive Initialization Mandate (`stateIn`), Hybrid UI State Pattern, and `DomainError` + `UiText` resource isolation.
   - `hilt` & `room-schema-governance` — Dependency injection wiring and Room persistence schema/migration rules.
-  - `design-system-governance`, `compose-state-hoisting`, `compose-modifier-and-layout-style` — Stateful `Screen` vs Stateless `Content` separation, string resource extraction (`stringResource`), and `@Preview` coverage.
+  - `design-system-governance`, `compose-state-hoisting`, `compose-modifier-and-layout-style` — Stateful `Screen` vs Stateless `Content` separation, `rememberSaveable` UI survival, string resource extraction (`stringResource`), and `@Preview` coverage.
   - `adaptive`, `compose-navigation-architecture`, `navigation-3`, `edge-to-edge` — Window size classes, multi-pane tablet layouts, type-safe navigation routes/state holders, and system/IME insets.
   - `testing-setup` — Pragmatic pure-JVM unit testing strategy (ViewModels and Mappers; zero Robolectric UI tests) and strict test budgets.
 

@@ -50,3 +50,13 @@ Choose the appropriate guard pattern:
 - **Mutex Guarding**: Reserved for complex concurrency. Use `withLock` for sequential queueing, `tryLock` + `finally` for thread-safe fast-entry, or `tryLock` without `unlock` for singleton engines.
 
 > **See [Concurrency Guarding Patterns](references/mutex-guarding.md)** for exact code implementations and when to use Mutex vs UDF.
+
+## 5. Process Death & Single-Activity State Restoration
+
+In a Single-Activity Jetpack Compose architecture, the OS Low Memory Killer (`lmkd`) silently terminates cached background processes without invoking `Activity.onDestroy()` or `ViewModel.onCleared()`. When the user returns from Recents, `NavHost` restores the backstack directly onto the top destination without executing previous screens.
+
+- **Persist Critical Flow & Input State**: Store route arguments (`savedStateHandle.toRoute<T>()`), user search queries, active filters, selected tabs, and multi-step sub-graph draft state in `SavedStateHandle` or a disk-backed SSOT (Room / DataStore) — never solely in volatile `MutableStateFlow` properties. *(Purely ephemeral visual flags such as animations or loading overlays do not need Bundle persistence.)*
+- **Zero Single-Entry-Point Coupling**: Never assume an earlier screen in the backstack populated a mutable `@Singleton`, `Application`, or `companion object` cache in RAM. Every non-root destination `ViewModel` MUST be self-sufficient from its route arguments (`SavedStateHandle`) + SSOT.
+- **Prevent `TransactionTooLargeException`**: Keep `SavedStateHandle` payloads lightweight (primitive IDs, enums, short query strings). Never serialize full domain lists, bitmaps, or large DTOs into `SavedStateHandle`; re-derive data reactively from Room/Repository.
+- **No Late Persistence in `onCleared()`**: Persist drafts or critical mutations eagerly (or at latest on user action / `onStop`), never inside `ViewModel.onCleared()`.
+- **Pure JVM Restoration Testing**: Whenever a `ViewModel` reads/writes `SavedStateHandle`, verify cold restoration in a pure JVM unit test by instantiating the `ViewModel` with a pre-populated `SavedStateHandle(mapOf(...))`.

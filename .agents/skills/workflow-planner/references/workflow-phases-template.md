@@ -122,7 +122,8 @@ so I can [expected outcome].
 ### UI/UX & Visual Assets
 * **UI Involved:** yes/no
 * **Design Source:** `DESIGN.md` / `docs/features/<feature-id>/ui/screens/` / N/A
-* **States & Navigation:** [Loading, Error, Empty, Success states, Navigation 3 routes, A11y, Adaptive]
+* **States & Navigation:** [Loading, Error, Empty, Success states, type-safe Navigation routes / Navigation 3 `rememberNavBackStack`, A11y, Adaptive]
+* **Process Death & State Restoration:** [Specify how stateful screens, form inputs, filters, route args (`SavedStateHandle`), and shared sub-graph ViewModels survive LMK process death and Activity recreation (`rememberSaveable` / `SavedStateHandle` / Room SSOT; ID-only route payloads), or `N/A` for pure stateless component/non-UI slices]
 * **Graphic Assets Conversion:** [List PNG/JPEG files in `docs/features/<feature-id>/ui/resources/` to convert to `.webp` in the target UI module (`app/src/main/res/drawable/ic_<name>.webp` in Layer-Based, or `<feature>/presentation/src/main/res/drawable/ic_<name>.webp` / `core/designsystem/src/main/res/drawable/` in Feature-First), or N/A. Screen mockups in `ui/screens/` are excluded.]
 
 ### API Design
@@ -155,7 +156,7 @@ so I can [expected outcome].
   - Interface binding in DI module: `@Binds abstract fun bind*(impl: *Impl): *` inside `@Module abstract class`.
   - Technical exceptions wrapped via `safeCall` / `.toDomainError()` rethrowing `CancellationException`.
 - [ ] **UI / Presentation (`:app` or `:<feature>:presentation` + `:app` NavHost/DI wiring):**
-  - Passive ViewModel: `@HiltViewModel class *ViewModel @Inject constructor(private val useCase: *UseCase) : ViewModel()`. Zero `init { launch }`, `_state.update { copy(...) }`, `content.Error(val error: DomainError)`.
+  - Passive ViewModel: `@HiltViewModel class *ViewModel @Inject constructor(private val useCase: *UseCase) : ViewModel()`. Zero `init { launch }`, `_state.update { copy(...) }`, `content.Error(val error: DomainError)`. Persist route args, critical user inputs, and shared sub-graph state via `SavedStateHandle` or SSOT (never mutable `@Singleton` RAM caches or `onCleared()`); keep Bundle payloads ID-only.
   - UI Mapper: `internal class *UiMapper` converting Domain to `*UiModel` (default-free) without concatenating language units (`" pts"`, `"%"`).
   - Stateless Compose Screen + `@Preview` (`@BcThemePreview`) for every view state.
 - [ ] **UI Design Assets & Folders:** Convert raw graphic assets in `docs/features/<feature-id>/ui/resources/` (PNG/JPEG) to `.webp` in the target UI module (`app/src/main/res/drawable/ic_<name>.webp` or `<feature>/presentation/src/main/res/drawable/ic_<name>.webp`; mockups in `ui/screens/` excluded).

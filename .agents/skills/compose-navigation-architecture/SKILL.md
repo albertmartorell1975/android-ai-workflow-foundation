@@ -3,13 +3,14 @@ name: compose-navigation-architecture
 description: Codifies the standard Jetpack Compose Navigation architecture using the AppState and Destinations pattern. Enforces Type-Safe navigation, hoisting of NavHostController, and decoupled UI screens.
 metadata:
   author: Albert Martorell Garcia
-  version: 1.1.0
+  version: 1.2.0
   keywords:
   - navigation
   - compose
   - appstate
   - destinations
   - architecture
+  - process-death
 ---
 # Compose Navigation Architecture Governance
 
@@ -32,6 +33,8 @@ Navigation routes MUST be strongly typed. String-based navigation (Navigation 1.
 - **Kotlin Serialization**: Use `kotlinx.serialization` and type-safe Navigation APIs (`@Serializable` objects and data classes).
 - **Destinations Object/File**: Define all global routes in a centralized `Destinations.kt` file, or within feature-specific modules if following a multi-module feature topology.
 - **AppState Methods**: The `AppState` class MUST expose specific, intent-driven navigation functions (e.g., `fun navigateToChat(chatId: String)`) rather than exposing the raw `NavController.navigate()` to the UI.
+- **Lightweight ID-Only Routes (`TransactionTooLargeException` Prevention)**: `@Serializable` route data classes MUST carry only lightweight primitive IDs or keys (never full domain objects, lists, or bitmaps), because the entire `NavHost` backstack is serialized into the single Activity's saved-state `Bundle`.
+- **Destination Self-Sufficiency After Process Death**: After an OS LMK kill, `NavHost` restores directly onto the top destination without composing prior screens in the backstack. Every non-root destination (and shared sub-graph `ViewModel`) MUST reconstruct its state strictly from `savedStateHandle.toRoute<T>()`, `SavedStateHandle`, and disk-backed SSOT (Room/DataStore) — never from mutable `@Singleton` RAM caches populated by an earlier screen.
 
 ## 3. Top-Level Navigation & Tab/Rail Management
 
