@@ -24,7 +24,7 @@ These non-negotiable rules govern all code written by `workflow-implementer`. Al
 ## 3. Dependency Injection (`hilt`)
 * **Constructor Injection**: Always use `@Inject constructor(...)` for classes you author.
 * **Interface Binding**: Always bind interfaces using `@Binds abstract fun bind*(impl: *Impl): *` inside `@Module abstract class`. Never use `@Provides` for classes with an `@Inject constructor`.
-* **Visibility Discipline**: All implementation classes (`*Impl`), Room Entities, DAOs, and Network DTOs MUST be declared `internal` so external modules cannot bypass domain interfaces.
+* **Visibility Discipline**: All implementation classes (`*Impl`), Room Entities, DAOs, and Network DTOs MUST be declared `internal` so external modules cannot bypass domain interfaces. Any helper `object`, class, or constant referenced exclusively within a single file MUST be `private` (e.g. `private const val`), never exposed as a `public object`.
 
 ---
 
@@ -66,7 +66,7 @@ These non-negotiable rules govern all code written by `workflow-implementer`. Al
 * **Coroutine Cancellation Safety**: Never catch broad `Exception` or `Throwable` in `suspend` functions without immediately rethrowing `CancellationException` (`if (e is CancellationException) throw e`).
 * **Main-Safe Room & Retrofit Calls**: Never wrap already main-safe Room (`suspend` DAO methods, `Flow` queries, `db.withTransaction`) or Retrofit (`suspend`) calls in redundant `withContext(Dispatchers.IO)`.
 * **No Domain/Mapper Extensions on Primitives or `String`**: Do not pollute global completion with `fun String.toX()` or `fun Int.toY()`; scope conversions to the specific DTO/Entity/Domain class or dedicated Mapper.
-* **Named Constants & Zero Dead Code**: Extract protocol codes, numeric thresholds, and repeated literals into named constants; never leave unused helpers, imports, or orphaned XML resources (`strings.xml`, drawables), and never silence warnings with `@SuppressLint` / `@Suppress` instead of fixing the root cause.
+* **Named Constants & Zero Dead Code**: Extract protocol codes, numeric thresholds, and repeated literals into named constants (centralizing raw Design System hex colors in a single `internal` primitives table rather than repeating inline `Color(0x...)` literals); never leave unused objects, classes, helpers, imports, or orphaned XML resources (`strings.xml`, drawables), and never silence warnings with `@SuppressLint` / `@Suppress` instead of fixing the root cause.
 * **Class Layout Order**: Keep class members ordered strictly as: Properties -> `init` blocks -> Public functions -> Private functions -> `companion object` at the very bottom.
 
 ---

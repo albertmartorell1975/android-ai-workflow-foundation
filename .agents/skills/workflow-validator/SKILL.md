@@ -3,7 +3,7 @@ name: workflow-validator
 description: Strictly read-only independent Validator subagent for the Android AI Workflow Foundation. Executes in an isolated git worktree across 4 validation levels (Spec Contract, Clean Architecture & Security, Compiler/Pure JVM Test Evidence, and optional Emulator Runtime via android-cli) and returns a structured evaluation with an Implementation Repair Brief to workflow-orchestrator without modifying repository files.
 metadata:
   author: Albert Martorell Garcia / Antonio Leiva / Nino Ruano
-  version: 2.3.0
+  version: 2.4.0
   keywords:
     - validator
     - subagent

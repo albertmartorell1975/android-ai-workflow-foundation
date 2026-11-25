@@ -3,7 +3,7 @@ name: workflow-planner
 description: Foundation-native Feature Planner and Specification Architect. Analyzes the repository and feature requirements to produce the unified implementation specification at docs/features/<feature-id>/spec.md before handing off to workflow-implementer.
 metadata:
   author: Albert Martorell Garcia / Antonio Leiva / Nino Ruano
-  version: 2.2.0
+  version: 2.3.0
   keywords:
     - workflow
     - planning

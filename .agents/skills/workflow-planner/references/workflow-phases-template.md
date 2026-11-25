@@ -47,6 +47,7 @@ Explicitly specify which durable documents **`workflow-documenter`** will need t
 * **`ARCHITECTURE.md`**: `create` / `update` / `not needed` — reason.
 * **`CONSTRAINTS.md`**: `create` / `update` / `not needed` — reason.
 * **`README.md` / `.agents/skills/README.md`**: `update` / `not needed` — reason.
+* **Superseded / Legacy Docs**: `delete <paths>` / `not needed` — inspect existing `docs/` for legacy records or outdated guides superseded by this feature and explicitly schedule their deletion or replacement so stale documentation does not linger.
 
 ### 2.7 Granular Actionable Clean Architecture Checklist (For `workflow-implementer`)
 Create an ordered step-by-step checklist following the project's Clean Architecture layers (adapting module names to either `Layer-Based` or `Feature-First` topology per `module-architecture-governance`):
@@ -135,6 +136,7 @@ so I can [expected outcome].
 * **`ARCHITECTURE.md`:** create / update / not needed — [reason]
 * **`CONSTRAINTS.md`:** create / update / not needed — [reason]
 * **`README.md` / `.agents/skills/README.md`:** update / not needed — [reason]
+* **Superseded / Legacy Docs:** delete `<paths>` / not needed — [reason]
 
 ## 6. Actionable Implementation Checklist (For `workflow-implementer`)
 

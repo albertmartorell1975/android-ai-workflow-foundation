@@ -3,7 +3,7 @@ name: workflow-implementer
 description: Implementer subagent for the Android AI Workflow Foundation. Executes in an isolated git worktree to implement a planned feature from docs/features/<feature-id>/spec.md (or apply a Repair Brief from docs/features/<feature-id>/validator/validation-report.md or post-PR review from pr-review.md), runs the compiler verification suite, and records passing evidence for workflow-validator.
 metadata:
   author: Albert Martorell Garcia / Antonio Leiva / Nino Ruano
-  version: 2.2.0
+  version: 2.3.0
   keywords:
     - implementer
     - subagent

@@ -12,7 +12,7 @@ During independent validation (Level 3 & Level 3.5), evaluate the implementation
 | **2** | **Single Responsibility (UseCases)** | Each UseCase has a single public `operator fun invoke(...)`. | Multiple public methods in one UseCase, business logic leaked into ViewModel/RepositoryImpl, or writing trivial unit tests (`*UseCaseTest`) for 1:1 pass-through UseCases. |
 | **3** | **Dependency Inversion (DIP)** | ViewModels/UseCases inject Domain interfaces. | Directly injecting concrete `*Impl` classes or data sources into ViewModels or UseCases. |
 | **4** | **DI Binding Hygiene (`hilt`)** | Classes with `@Inject constructor` bound via `@Binds` in `@Module abstract class`. | Using `@Provides` in `object` module for a class that has `@Inject constructor`. |
-| **5** | **Visibility Encapsulation** | Implementation classes (`*Impl`), DAOs, Entities, and DTOs are `internal`. | Any `*Impl`, Room `@Entity`, Room `@Dao`, or network DTO declared `public` in `:data`. |
+| **5** | **Visibility Encapsulation** | Implementation classes (`*Impl`), DAOs, Entities, and DTOs are `internal`; helper objects, classes, and constants used only within a single file are `private` (or `internal` if module-scoped). | Any `*Impl`, Room `@Entity`, Room `@Dao`, or network DTO declared `public` in `:data`, OR any new/modified `public` `object`, class, or helper constant referenced exclusively within its own file (must be `private const val` / `private` helper instead of leaking into the public API). |
 | **6** | **Passive ViewModel** | ViewModel construction is completely passive. | Any `init { launch { ... } }` or coroutine launched in `init {}`. Must use declarative `stateIn` or explicit `onStart()`. |
 | **7** | **Atomic UI State (UDF)** | UI state modified via `_state.update { copy(...) }`. | Using `_state.value = _state.value.copy(...)` (causes race conditions) or exposing MutableStateFlow publicly. |
 | **8** | **Zero Resource Coupling in VM** | Errors exposed as typed `DomainError` in `content.Error(val error: DomainError)`. | ViewModel importing `R.string` or assembling user-facing error strings directly. |
@@ -22,7 +22,7 @@ During independent validation (Level 3 & Level 3.5), evaluate the implementation
 | **12** | **Compose State & Previews** | Stateful `*Screen` separated from Stateless `*Content`. | Any new stateless composable missing `@Preview` or root layout hardcoding `.fillMaxSize()` on reusable components. |
 | **13** | **Kotlin Style & Coroutine Safety** | Structured concurrency and official Kotlin layout conventions followed. | Catching broad `Exception`/`Throwable` in `suspend` functions without rethrowing `CancellationException`, defining domain/mapper extensions on `String`/primitives, or placing `companion object` above methods. |
 | **14** | **Suppression & Lint Hygiene** | Compiler and Lint warnings are fixed at the root cause. | Introducing any new `@SuppressLint(...)` or `@Suppress(...)` annotation without explicit justification in `spec.md` or `pr-review.md` (e.g., silencing `MissingPermission` instead of checking permissions). |
-| **15** | **Dead Code & Orphaned Resources** | Every new/modified symbol and resource in the diff is actively used. | Introducing or leaving behind unused public/internal helper methods, extensions, imports, or orphaned XML resources (`strings.xml`, `colors.xml`, drawables) unreferenced anywhere in production code. |
+| **15** | **Dead Code & Orphaned Resources** | Every new/modified symbol and resource in the diff is actively used, and superseded legacy docs scheduled in `spec.md` §5 are removed. | Introducing or leaving behind unused public/internal helper objects, classes, methods, extensions, imports, or orphaned XML resources (`strings.xml`, `colors.xml`, drawables) unreferenced anywhere in production code, or leaving superseded legacy docs scheduled for deletion in `spec.md` §5 behind. |
 | **16** | **Named Constants (Zero Magic Literals)** | Protocol codes, thresholds, and repeated literals are named constants. | Using un-named magic numbers or repeated protocol/domain literals (e.g., HTTP status codes `401`/`403`, numeric thresholds, key strings) directly inside new/modified production logic. |
 | **17** | **Main-Safe Room & Retrofit Dispatchers** | Explicit `withContext(...)` is reserved for blocking I/O or CPU work. | Wrapping already main-safe Room (`suspend` DAO methods, `Flow` queries, `withTransaction`) or Retrofit (`suspend`) calls in redundant `withContext(Dispatchers.IO)`. |
 
@@ -52,6 +52,9 @@ git diff <base>..HEAD -U0 | grep -E "^\+.*@Suppress(Lint)?\("
 
 # 7. Check for redundant Dispatchers.IO wrappers in Room/Retrofit data sources:
 git grep -n "withContext(Dispatchers\.IO)" -- "*Room*.kt" "*Dao*.kt" "*DataSource*.kt" "*RepositoryImpl.kt"
+
+# 8. Check new/modified public objects in the diff for single-file-only usage (must be private/internal):
+git diff <base>..HEAD -U0 | grep -E "^\+object "
 ```
 
 ---
