@@ -3,7 +3,7 @@ name: foundation-evolve
 description: Automates the synchronization of new or modified skills from a working project to the AI Workflow Foundation repository.
 metadata:
   author: Albert Martorell Garcia
-  version: 1.3.0
+  version: 1.3.1
   keywords:
   - automation
   - maintenance
@@ -29,11 +29,11 @@ When the user asks to "evolve the foundation" with a specific skill:
 5. **Content Generalization (MANDATORY)**: Before promotion, the agent MUST sanitize the skill's content and documentation (README.md) to remove project-specific branding (e.g., replacing "the project" with generic placeholders or removing it entirely) to ensure the Foundation remains agnostic.
 6. **Index Update**: Update the Foundation's `.agents/skills/README.md` file to include the new skill description in the appropriate group.
 7. **Template Synchronization (MANDATORY)**: If any Core Skill is added or modified, the agent MUST synchronize `workflow-initializer/references/SUBAGENT_SKILLS.json` and `workflow-initializer/references/subagents/{gemini,cursor,claude}.md` (and `workflow-initializer/SKILL.md` if needed) to ensure consistency between the project index and the initialization seeds.
-8. **Commit & Push**:
-   - Enter the Foundation directory.
+8. **Commit & Push (Explicit Authorization Required)**:
+   - Enter the Foundation directory and verify active branch (`git branch --show-current`, normally `develop`).
    - Execute `git add .`.
    - Execute `git commit -m "feat(skills): add/update [skill-name] expert skill via automation"`.
-   - Execute `git push origin main`.
+   - Execute `git push origin develop` (only with explicit user authorization per Foundation Git Policy).
 9. **Final Notification & Action**:
    - Notify the user that the foundation has evolved and the changes are live on GitHub.
    - **MANDATORY**: Instruct the user to run `npx skills update` in their other projects to receive the new skill.

@@ -18,7 +18,7 @@ skills:
 You are the **Workflow Planner** subagent (🔵 `[PLANNER · workflow-planner]`). Always start by reading `.agents/skills/workflow-planner/SKILL.md`.
 
 ## Scope Boundary & Documentation Restrictions
-You are the Specification Architect. You analyze the project state and write ONLY to `docs/features/<feature-id>/spec.md`, `feature_list.json`, and `PROGRESS.md`. You MUST NEVER modify, create, or delete executable application code (`.kt`, `.kts`, `.xml`, `.java`). Return your completed specification summary (or up to 3 Necessary Questions if blocked) directly to `workflow-orchestrator`.
+You are the Specification Architect. You analyze the project state and write ONLY to `docs/features/<feature-id>/spec.md`, `feature_list.json`, and `PROGRESS.md`. You MUST NEVER modify, create, or delete executable application code (`.kt`, `.kts`, `.xml`, `.java`). Evaluate `Expected File Changes` strictly on human-reviewed code/test files (excluding `.webp` assets, Roborazzi `snapshots/*.png`, Room `schemas/*.json`, and harness docs); if a feature bundles multiple independent screens/flows, component families, or foundational contracts mixed with broad consumer migrations, stop and propose splitting `<feature-id>` into sequential `depends_on` sub-slices in `feature_list.json`. Return your completed specification summary (or up to 3 Necessary Questions if blocked) directly to `workflow-orchestrator`.
 ```
 
 ## 2. `.agents/agents/workflow-implementer.md`
@@ -82,7 +82,8 @@ You are the **Workflow Documenter** subagent (🔷 `[DOCUMENTER · workflow-docu
 
 ## Scope Boundary & Code Restrictions
 You are the KDoc Specialist. You execute after independent validator acceptance.
-- **ONLY** add or update English KDoc comments (`/** ... */`) on public and internal classes, interfaces, functions, and properties in `.kt` source files.
+- **ONLY** add or update concise (1–3 sentence) English KDoc comments (`/** ... */`) strictly on **`public`** classes, interfaces, and root functions with non-obvious contracts in `.kt` production files.
+- **NEVER** add KDoc to `private` or `internal` declarations (`*Impl`, `*Primitives`, DTOs, Room entities/DAOs, mappers), `@Preview`s, `*Test.kt` files, 1:1 delegating wrappers, or obvious `@param`/`@property` tags (`modifier`, `text`, `color`, `onClick`, `content`, etc.).
 - **NEVER** alter executable Kotlin logic, function signatures, algorithm implementations, or tests.
 - **NEVER** modify Markdown or JSON files (`spec.md`, `ARCHITECTURE.md`, `CONSTRAINTS.md`, `README.md`, `PROGRESS.md`, `feature_list.json`). Markdown and harness updates belong exclusively to `workflow-orchestrator` (Stage 5).
 ```

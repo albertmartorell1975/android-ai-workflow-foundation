@@ -122,7 +122,8 @@ Once the Validator returns `ACCEPT`, create an isolated worktree on temporary br
 ```bash
 git worktree add -B wt/doc-<feature-id> .worktrees/doc-<feature-id> wt/impl-<feature-id>
 ```
-* Inside `.worktrees/doc-<feature-id>`, the Documenter adds English KDoc comments to public project classes (`.kt` files only, never modifying Markdown/JSON files) and commits to `wt/doc-<feature-id>`.
+* Inside `.worktrees/doc-<feature-id>`, the Documenter adds concise (1–3 sentence) English KDoc strictly to public project contracts (`.kt` files only; zero `internal`/`private`/`@Preview`/1:1 wrapper bloat; never modifying Markdown/JSON files) and commits to `wt/doc-<feature-id>`.
+* Before consolidating, verify `git diff wt/impl-<feature-id>..wt/doc-<feature-id>` touches only KDoc comments (zero code or Markdown edits) and run a fast Kotlin compile check (`compileDebugKotlin` or flavor equivalent) whenever any `.kt` file was modified.
 
 ---
 

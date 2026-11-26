@@ -7,11 +7,11 @@ The output must be consistent with the current repository structure, `AGENTS.md`
 
 ---
 
-## PHASE 1: MANDATORY PRE-DIAGNOSIS & SIZING
+## PHASE 1: MANDATORY PRE-DIAGNOSIS & PR REVIEWABILITY SIZING
 Before generating the final specification, the agent MUST verify that:
 1. The feature has a clear `kebab-case` `<feature-id>` and is registered in `feature_list.json` (if running in Standalone Mode, add the entry to `feature_list.json` and `PROGRESS.md`).
 2. All `depends_on` prerequisites in `feature_list.json` have status `accepted`.
-3. The feature is session-sized (typically 100–250 lines of spec). If it combines multiple unrelated screens or domains, recommend splitting it in `feature_list.json`.
+3. **Semantic PR Slicing (Pre-Diagnosis)**: Evaluate only candidate human-reviewed code/test files (`.kt`, `.java`, `.kts`, `AndroidManifest.xml`, `strings.xml`), ignoring `.webp` visual assets, Roborazzi `snapshots/*.png`, Room `schemas/*.json`, and harness docs. Do not apply arbitrary file/LOC limits, but if the feature bundles multiple independent screens/flows, an entire component catalog, foundational contract creation + broad consumer migration, or piggybacked cleanups, stop and propose splitting `<feature-id>` into sequential `depends_on` sub-slices in `feature_list.json` (each producing one focused PR).
 4. Any blocking **Necessary Questions** have been answered by the user or assumptions have been explicitly stated.
 
 ---
@@ -25,7 +25,7 @@ Once context is sufficient, construct the unified specification covering behavio
 * Write concrete **Acceptance Scenarios** (`Given <state> / When <action> / Then <observable outcome>`) covering the happy path and relevant edge/error states.
 
 ### 2.2 Repository Research & Expected File Changes
-* Inspect the existing repository and list the exact files inspected, existing patterns to follow, current gaps, and the concrete files to create or modify.
+* Inspect the existing repository and list the exact files inspected, existing patterns to follow, current gaps, and the concrete files to create or modify, separating **Reviewable Code & Tests** from **Excluded Assets, Snapshots & Generated Artifacts** (`.webp` icons, Roborazzi `snapshots/*.png`, Room `schemas/*.json`) so PR reviewability breadth is explicit at planning time.
 
 ### 2.3 UI/UX Layer & Visual Assets (`docs/features/<feature-id>/ui/`)
 Identify whether UI changes are needed. When applicable, describe:
@@ -41,9 +41,9 @@ When an API is involved, define: HTTP methods, routes, request parameters, DTOs/
 ### 2.5 Persistence Layer
 When persistence is involved, detail: storage requirements (Room, DataStore), database schema changes, entities, DAO/repository changes, and migrations. If not involved, explicitly state `"No persistence changes required"`.
 
-### 2.6 Durable Documentation Impact (For `workflow-documenter`)
-Explicitly specify which durable documents **`workflow-documenter`** will need to update after validation passes:
-* **Public KDoc**: Which new/modified Domain models, UseCases, Repositories, or ViewModels require English KDoc.
+### 2.6 Durable Documentation Impact (For `workflow-documenter` & Stage 5)
+Explicitly specify which durable documents require updates after validation passes:
+* **Public KDoc Targets (`workflow-documenter`)**: List ONLY `public` classes, interfaces, and root reusable APIs with non-obvious contracts (Domain models/repositories, UseCases, ViewModels, root Design System components). Never list `internal`/`private` classes (`*Impl`, `*Primitives`, DTOs, Entities, DAOs, UI Mappers), `@Preview` functions, or repetitive 1:1 delegating wrappers.
 * **`ARCHITECTURE.md`**: `create` / `update` / `not needed` — reason.
 * **`CONSTRAINTS.md`**: `create` / `update` / `not needed` — reason.
 * **`README.md` / `.agents/skills/README.md`**: `update` / `not needed` — reason.
@@ -115,7 +115,10 @@ so I can [expected outcome].
 * [Established module topology (`Layer-Based` or `Feature-First`), DI, StateFlow/ViewModel, or Repository conventions]
 
 ### Expected File Changes
-* `<path>` — create/modify; [reason]
+* **Reviewable Code & Tests (drives semantic PR scope check):**
+  * `<path>` — create/modify; [reason]
+* **Excluded Visual Assets, Snapshots & Generated Artifacts (excluded from scope breadth):**
+  * `<path or N/A>` — [e.g., `res/drawable/ic_*.webp`, Roborazzi `snapshots/*.png`, Room `schemas/*.json`, or `N/A`]
 
 ## 4. Android Layer Breakdown
 
@@ -132,8 +135,8 @@ so I can [expected outcome].
 ### Persistence
 [Describe Room/DataStore entities, DAOs, and migrations, or state "No persistence changes required".]
 
-## 5. Durable Documentation Impact (For `workflow-documenter`)
-* **KDoc Targets:** [List new public classes/interfaces in Domain, Data, UseCase, UI/Presentation requiring English KDoc]
+## 5. Durable Documentation Impact (For `workflow-documenter` & Stage 5)
+* **KDoc Targets (concise public APIs only — zero `internal`/`private` types, `@Preview`s, or 1:1 wrappers):** [List new/modified `public` contracts in Domain, UseCase, or UI/Design System requiring concise 1–3 line English KDoc, or `None`]
 * **`ARCHITECTURE.md`:** create / update / not needed — [reason]
 * **`CONSTRAINTS.md`:** create / update / not needed — [reason]
 * **`README.md` / `.agents/skills/README.md`:** update / not needed — [reason]

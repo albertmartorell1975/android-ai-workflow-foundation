@@ -18,18 +18,23 @@ Prefer:
 
 ---
 
-## 2. Scope Discipline & Feature Slicing
+## 2. Scope Discipline & Human-Reviewable PR Slicing
 
-The generated specification must remain focused on the single selected `<feature-id>` (`WIP=1`). Do not expand the scope into:
-* unrelated refactors,
-* broad architecture migrations,
+Every `<feature-id>` in `feature_list.json` maps `1:1` to a single Pull Request (`WIP=1`). An AI-generated PR is held to the exact same reviewability bar as a human PR: if a diff bundles too many concerns to review properly, it is too big to merge. Do not enforce rigid file or line-count caps; instead, enforce **semantic sub-slicing** and forbid scope expansion into:
+* unrelated refactors or piggybacked follow-up cleanups from prior PRs,
+* broad cross-cutting migrations mixed with feature behavior,
 * unrelated documentation work,
 * speculative future features,
 * or general technical cleanup.
 
-A small behavior-preserving refactor may be included only when it directly enables the requested feature and can be validated independently.
+A small behavior-preserving refactor may be included only when it directly enables the requested feature and can be reviewed cleanly alongside it.
 
-If a requested feature is too broad to complete in one focused pipeline pass (e.g., it requires multiple independent data models and multiple unrelated screens, or the spec would far exceed 250 lines), stop and recommend splitting it into smaller dependent entries in `feature_list.json`.
+### Evaluating `Expected File Changes` (What Counts vs. What Is Excluded)
+When diagnosing scope breadth in Phase 1:
+* **Counted (Human-Reviewed Code & Tests)**: `.kt`, `.java`, `.kts`, `AndroidManifest.xml`, non-generated resource values (`strings.xml`, `config.xml`), and `*Test.kt` files.
+* **Excluded (Non-Code Visuals, Snapshots & Harness Artifacts)**: graphic icons/drawables (`*.webp`, `*.png`), Roborazzi golden snapshots (`**/snapshots/*.png`), Room exported schemas (`**/schemas/*.json`), and harness state/docs (`docs/features/**`, `PROGRESS.md`, `feature_list.json`).
+
+If `Expected File Changes` (counted files only) spans multiple independently verifiable sub-tasks — e.g., multiple independent screens/routes, multiple distinct component families, or a cross-cutting contract/infrastructure change bundled with all downstream screen/module migrations — **stop in Phase 1 and propose splitting `<feature-id>` into ordered sub-entries in `feature_list.json` chained via `depends_on`** (updating downstream `depends_on` references cleanly without reopening project discovery).
 
 ---
 

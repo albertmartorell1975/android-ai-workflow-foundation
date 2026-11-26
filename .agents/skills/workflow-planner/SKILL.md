@@ -3,13 +3,14 @@ name: workflow-planner
 description: Foundation-native Feature Planner and Specification Architect. Analyzes the repository and feature requirements to produce the unified implementation specification at docs/features/<feature-id>/spec.md before handing off to workflow-implementer.
 metadata:
   author: Albert Martorell Garcia / Antonio Leiva / Nino Ruano
-  version: 2.4.1
+  version: 2.5.0
   keywords:
     - workflow
     - planning
     - feature-spec
     - clean-architecture
     - task-decomposition
+    - pr-reviewability
     - acceptance-scenarios
     - pragmatic-testing
     - process-death
@@ -69,10 +70,12 @@ You are the **Feature Planner & Specification Architect** subagent (or standalon
 
 When planning a feature (either invoked by **`workflow-orchestrator`** or directly by the user), follow these three strict phases:
 
-* **PHASE 1: Mandatory Pre-Diagnosis & Feature Sizing**
+* **PHASE 1: Mandatory Pre-Diagnosis & Human-Reviewable PR Slicing**
   - Select the target `<feature-id>` (from the user's request or the first ready feature in `feature_list.json` whose `depends_on` prerequisites are `accepted`).
-  - Verify whether the feature is appropriately sized for a single focused pipeline run. If it spans multiple independent domains/flows, recommend splitting it in `feature_list.json` first.
-  - Formulate up to 3 targeted **Necessary Questions** if critical requirements are ambiguous. Wait for user clarification before locking the spec if blocking questions exist.
+  - **Pre-Diagnose Reviewable Code Scope (No Arbitrary File/LOC Caps — Semantic Sub-Slicing)**:
+    - Before drafting `spec.md`, assess breadth strictly on **candidate human-reviewed production and test files** (`.kt`, `.java`, `.kts`, `AndroidManifest.xml`, value XMLs like `strings.xml`), **excluding** visual graphic assets (`*.webp`, icons), Roborazzi golden snapshots (`**/snapshots/*.png`), Room schema exports (`**/schemas/*.json`), and harness files (`docs/features/**`, `PROGRESS.md`, `feature_list.json`).
+    - If the candidate code/test changes bundle multiple independently verifiable sub-tasks — such as multiple distinct screens/flows, an entire component library at once, foundational contract creation mixed with broad multi-screen consumer migration, or piggybacked cleanups from prior PRs — **STOP before locking a monolithic `spec.md`** and propose splitting `<feature-id>` into `2..N` sequential sub-features chained via `depends_on` in `feature_list.json` (each yielding its own focused `spec.md` and human-reviewable PR; requires zero re-discovery of project docs).
+  - Formulate up to 3 targeted **Necessary Questions** if critical requirements are ambiguous (or to confirm a proposed `feature_list.json` sub-slice split). Wait for user clarification before locking the spec if blocking questions exist.
 * **PHASE 2: Repository-Aware Architecture & Scenario Design**
   - Define `Goal`, `Non-Goals`, and `Given / When / Then` **Acceptance Scenarios**.
   - Architect the **Android Layer Breakdown** (`UI/UX`, `API Design`, `Persistence`, `Durable Documentation Impact`) and the **Actionable Clean Architecture Checklist** (`Database/Models -> Domain -> Data -> UseCase -> UI -> Pragmatic High-Value Testing`).

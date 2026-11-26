@@ -52,7 +52,7 @@ Every agent and subagent MUST prefix its responses and `PROGRESS.md` entries wit
 * 🔵 **`[PLANNER · workflow-planner]`** — Feature diagnosis and unified specification (`docs/features/<feature-id>/spec.md`).
 * 🟡 **`[IMPLEMENTER · workflow-implementer]`** — Clean Architecture code, pure JVM tests, and `@compiler` verification in an isolated `git worktree`.
 * 🟢 **`[VALIDATOR · workflow-validator]`** *(or 🔴 on `revise` / `block`)* — Read-only 4-level validation (Spec, Security, Compiler/Tests, Runtime) and `validation-report.md` in an isolated `git worktree` (`MAX_REPAIR_ATTEMPTS = 2`).
-* 🔷 **`[DOCUMENTER · workflow-documenter]`** — English KDoc comments on public project classes in an isolated `git worktree` after acceptance.
+* 🔷 **`[DOCUMENTER · workflow-documenter]`** — Concise English KDoc comments strictly on public project contracts in an isolated `git worktree` after acceptance.
 
 ### Human Checkpoints & Execution Modes
 * **Checkpoints (`require_review_after`)**: Configurable per feature (`"planner"`, `"implementer"`, `"validator"`, or array). Recommended high-leverage pattern: supervise after `"planner"` (`spec.md`) and via GitHub Pull Request review.
@@ -217,3 +217,14 @@ Status values:
 - `"validator"`: Pause after `workflow-validator` returns `accept`, before `workflow-documenter` and final git consolidation. The developer reviews the code diff and `validation-report.md`.
 - `["planner", "validator"]` (Array): Pause at multiple stages for critical features (e.g. payment flows, core architecture shifts).
 - *Permissive Evaluation*: Any unrecognized string, unknown value, or invalid stage name is treated permissively as `null` (autonomous flow continues without blocking).
+
+## `.gitattributes` (PR Diff Noise Collapse)
+
+Purpose: keep Roborazzi golden snapshots, Room exported schema JSONs, and verbose validator reports versioned in git while collapsing them by default in GitHub's *Files changed* tab so human reviewers focus on production and test code.
+
+```gitattributes
+# Collapse generated snapshots, exported schemas, and verbose validator reports in GitHub PR diffs
+**/snapshots/**/*.png linguist-generated=true
+**/schemas/**/*.json linguist-generated=true
+docs/features/**/validator/*.md linguist-generated=true
+```

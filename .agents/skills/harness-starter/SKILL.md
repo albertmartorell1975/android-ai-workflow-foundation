@@ -18,7 +18,7 @@ Create or update the smallest useful repository harness so any orchestrator or s
 - Do not reopen product discovery unless asked, or unless there are neither discovery docs nor a codebase to inspect.
 - Only create/update these artifacts:
   - `AGENTS.md`, `PROGRESS.md`, `CONSTRAINTS.md` (if durable rules exist), `feature_list.json`
-  - `.github/workflows/gate.yml`
+  - `.github/workflows/gate.yml`, `.gitattributes` (collapse generated snapshots/schemas/reports in PR diffs)
   - `docs/features/<feature-id>/{ui/screens,ui/resources,validator}/` (never recreate existing folders)
 - Read existing files first and update conservatively; never overwrite useful human-authored content.
 - Preserve the repository's document language and style (infer from discovery docs; ask only without evidence).
@@ -44,7 +44,7 @@ If neither exists, ask whether to run `@build-brief` first or accept a brief lis
    - `.github/workflows/gate.yml` — headless CI gate (`testDebugUnitTest` + `lintDebug`, or `test<Flavor>DebugUnitTest` + `lint<Flavor>Debug` when `productFlavors` are configured) on PRs to `develop`/`main`; JDK 17 by default, 21 for `jvmToolchain(21)` or SDK 36+. Created **once**; an existing CI workflow is preserved untouched.
    - `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json` (with optional `require_review_after`).
    - Feature folders for every feature id.
-3. **Slice** features into session-sized units and wire `depends_on` per **[Feature Slicing & Quality Check](references/feature-slicing.md)**.
+3. **Slice** features into atomic, human-reviewable PR units (separating foundational contracts from multi-screen adoption, avoiding multi-screen/component-catalog bundles, and forbidding piggybacked cleanups) and wire `depends_on` per **[Feature Slicing & Quality Check](references/feature-slicing.md)**.
 4. **Verify** with the quality checklist in the same reference before finishing.
 
 ## Teaching Note

@@ -122,6 +122,7 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
 
 ### 2. 🔵 Planner (`workflow-planner`)
 * Spawns in a clean subagent context restricted to specification files, never modifying executable application code.
+* Diagnoses semantic PR reviewability via `Expected File Changes` (counting only human-reviewed code/tests while excluding `.webp` visual assets, Roborazzi `snapshots/*.png`, Room `schemas/*.json`, and harness docs); if a feature bundles multiple independent screens/flows, component families, or foundational contracts mixed with broad consumer migrations, stops and proposes splitting `<feature-id>` into sequential `depends_on` sub-slices in `feature_list.json`.
 * Inspects the repository and clarifies up to 3 blocking technical questions with the user.
 * Authors the unified feature contract at **`docs/features/<feature-id>/spec.md`** (`Given / When / Then` acceptance scenarios, Android layer breakdown, Clean Architecture checklist, and a closed 0–6 pure JVM test plan specifying `0 tests` for boilerplate or pass-through layers).
 
@@ -140,7 +141,7 @@ Whether a developer requests a **Standalone Feature (Mode A)** or processes a **
 
 ### 5. 🔷 Documenter (`workflow-documenter`)
 * Runs in an isolated `git worktree` (`.worktrees/doc-<feature-id>`) **only after `workflow-validator` returns `accept`**.
-* Strictly documents public classes across all layers with English KDoc comments without altering executable code or modifying Markdown documentation files.
+* Adds concise (1–3 sentence), high-signal English KDoc strictly to `public` contracts across layers (zero `internal`/`private` declarations, `@Preview`s, obvious `@param` noise, or 1:1 delegating wrappers) without altering executable code or modifying Markdown documentation files.
 
 ---
 

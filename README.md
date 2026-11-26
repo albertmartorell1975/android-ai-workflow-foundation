@@ -95,10 +95,10 @@ flowchart TD
 | Role | Core Skill | Execution Scope | Responsibilities |
 | :--- | :--- | :--- | :--- |
 | 🟣 **Orchestrator** | `workflow-orchestrator` | Feature branch (`feature/<id>`) | Coordinates queue & `depends_on` PR gates, hydrates worktrees/APKs, enforces checkpoints & repair loops (`MAX_REPAIR_ATTEMPTS = 2`), updates harness & project `.md` docs, creates atomic commits (`@git-governance`), and opens PRs. |
-| 🔵 **Planner** | `workflow-planner` | Clean context (`docs/features/<id>/`) | Asks up to 3 blocking questions and writes `spec.md` (`Given/When/Then` scenarios, layer breakdown, Clean Architecture checklist). Never writes app code. |
+| 🔵 **Planner** | `workflow-planner` | Clean context (`docs/features/<id>/`) | Evaluates semantic PR reviewability via `Expected File Changes` (excluding visual/snapshot/schema assets, proposing sequential `depends_on` sub-slices when needed), asks up to 3 blocking questions, and writes `spec.md`. Never writes app code. |
 | 🟡 **Implementer** | `workflow-implementer` | `.worktrees/impl-<id>` | Implements Clean Architecture layers (`Domain -> Data -> UseCase -> UI`), converts `ui/resources/` assets to `.webp`, writes JVM tests, and runs `@compiler` checks. |
-| 🟢/🔴 **Validator** | `workflow-validator` | `.worktrees/val-<id>` | Strictly read-only adversarial auditor across **4 levels** (Spec, Security/Scope, `@compiler`/Tests + 18 Architecture/SOLID & Process Death triggers, and optional `@android-cli` emulator runtime incl. Activity recreation & LMK process-death probes). Emits `accept`, `revise` + Repair Brief, or `block`. |
-| 🔷 **Documenter** | `workflow-documenter` | `.worktrees/doc-<id>` | Runs only after `accept`. Adds English KDoc comments to public project classes without modifying code logic. |
+| 🟢/🔴 **Validator** | `workflow-validator` | `.worktrees/val-<id>` | Strictly read-only adversarial auditor across **4 levels** (Spec, Security & Zero-Piggybacking Scope, `@compiler`/Tests + 18 Architecture/SOLID & Process Death triggers, and optional `@android-cli` emulator runtime incl. Activity recreation & LMK process-death probes). Emits `accept`, `revise` + Repair Brief, or `block`. |
+| 🔷 **Documenter** | `workflow-documenter` | `.worktrees/doc-<id>` | Runs only after `accept`. Adds concise (1–3 sentence), high-signal English KDoc strictly to public contracts without diff-padding boilerplate or code changes. |
 
 ---
 

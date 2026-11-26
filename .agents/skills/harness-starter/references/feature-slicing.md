@@ -4,18 +4,23 @@ Reference for `@harness-starter` when deriving `feature_list.json` and validatin
 
 ---
 
-## 1. Feature Slicing
+## 1. Feature Slicing (Atomic, Human-Reviewable PR Units)
 
-`feature_list.json` must contain **session-sized slices**: user-visible or system-verifiable behavior that one focused pipeline run (`workflow-planner -> workflow-implementer -> workflow-validator -> workflow-documenter`) can complete and verify. No epics, no low-level chores.
+`feature_list.json` must contain **atomic, human-reviewable slices**: each entry maps `1:1` to a single focused Pull Request that `workflow-planner -> workflow-implementer -> workflow-validator -> workflow-documenter` can verify **and** a human engineer can review without cognitive overload. Do not set rigid file or line-count caps; instead, enforce semantic atomicity (no epics, no cross-cutting mega-slices, no low-level chores).
 
-Split a feature when:
-- Its title joins multiple domains with "and" / "/" / commas.
-- Verification needs multiple independent screens, endpoints, jobs, or integrations.
-- It cannot be verified with one small scenario plus the standard repo gate.
+Split a feature into ordered sub-slices chained via `depends_on` when:
+- Its title or behavior joins multiple domains, screens, or user flows with "and" / "/" / commas (e.g., split `auth-splash-login` into `auth-splash` and `auth-login`; split list + unrelated modal flows when each has distinct state/logic).
+- It mixes **foundational contract/infrastructure changes** (e.g., error hierarchy, database migration, theme tokens, navigation shell) with **broad multi-screen consumer adoption** — slice the contract/foundation first, then slice consumer adoption downstream.
+- It updates an entire catalog of UI/Design System components at once — group into cohesive component families (e.g., actions & typography vs. inputs & feedback vs. navigation & cards) rather than one monolithic alignment PR.
+- Verification requires multiple independent screens, endpoints, jobs, or integrations that could be verified and reviewed separately.
+
+Scope assessment exclusions & anti-piggybacking:
+- **Exclude non-code & harness artifacts from scope breadth**: graphic icons/assets (`*.webp`, `*.png`, vector XML), Roborazzi golden snapshots (`**/snapshots/*.png`), Room schema exports (`**/schemas/*.json`), and harness files (`docs/features/**`, `PROGRESS.md`, `feature_list.json`) do not make a slice "too broad" on their own.
+- **Zero Piggybacking**: never attach follow-up cleanups from earlier PRs onto a functional feature's `notes`. Resolve review items inside their own PR's `review-fix` loop or register a dedicated small `refactor`/`chore` slice.
 
 Sizing guidance:
-- Full MVP from `@build-brief`: roughly 10–30 features, not 4–5 broad epics.
-- Existing project with a lightweight harness: only the requested slices.
+- Full MVP from `@build-brief`: roughly 12–35 atomic slices, never 4–5 broad epics.
+- Existing project with a lightweight harness: only the requested slices, decomposed cleanly where needed.
 
 State rules:
 - At most one feature `in_progress` initially (prefer all `not_started` unless work is already active).

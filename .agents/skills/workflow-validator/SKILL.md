@@ -3,7 +3,7 @@ name: workflow-validator
 description: Strictly read-only independent Validator subagent for the Android AI Workflow Foundation. Executes in an isolated git worktree across 4 validation levels (Spec Contract, Clean Architecture & Security, Compiler/Pure JVM Test Evidence, and optional Emulator Runtime via android-cli) and returns a structured evaluation with an Implementation Repair Brief to workflow-orchestrator without modifying repository files.
 metadata:
   author: Albert Martorell Garcia / Antonio Leiva / Nino Ruano
-  version: 2.5.2
+  version: 2.5.3
   keywords:
     - validator
     - subagent
@@ -78,7 +78,7 @@ You are the **Independent Validator / Evaluator subagent**, not the planner, not
 - Check every `Given / When / Then` **Acceptance Scenario** in `docs/features/<feature-id>/spec.md`. Ensure real logic is implemented (no `TODO` placeholders, fake responses, or missing UI states `Loading`, `Error`, `Success`).
 
 ### Level 2: Security & Scope Discipline Audit
-- **Scope Discipline**: Verify that the diff touches only files required for `<feature-id>` and respects `CONSTRAINTS.md`.
+- **Scope Discipline & Zero Piggybacking**: Verify that the human-reviewed code diff touches only files justified by `Expected File Changes` in `spec.md` (or `pr-review.md` in `review-fix` mode), introduces zero piggybacked cleanups or opportunistic refactors outside `<feature-id>` (`WIP=1`), and respects `CONSTRAINTS.md`. Visual assets (`*.webp`), Roborazzi golden snapshots (`**/snapshots/*.png`), and Room schema exports (`**/schemas/*.json`) are audited for determinism/parity without penalizing reviewable diff scope.
 - **Android Component & Intent Security**: Audit `AndroidManifest.xml` (`android:exported`), Intent handling, and `PendingIntent` mutability flags per **[Security Checklist](references/security-checklist.md)**.
 
 ### Level 3: Compiler Evidence, Test Quality & Architecture/SOLID Audit
