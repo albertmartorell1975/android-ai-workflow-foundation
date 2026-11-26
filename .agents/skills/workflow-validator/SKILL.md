@@ -3,7 +3,7 @@ name: workflow-validator
 description: Strictly read-only independent Validator subagent for the Android AI Workflow Foundation. Executes in an isolated git worktree across 4 validation levels (Spec Contract, Clean Architecture & Security, Compiler/Pure JVM Test Evidence, and optional Emulator Runtime via android-cli) and returns a structured evaluation with an Implementation Repair Brief to workflow-orchestrator without modifying repository files.
 metadata:
   author: Albert Martorell Garcia / Antonio Leiva / Nino Ruano
-  version: 2.5.0
+  version: 2.5.1
   keywords:
     - validator
     - subagent
@@ -94,19 +94,24 @@ You are the **Independent Validator / Evaluator subagent**, not the planner, not
 
 ### Level 4: Runtime / User-Flow, Activity Recreation & Process Death Validation (`@android-cli`)
 - If the feature has `UI Involved: yes` (spec.md, Android Layer Breakdown) and an emulator/device is active, verify that the pre-installed application is launched or deploy the hydrated APK artifact located at `app/build/outputs/apk/` using `android run --apks=<path>` (retry `android` / `adb` commands with `BypassSandbox: true` if blocked by sandbox local socket restrictions). Execute the `Given / When / Then` Acceptance Scenarios of `docs/features/<feature-id>/spec.md` as black-box `android-cli` journeys (`android layout --diff`, `android screen capture` saving any temporary captures under git-ignored `app/build/outputs/`; see `android-cli` references `journeys.md` and `interact.md`) and verify the flow without crashes.
-- **Lifecycle & Process Death Runtime Probes (MANDATORY whenever the feature touches stateful Screens, ViewModels, forms/filters, or Navigation routes on an active emulator; mark `N/A — stateless component/token slice` for pure Design System slices)**:
+- **Lifecycle & Process Death Runtime Probes (MANDATORY across EVERY stateful screen, non-root route, and critical interactive state touched by the feature when an emulator is active; mark `N/A — stateless component/token slice` only for pure Design System slices)**:
+  - Build a **Probe Checklist** from `spec.md` (*Process Death & State Restoration*) and the diff covering **every distinct stateful destination and critical persistable state** introduced or modified by the feature (e.g., list screen with active search/filter/tab, each non-root detail or sub-graph route, active form/draft input, or open stateful modal/sheet when `spec.md` expects it to survive; do NOT probe ephemeral network-error/loading overlays). If the feature modifies shared navigation infrastructure (`MainActivity`, `NavHost`, or `AppState`), include the root destination plus at least one existing non-root destination. Running only a single probe on one screen is **insufficient** when a feature spans multiple screens or stateful flows.
   1. **Probe 4A — Activity Destruction (*Don't keep activities*)**: Tests `MainActivity` + Compose `setContent` teardown/recreation while `ViewModelStore` stays alive (simulating system picker/OAuth return or low-RAM Activity eviction):
-     - Enable: `adb shell settings put global always_finish_activities 1`.
-     - Navigate to the feature's destination (enter/select UI state if applicable), background via `adb shell input keyevent KEYCODE_HOME`, and resume from Recents (`adb shell input keyevent KEYCODE_APP_SWITCH` + tap app card via `@android-cli`).
-     - Verify via `android layout` and `adb logcat` that `rememberSaveable` state survives, no crash occurs, and `LaunchedEffect` does not trigger duplicate loads or reset valid ViewModel state.
-     - **MANDATORY Cleanup (always execute, even on failure)**: `adb shell settings put global always_finish_activities 0`.
+     - Enable once at the start of the pass: `adb shell settings put global always_finish_activities 1`.
+     - **Repeat for every screen/state in the Probe Checklist**: navigate into that screen and set up its active UI state, clear logs (`adb logcat -c`), background via `adb shell input keyevent KEYCODE_HOME`, and resume from Recents (`adb shell input keyevent KEYCODE_APP_SWITCH` + tap app card via `@android-cli`).
+     - Verify via `android layout` and `adb logcat -d AndroidRuntime:E JavaBinder:E *:S` that `rememberSaveable` state survives, zero crashes or Binder transaction errors occur, and `LaunchedEffect` does not trigger duplicate loads or reset valid ViewModel state.
+     - **MANDATORY Cleanup (always execute BEFORE starting Probe 4B and on any failure/abort)**: `adb shell settings put global always_finish_activities 0`.
   2. **Probe 4B — True Process Death (OS LMK Simulation)**: Tests full Linux process termination (`Application`, Hilt `@Singleton`s, `ViewModel`s, and Compose tree wiped) while preserving the `NavHost` backstack and saved `Bundle`s:
-     - Navigate to the feature's destination (preferring a non-root detail/sub-graph screen or active input/filter state).
-     - Background the app so Android transitions the process to *Cached* priority and runs `onStop()` + `onSaveInstanceState()`: `adb shell input keyevent KEYCODE_HOME`.
-     - Kill the cached process cleanly: `adb shell am kill <applicationId>` *(NEVER use `am force-stop`, which wipes the task stack and saved instance state)*.
-     - Confirm the process is dead: `adb shell pidof <applicationId>` returns empty.
-     - Restore the existing task exclusively via **Recents** (`adb shell input keyevent KEYCODE_APP_SWITCH` + tap app card via `@android-cli` — NEVER a plain cold `am start -n` that bypasses task restoration).
-     - Verify via `adb logcat` and `android layout` that: (i) zero crashes (`NullPointerException`, deserialization errors, `TransactionTooLargeException`) occurred, and (ii) the app restored directly onto the active destination with intact data/input state (not blank, not reset to root unexpectedly, not stuck in infinite `Loading`).
+     - Resolve the exact running `<applicationId>` (including flavor/buildType suffix, e.g. via `adb shell dumpsys activity activities | grep mResumedActivity`).
+     - **Repeat the full LMK kill-and-restore cycle for EVERY distinct stateful screen, non-root destination, and critical interactive state in the Probe Checklist**:
+       1. Navigate to the target screen/destination, set up its active state (e.g., query/filter, selected tab, detail route, draft input, or stateful sheet), capture `PID_BEFORE` via `adb shell pidof <applicationId>` (MUST be non-empty), and clear logs (`adb logcat -c`).
+       2. Background the app via `adb shell input keyevent KEYCODE_HOME` and wait ~1–2 seconds so Android finishes `onStop()` + `onSaveInstanceState()` and lowers the process to *Cached* priority.
+       3. Kill the cached process cleanly: `adb shell am kill <applicationId>` *(NEVER use `am force-stop`, which wipes the task stack and saved instance state)*.
+       4. Confirm the process is dead: `adb shell pidof <applicationId>` returns empty *(if still alive, wait 2 seconds and retry `am kill` once; never substitute `am force-stop`)*.
+       5. Restore the existing task exclusively via **Recents** (`adb shell input keyevent KEYCODE_APP_SWITCH` + tap app card via `@android-cli` — NEVER a plain cold `am start -n` that bypasses task restoration).
+       6. Confirm `PID_AFTER` (`adb shell pidof <applicationId>`) is non-empty and **`PID_AFTER != PID_BEFORE`** (proving real process death occurred).
+       7. Verify via `adb logcat -d AndroidRuntime:E JavaBinder:E *:S` and `android layout` that: (i) zero crashes (`NullPointerException`, deserialization errors, `TransactionTooLargeException`, `FAILED BINDER TRANSACTION`) occurred, and (ii) the app restored directly onto that exact active destination with intact data/input state (not blank, not reset to root unexpectedly, not stuck in infinite `Loading`).
+     - Record every probed screen/state as its own row in the **Level 4 Process Death & Recreation Matrix** (Section 3.3) in your validation report; omitting any stateful screen or interactive state touched by the feature invalidates `accept`.
 - If no device is active (or `UI Involved: no`), record Level 4 as `SKIPPED (headless)` and note that behavior was verified via Pure JVM tests, static Trigger #18 audit, and `@Preview`s. This never blocks the pipeline.
 
 ---
@@ -137,6 +142,6 @@ Perform each applicable audit and record it in an **Adversarial Attempts Log** i
 
 ## 4. Verdicts & Implementation Repair Brief
 
-- **`accept`**: Zero blocking findings (`Critical` / `High` / `Medium`); all acceptance scenarios, 18 triggers, and test checks pass; AND both an **Adversarial Attempts Log** (Section 3.5) and a **Non-Blocking Code Review Observations** section are explicitly populated. An `accept` without those sections is invalid.
+- **`accept`**: Zero blocking findings (`Critical` / `High` / `Medium`); all acceptance scenarios, 18 triggers, and test checks pass; AND an **Adversarial Attempts Log** (Section 3.5), a **Non-Blocking Code Review Observations** section, and (when Level 4 runs on stateful UI) a complete **Level 4 Process Death & Recreation Matrix** (Section 3.3) covering every stateful screen/route/state touched by the feature are explicitly populated. An `accept` without those sections is invalid.
 - **`revise`**: Fixable Critical, High, or Medium findings exist. You **MUST** include a clear `Implementation Repair Brief`.
 - **`block`**: Fundamental architectural/security blocker.
