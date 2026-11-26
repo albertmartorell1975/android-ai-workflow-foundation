@@ -33,7 +33,7 @@ Identify whether UI changes are needed. When applicable, describe:
 * Dedicated feature folders under:
   - `docs/features/<feature-id>/ui/screens/` (full-screen mockups/reference guides ONLY — **MUST NOT** be converted into Android drawables).
   - `docs/features/<feature-id>/ui/resources/` (raw PNG/JPEG graphic assets — **MUST** be converted into optimized `.webp` format in the target UI module: `app/src/main/res/drawable/ic_<name>.webp` for Layer-Based projects, or `<feature>/presentation/src/main/res/drawable/ic_<name>.webp` / `core/designsystem/src/main/res/drawable/` for Feature-First projects).
-* Loading, error, empty, and success states, navigation implications (`navigation-3`), accessibility, and adaptive layout considerations (`adaptive`, `edge-to-edge`).
+* Loading, error, empty, and success states, navigation implications (`navigation-3`), accessibility, adaptive layout considerations (`adaptive`, `edge-to-edge`), and **Process Death & State Restoration** (enumerating every distinct stateful screen, non-root destination, and critical persistable UI state for Level 4 Probes 4A & 4B).
 
 ### 2.4 API Layer
 When an API is involved, define: HTTP methods, routes, request parameters, DTOs/JSON schemas, authentication requirements, and error mapping contracts. If not involved, explicitly state `"No API changes required"`.
@@ -123,7 +123,7 @@ so I can [expected outcome].
 * **UI Involved:** yes/no
 * **Design Source:** `DESIGN.md` / `docs/features/<feature-id>/ui/screens/` / N/A
 * **States & Navigation:** [Loading, Error, Empty, Success states, type-safe Navigation routes / Navigation 3 `rememberNavBackStack`, A11y, Adaptive]
-* **Process Death & State Restoration:** [Specify how stateful screens, form inputs, filters, route args (`SavedStateHandle`), and shared sub-graph ViewModels survive LMK process death and Activity recreation (`rememberSaveable` / `SavedStateHandle` / Room SSOT; ID-only route payloads), or `N/A` for pure stateless component/non-UI slices]
+* **Process Death & State Restoration:** [Enumerate EVERY distinct stateful screen, non-root destination, shared sub-graph flow, and critical interactive UI state (e.g. active search/filter, selected tab, form/draft input, modal/sheet) introduced or modified by this feature, and specify how each survives Activity recreation and OS LMK process death (`rememberSaveable` / `SavedStateHandle` / Room SSOT; ID-only route payloads) — this list drives mandatory Level 4 Probes 4A & 4B; write `N/A` only for pure stateless component/non-UI slices]
 * **Graphic Assets Conversion:** [List PNG/JPEG files in `docs/features/<feature-id>/ui/resources/` to convert to `.webp` in the target UI module (`app/src/main/res/drawable/ic_<name>.webp` in Layer-Based, or `<feature>/presentation/src/main/res/drawable/ic_<name>.webp` / `core/designsystem/src/main/res/drawable/` in Feature-First), or N/A. Screen mockups in `ui/screens/` are excluded.]
 
 ### API Design
@@ -162,14 +162,15 @@ so I can [expected outcome].
 - [ ] **UI Design Assets & Folders:** Convert raw graphic assets in `docs/features/<feature-id>/ui/resources/` (PNG/JPEG) to `.webp` in the target UI module (`app/src/main/res/drawable/ic_<name>.webp` or `<feature>/presentation/src/main/res/drawable/ic_<name>.webp`; mockups in `ui/screens/` excluded).
 - [ ] **Testing & Integration (Pragmatic High-Value Testing & Closed Test Plan):**
   - *Budget*: Max 1-3 `@Test` per class and **0-6 `@Test` total** across the feature (pure JVM only with Manual Fakes; no Compose/Robolectric screen tests; zero cross-layer duplication; zero trivial tests).
-  - *Planned `*Test.kt` files*: [List exact `<ClassName>Test.kt` -> `@Test` method names and the production branch/calculation/state transition each covers, or state `0 tests` for layers with no branching/transformation logic].
+  - *Planned `*Test.kt` files*: [List exact `<ClassName>Test.kt` -> `@Test` method names and the production branch/calculation/state transition each covers — including `SavedStateHandle(mapOf(...))` cold-restoration coverage whenever a ViewModel uses `SavedStateHandle`, either dedicated or integrated into a cohesive `*ViewModelTest` — or state `0 tests` for layers with no branching/transformation logic].
 - [ ] **Compiler Self-Verification (MANDATORY):** Execute the `compiler` skill verification suite (`assembleDebug`, `lintDebug`, `testDebugUnitTest`) and record evidence in `PROGRESS.md` and `feature_list.json` (`status: "passing"`).
 
 ## 7. Validator Checklist (For `workflow-validator`)
 
 - [ ] Implementation stays strictly within `<feature-id>` scope (`WIP=1`) and `CONSTRAINTS.md`.
 - [ ] All Acceptance Scenarios (`Given/When/Then`) are satisfied with real behavior (no fake/hardcoded stubs).
-- [ ] Clean Architecture & SOLID invariants (`architecture-solid-audit.md`) and security rules (`android-intent-security`) are respected across all layers.
+- [ ] Clean Architecture & SOLID invariants (`architecture-solid-audit.md`, all 18 Triggers incl. Trigger #18 Process Death) and security rules (`android-intent-security`) are respected across all layers.
 - [ ] `@compiler` verification evidence is present and valid; pure JVM unit tests (`testing-setup`) verify real behavior within the strict Test Budget (1-3 tests/class, 0-6 tests/feature, zero cross-layer duplication, zero trivial/watermelon tests).
+- [ ] On an active emulator with stateful UI, Level 4 Probes 4A & 4B (`PID_AFTER != PID_BEFORE`) pass across every stateful screen, non-root route, and critical persistable state declared in Section 4 (recorded in Validation Report §3.3), or Level 4 is recorded as `SKIPPED (headless)` / `N/A`.
 - [ ] Structured validation report written to `docs/features/<feature-id>/validator/validation-report.md`.
 ```

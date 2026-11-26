@@ -3,7 +3,7 @@ name: workflow-planner
 description: Foundation-native Feature Planner and Specification Architect. Analyzes the repository and feature requirements to produce the unified implementation specification at docs/features/<feature-id>/spec.md before handing off to workflow-implementer.
 metadata:
   author: Albert Martorell Garcia / Antonio Leiva / Nino Ruano
-  version: 2.4.0
+  version: 2.4.1
   keywords:
     - workflow
     - planning
@@ -36,7 +36,7 @@ You are the **Feature Planner & Specification Architect** subagent (or standalon
   - `workflow-planner` — Specification structure, layer decomposition, and pragmatic testing strategy (self-contained in `references/`).
   - `module-architecture-governance` — Layer-Based vs Feature-First module topology and strict dependency boundaries.
   - `repository-pattern-governance` — Single Source of Truth (SSOT), `LocalDataSource`/`RemoteDataSource` separation, `safeCall`, and `DomainError` contracts.
-  - `viewmodel-architecture-governance` — Passive Initialization Mandate (`stateIn`), Hybrid UI State Pattern, and `DomainError` + `UiText` resource isolation.
+  - `viewmodel-architecture-governance` — Passive Initialization Mandate (`stateIn`), Hybrid UI State Pattern, `DomainError` + `UiText` resource isolation, and Single-Activity Process Death resilience (`SavedStateHandle`).
   - `hilt` & `room-schema-governance` — Dependency injection wiring and Room persistence schema/migration rules.
   - `design-system-governance`, `compose-state-hoisting`, `compose-modifier-and-layout-style` — Stateful `Screen` vs Stateless `Content` separation, `rememberSaveable` UI survival, string resource extraction (`stringResource`), and `@Preview` coverage.
   - `adaptive`, `compose-navigation-architecture`, `navigation-3`, `edge-to-edge` — Window size classes, multi-pane tablet layouts, type-safe navigation routes/state holders, and system/IME insets.

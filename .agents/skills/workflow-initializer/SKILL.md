@@ -3,7 +3,7 @@ name: workflow-initializer
 description: Initializes a new or existing Android project with the unified Android AI Workflow Foundation multi-agent setup. Configures AGENTS.md, AI context exclusions, safety hooks, and provider-specific subagent definitions (implementer, validator, documenter) with git worktree isolation.
 metadata:
   author: Albert Martorell Garcia
-  version: 2.2.0
+  version: 2.2.1
   keywords:
     - setup
     - initialization
