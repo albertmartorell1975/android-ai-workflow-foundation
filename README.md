@@ -28,7 +28,7 @@ The initializer inspects your module topology (*Layer-Based* vs. *Feature-First*
 
 ### 3. Set Up Discovery & Project Harness
 * **New product / MVP:** Run `@build-brief` for guided discovery (`CONTEXT.md`, `docs/build-brief.md`, `docs/domain-model.md`, `DESIGN.md`), then run `@harness-starter`.
-* **Existing Android codebase:** Run `@harness-starter` directly. In both cases, it generates `PROGRESS.md`, `CONSTRAINTS.md`, `feature_list.json`, `docs/features/<feature-id>/` folders, and the CI quality gate (`.github/workflows/gate.yml`) in your Android repository.
+* **Existing Android codebase:** Run `@harness-starter` directly. In both cases, it generates `PROGRESS.md`, `CONSTRAINTS.md`, atomic PR-sized `feature_list.json` slices, `docs/features/<feature-id>/` folders, `.gitattributes` (collapsing snapshots/schemas/validator reports in PR diffs), and the CI quality gate (`.github/workflows/gate.yml`) in your Android repository.
 * **Start building:** Invoke `@workflow-orchestrator` with a specific feature request (Standalone Mode) or `"continue"` to process `feature_list.json` / pending PR reviews.
 
 ### Updating an Existing Project
@@ -127,9 +127,9 @@ The Foundation ships **37 active skills** under `.agents/skills/` and **25 optio
   * **Feature-First** (scalable/multi-team): `:<feature>:{domain,usecases,data,presentation}`, `:core:*`, `:app`.
 * **Opinionated Engineering Stack:** Kotlin, Clean Architecture & SOLID, MVVM with Hybrid UI State, Repository SSOT with typed `DomainError`, **Hilt**, **Room**, **Firebase** (Auth, Remote Config), and **Jetpack Compose** (Navigation 3, adaptive layouts, edge-to-edge, state hoisting, side effects).
 * **Pragmatic Testing Strategy:**
-  * **Closed, high-value test budget (0–6 `@Test` per feature):** Pure JVM unit tests (JUnit + Manual Fakes + `MainDispatcherRule` + Turbine) planned upfront in `spec.md` only for layers with real branching, calculations, error mapping, multi-source orchestration, or ViewModel state transitions (**0 tests** by default on boilerplate or 1:1 pass-through layers).
+  * **Closed, high-value test budget (0–6 `@Test` per feature):** Pure JVM unit tests (JUnit + Manual Fakes + `MainDispatcherRule` + Turbine) planned upfront in `spec.md` only for layers with real branching, calculations, error mapping, multi-source orchestration, ViewModel state transitions, or `SavedStateHandle(mapOf(...))` cold-restoration (**0 tests** by default on boilerplate or 1:1 pass-through layers).
   * **Zero bloat:** No Robolectric screen tests, no mocking frameworks (`MockK`/`Mockito`) over domain interfaces, and no trivial tests—every test is audited for falsifiability and non-trivial value.
-  * **Black-box UI journeys:** End-to-end flows validated on an active emulator/device (and skipped cleanly when no device is attached).
+  * **Black-box UI journeys & Process Death probes:** End-to-end Acceptance Scenarios plus Activity recreation (`always_finish_activities 1 -> 0`) and LMK process-death (`am kill` + Recents restore with `PID_AFTER != PID_BEFORE`) probes validated on an active emulator/device (and skipped cleanly when headless).
 * **Optional Catalog Plugins (on demand):** CameraX, Wear Compose M3, AppFunctions, R8 Analyzer, Perfetto Trace/SQL, Compose stability/recomposition diagnostics, Play Billing/Policy tools, and custom skill/hook authoring.
 
 ---
@@ -143,7 +143,8 @@ your-android-project/
 ├── AGENTS.md                           # Routing map & project guardrails (max 120 lines / 6 KB)
 ├── PROGRESS.md                         # Current verified state & session log
 ├── CONSTRAINTS.md                      # Durable MUST / MUST NOT architectural rules
-├── feature_list.json                   # Backlog queue, depends_on, checkpoints & status
+├── feature_list.json                   # Atomic PR-sized backlog queue, depends_on, checkpoints & status
+├── .gitattributes                      # Collapses Roborazzi PNGs, Room schemas & validator reports in PR diffs
 ├── .github/workflows/gate.yml          # CI quality gate triggered on PRs
 └── docs/features/<feature-id>/
     ├── spec.md                         # Unified contract (Given/When/Then + layers + test plan)
